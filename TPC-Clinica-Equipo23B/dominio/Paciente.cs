@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace dominio
 {
-    public class Paciente
+    public class Paciente : Persona
     {
         public int IdPaciente { get; set; }
-
         public DateTime FechaNacimiento { get; set; } //date?
 
     }
