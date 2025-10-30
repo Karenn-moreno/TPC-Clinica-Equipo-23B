@@ -41,8 +41,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Especialidad.cs" />
+    <Compile Include="Medico.cs" />
+    <Compile Include="Paciente.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rol.cs" />
+    <Compile Include="Turno.cs" />
     <Compile Include="TurnoDeTrabajo.cs" />
     <Compile Include="Usuario.cs" />
     <Compile Include="UsuarioRol.cs" />
