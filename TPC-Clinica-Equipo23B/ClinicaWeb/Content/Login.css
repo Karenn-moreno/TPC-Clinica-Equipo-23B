@@ -1,0 +1,48 @@
+﻿body {
+    font-family: 'Manrope', sans-serif;
+    background-color: #f8f9fa;
+}
+
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-card {
+    max-width: 480px;
+    width: 100%;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, .25);
+}
+
+.btn-primary {
+    background-color: #135bec;
+    border-color: #135bec;
+}
+
+    .btn-primary:hover {
+        background-color: #104abd;
+        border-color: #104abd;
+    }
+
+.logo-icon {
+    font-size: 2.25rem;
+    color: #135bec;
+    vertical-align: middle;
+}
+
+a {
+    color: #135bec;
+    text-decoration: none;
+}
+
+    a:hover {
+        text-decoration: underline;
+    }

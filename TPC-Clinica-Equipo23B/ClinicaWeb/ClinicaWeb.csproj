@@ -67,9 +67,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\Default.css" />
+    <Content Include="Content\GestionMedicos.css" />
+    <Content Include="Content\GestionPacientes.css" />
+    <Content Include="Content\GestionTurnos.css" />
+    <Content Include="Content\Login.css" />
     <Content Include="Default.aspx" />
+    <Content Include="GestionMedicos.aspx" />
+    <Content Include="GestionPacientes.aspx" />
+    <Content Include="GestionTurnos.aspx" />
     <Content Include="Global.asax" />
     <Content Include="Inicio.aspx" />
+    <Content Include="Login.aspx" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -80,6 +89,27 @@
     <Compile Include="Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
+    <Compile Include="GestionMedicos.aspx.cs">
+      <DependentUpon>GestionMedicos.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="GestionMedicos.aspx.designer.cs">
+      <DependentUpon>GestionMedicos.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="GestionPacientes.aspx.cs">
+      <DependentUpon>GestionPacientes.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="GestionPacientes.aspx.designer.cs">
+      <DependentUpon>GestionPacientes.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="GestionTurnos.aspx.cs">
+      <DependentUpon>GestionTurnos.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="GestionTurnos.aspx.designer.cs">
+      <DependentUpon>GestionTurnos.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -89,6 +119,13 @@
     </Compile>
     <Compile Include="Inicio.aspx.designer.cs">
       <DependentUpon>Inicio.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Login.aspx.cs">
+      <DependentUpon>Login.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Login.aspx.designer.cs">
+      <DependentUpon>Login.aspx</DependentUpon>
     </Compile>
     <Compile Include="MasterPage.Master.cs">
       <DependentUpon>MasterPage.Master</DependentUpon>
@@ -111,7 +148,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Content\" />
     <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>

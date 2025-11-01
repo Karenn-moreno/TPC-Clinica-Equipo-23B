@@ -1,0 +1,43 @@
+﻿
+body {
+    font-family: 'Manrope', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+.hero-section {
+    position: relative;
+    min-height: 100vh;
+    background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCIQREHkUuMzdAM__btk8tW5hku9S27O35-Dhb66dC_VsQ6HnC_6f6uS9pwKFziycjyA-UpbU7Vd8TLFfaNr4fqp3Vjw4fkbw3S-fDyC6O7D4b4Zf6lTFZUkpEC-4_Oe9BZ5R4cFRBX7D0KTf_YMv377g_F_6JF_HzVzoqRAEQyKmoLTvaRVzM_IMdZYJ50VeU7SZTt1s8IiuLozeWYkyPGHXu9n7SfVl1Kyyh4Q-20EkMdzgY8BosG08iC-J5cZl5F9RcIcs2Wj1xW");
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(16, 22, 34, 0.6);
+        backdrop-filter: blur(5px);
+        z-index: 1;
+    }
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+.navbar-brand .svg-icon {
+    color: #135bec;
+    width: 24px;
+    height: 24px;
+    margin-right: .5rem;
+}
+
