@@ -1,14 +1,18 @@
 ﻿using dominio;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace negocio
 {
-    internal class EspecialidadNegocio
+    internal class MedicoNegocio
     {
-        //public List<Especialidad> ListarEspecialidad()
+        //public List<Medico> ListarMedico()
+       // {
+
+        //}
     }
 }
