@@ -21,7 +21,7 @@ namespace ClinicaWeb
 
         protected void btnRegistrar_Click(object sender, EventArgs e)
         {
-
+            Response.Redirect("Registrarse.aspx",false);
         }
     }
 }
