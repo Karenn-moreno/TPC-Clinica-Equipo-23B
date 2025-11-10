@@ -176,5 +176,198 @@ VALUES ('Victoria', 'Caseres', '47083346', 'victoria.caseres2005@gmail.com', '11
 INSERT INTO Persona (Nombre, Apellido, Dni, Email, Telefono, Localidad)
 VALUES ('Anahi', 'Gimenez', '47505693', 'gimenez.anahi@hotmail.com', '1158692377', 'Malvinas');
 
+-- ======================================
+-- Insertar datos en la tabla Usuario
+-- ======================================
+-- Asignamos a Carlos Rodriguez (IdPersona = 3) y Anahi Gimenez (IdPersona = 6) como Usuarios/Medicos
+INSERT INTO Usuario (IdUsuario, Password)
+VALUES (3, 'passmedico123');
+
+INSERT INTO Usuario (IdUsuario, Password)
+VALUES (6, 'passmedico456');
+
+-- Asignamos a Juan Perez (IdPersona = 1) como un usuario administrativo
+INSERT INTO Usuario (IdUsuario, Password)
+VALUES (1, 'passadmin789');
 
 
+-- ======================================
+-- Insertar datos en la tabla Medico
+-- ======================================
+-- Carlos Rodriguez (IdUsuario/IdMedico = 3)
+INSERT INTO Medico (IdMedico, Matricula)
+VALUES (3, 'MN-45678');
+
+-- Anahi Gimenez (IdUsuario/IdMedico = 6)
+INSERT INTO Medico (IdMedico, Matricula)
+VALUES (6, 'MN-87654');
+
+
+-- ======================================
+-- Insertar datos en la tabla Paciente
+-- ======================================
+-- Laura Martinez (IdPersona/IdPaciente = 4)
+INSERT INTO Paciente (IdPaciente, FechaNacimiento)
+VALUES (4, '1990-05-15');
+
+-- Victoria Caseres (IdPersona/IdPaciente = 5)
+INSERT INTO Paciente (IdPaciente, FechaNacimiento)
+VALUES (5, '2005-08-20');
+
+
+-- ======================================
+-- Insertar datos en la tabla Rol
+-- ======================================
+INSERT INTO Rol (TipoRol) VALUES ('Administrador'); -- IdRol = 1
+INSERT INTO Rol (TipoRol) VALUES ('Medico'); -- IdRol = 2
+INSERT INTO Rol (TipoRol) VALUES ('Recepcionista'); -- IdRol = 3
+
+
+-- ======================================
+-- Insertar datos en la tabla Permiso
+-- ======================================
+INSERT INTO Permiso (NombrePermiso, Descripcion) VALUES ('GestionarUsuarios', 'Crear, modificar y eliminar usuarios.'); -- IdPermiso = 1
+INSERT INTO Permiso (NombrePermiso, Descripcion) VALUES ('GestionarTurnos', 'Asignar, reprogramar y cancelar turnos.'); -- IdPermiso = 2
+INSERT INTO Permiso (NombrePermiso, Descripcion) VALUES ('VerHistoriasClinicas', 'Acceso a registros de pacientes.'); -- IdPermiso = 3
+
+
+-- ======================================
+-- RELACIÓN: Rol ↔ Permiso - RolPermiso
+-- ======================================
+-- Administrador (1) tiene todos los permisos
+INSERT INTO RolPermiso (IdRol, IdPermiso) VALUES (1, 1);
+INSERT INTO RolPermiso (IdRol, IdPermiso) VALUES (1, 2);
+INSERT INTO RolPermiso (IdRol, IdPermiso) VALUES (1, 3);
+
+-- Medico (2) tiene GestionarTurnos y VerHistoriasClinicas
+INSERT INTO RolPermiso (IdRol, IdPermiso) VALUES (2, 2);
+INSERT INTO RolPermiso (IdRol, IdPermiso) VALUES (2, 3);
+
+-- Recepcionista (3) tiene GestionarTurnos
+INSERT INTO RolPermiso (IdRol, IdPermiso) VALUES (3, 2);
+
+
+-- ======================================
+-- RELACIÓN: Usuario ↔ Rol - UsuarioRol
+-- ======================================
+-- Juan Perez (IdUsuario = 1) es Administrador (1)
+INSERT INTO UsuarioRol (IdUsuario, IdRol) VALUES (1, 1);
+
+-- Carlos Rodriguez (IdUsuario = 3) es Medico (2)
+INSERT INTO UsuarioRol (IdUsuario, IdRol) VALUES (3, 2);
+
+-- Anahi Gimenez (IdUsuario = 6) es Medico (2)
+INSERT INTO UsuarioRol (IdUsuario, IdRol) VALUES (6, 2);
+
+
+-- ======================================
+-- Insertar datos en la tabla Especialidad
+-- ======================================
+INSERT INTO Especialidad (Nombre) VALUES ('Cardiología'); -- IdEspecialidad = 1
+INSERT INTO Especialidad (Nombre) VALUES ('Pediatría'); -- IdEspecialidad = 2
+INSERT INTO Especialidad (Nombre) VALUES ('Dermatología'); -- IdEspecialidad = 3
+
+
+-- ======================================
+-- RELACIÓN: Medico ↔ Especialidad 
+-- ======================================
+-- Medico 3 (Carlos Rodriguez) tiene Cardiología (1)
+INSERT INTO MedicoEspecialidad (IdMedico, IdEspecialidad) VALUES (3, 1);
+
+-- Medico 6 (Anahi Gimenez) tiene Pediatría (2)
+INSERT INTO MedicoEspecialidad (IdMedico, IdEspecialidad) VALUES (6, 2);
+-- Medico 6 (Anahi Gimenez) también tiene Dermatología (3)
+INSERT INTO MedicoEspecialidad (IdMedico, IdEspecialidad) VALUES (6, 3);
+
+
+-- ======================================
+-- Insertar datos en la tabla TurnoDeTrabajo
+-- ======================================
+INSERT INTO TurnoDeTrabajo (TipoDeTurno, HoraInicioDefault, HoraFinDefault)
+VALUES ('Mañana', '08:00:00', '12:00:00'); -- IdTurnoTrabajo = 1
+
+INSERT INTO TurnoDeTrabajo (TipoDeTurno, HoraInicioDefault, HoraFinDefault)
+VALUES ('Tarde', '14:00:00', '18:00:00'); -- IdTurnoTrabajo = 2
+
+INSERT INTO TurnoDeTrabajo (TipoDeTurno, HoraInicioDefault, HoraFinDefault)
+VALUES ('Jornada Completa', '09:00:00', '17:00:00'); -- IdTurnoTrabajo = 3
+
+
+-- ======================================
+-- Insertar datos en la tabla JornadaLaboral
+-- ======================================
+-- Medico 3 (Carlos Rodriguez) - Lunes por la mañana (Turno 1)
+INSERT INTO JornadaLaboral (IdMedico, IdTurnoTrabajo, DiaLaboral)
+VALUES (3, 1, 'Lunes');
+
+-- Medico 3 (Carlos Rodriguez) - Miércoles por la tarde (Turno 2) con horario ajustado
+INSERT INTO JornadaLaboral (IdMedico, HoraInicio, HoraFin, DiaLaboral)
+VALUES (3, '13:00:00', '17:00:00', 'Miercoles');
+
+-- Medico 6 (Anahi Gimenez) - Viernes jornada completa (Turno 3)
+INSERT INTO JornadaLaboral (IdMedico, IdTurnoTrabajo, DiaLaboral)
+VALUES (6, 3, 'Viernes');
+
+-- Medico 6 (Anahi Gimenez) - Sábado por la mañana (Turno 1)
+INSERT INTO JornadaLaboral (IdMedico, IdTurnoTrabajo, DiaLaboral)
+VALUES (6, 1, 'Sabado');
+
+
+-- ======================================
+-- Insertar datos en la tabla Turno
+-- ======================================
+-- Turno 1: Medico 3 (Cardiología) con Paciente 4 (Laura Martinez)
+INSERT INTO Turno (IdMedico, IdPaciente, FechaHoraInicio, FechaHoraFin, MotivoDeConsulta, EstadoTurno)
+VALUES (
+    3, 
+    4, 
+    '2025-12-01 09:00:00', 
+    '2025-12-01 09:30:00', 
+    'Control de rutina cardiológico', 
+    'Nuevo'
+);
+
+-- Turno 2: Medico 6 (Pediatría/Dermatología) con Paciente 5 (Victoria Caseres)
+INSERT INTO Turno (IdMedico, IdPaciente, FechaHoraInicio, FechaHoraFin, MotivoDeConsulta, EstadoTurno)
+VALUES (
+    6, 
+    5, 
+    '2025-12-05 15:00:00', 
+    '2025-12-05 15:45:00', 
+    'Erupción cutánea', 
+    'Nuevo'
+);
+
+-- Turno 3: Turno cerrado (ya realizado)
+INSERT INTO Turno (IdMedico, IdPaciente, FechaHoraInicio, FechaHoraFin, MotivoDeConsulta, Diagnostico, EstadoTurno)
+VALUES (
+    3, 
+    5, 
+    '2025-11-01 14:00:00', 
+    '2025-11-01 14:45:00', 
+    'Dolor de pecho', 
+    'Estrés, sin hallazgos cardiológicos', 
+    'Cerrado'
+);
+
+-- Turno 4: Turno cancelado
+INSERT INTO Turno (IdMedico, IdPaciente, FechaHoraInicio, FechaHoraFin, MotivoDeConsulta, EstadoTurno)
+VALUES (
+    6, 
+    4, 
+    '2025-12-10 10:00:00', 
+    '2025-12-10 10:30:00', 
+    'Consulta general', 
+    'Cancelado'
+);
+
+-- Turno 5: Turno reprogramado
+INSERT INTO Turno (IdMedico, IdPaciente, FechaHoraInicio, FechaHoraFin, MotivoDeConsulta, EstadoTurno)
+VALUES (
+    6, 
+    5, 
+    '2025-12-06 09:00:00', 
+    '2025-12-06 09:45:00', 
+    'Seguimiento de erupción', 
+    'Reprogramado'
+);
