@@ -8,9 +8,7 @@ namespace dominio
 {
     public class Usuario : Persona
     {
-        public int IdUsuario { get; set; }
         public string Password { get; set; }
-        public Persona Persona { get; set; }
-        public ICollection<RolPermiso> RolPermisos { get; set; } = new List<RolPermiso>();
+        public ICollection<UsuarioRol> UsuarioRoles { get; set; } = new List<UsuarioRol>();
     }
 }

@@ -12,6 +12,11 @@ namespace dominio
         public TimeSpan HorarioInicio { get; set; }
         public TimeSpan HoraFin { get; set; }
         public DiaLaboral DiaLaboral { get; set; }
+        public int IdMedico { get; set; }
+        public Medico Medico { get; set; }
+
+        public int? IdTurnoTrabajo { get; set; } 
+        public TurnoDeTrabajo TurnoDeTrabajo { get; set; }
     }
 
     public enum DiaLaboral

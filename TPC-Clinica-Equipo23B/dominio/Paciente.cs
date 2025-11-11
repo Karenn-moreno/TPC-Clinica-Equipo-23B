@@ -8,8 +8,9 @@ namespace dominio
 {
     public class Paciente : Persona
     {
-        public int IdPaciente { get; set; }
+        
         public DateTime FechaNacimiento { get; set; } //date?
+        public ICollection<Turno> Turnos { get; set; } = new List<Turno>();
 
     }
 }

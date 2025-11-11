@@ -15,7 +15,11 @@ namespace dominio
         public string Diagnostico { get; set; }
         public EstadoTurno EstadoTurno { get; set; }
 
+        public int IdMedico { get; set; }
+        public Medico Medico { get; set; }
 
+        public int IdPaciente { get; set; }
+        public Paciente Paciente { get; set; }
     }
     public enum EstadoTurno
     {
@@ -25,4 +29,5 @@ namespace dominio
         NoAsistio,
         Cerrado
     }
+
 }

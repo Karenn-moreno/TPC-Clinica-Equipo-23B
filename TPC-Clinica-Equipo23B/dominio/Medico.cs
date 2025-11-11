@@ -8,9 +8,11 @@ namespace dominio
 {
      public class Medico : Usuario
     {
-        public int IdMedico { get; set; }
         public string Matricula { get; set; }
 
-        public List<Especialidad> Especialidades { get; set; } = new List<Especialidad>();
+        public ICollection<MedicoEspecialidad> MedicoEspecialidades { get; set; } = new List<MedicoEspecialidad>();
+        public ICollection<JornadaLaboral> JornadasLaborales { get; set; } = new List<JornadaLaboral>();
+        public ICollection<Turno> Turnos { get; set; } = new List<Turno>();
+
     }
 }

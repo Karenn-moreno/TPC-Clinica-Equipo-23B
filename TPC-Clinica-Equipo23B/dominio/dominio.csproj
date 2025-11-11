@@ -44,6 +44,7 @@
     <Compile Include="Especialidad.cs" />
     <Compile Include="JornadaLaboral.cs" />
     <Compile Include="Medico.cs" />
+    <Compile Include="MedicoEspecialidad.cs" />
     <Compile Include="Paciente.cs" />
     <Compile Include="Permiso.cs" />
     <Compile Include="Persona.cs" />
