@@ -43,7 +43,7 @@ namespace negocio
                     Paciente paciente = new Paciente();
 
                     // Mapeo de campos de la tabla Persona
-                    paciente.IdPaciente = (int)lector["IdPciente"];
+                    paciente.IdPersona = (int)lector["IdPersona"];
                     // Como Paciente hereda de Persona, mapeamos los campos base
                     paciente.Nombre = (string)lector["Nombre"];
                     paciente.Apellido = (string)lector["Apellido"];
