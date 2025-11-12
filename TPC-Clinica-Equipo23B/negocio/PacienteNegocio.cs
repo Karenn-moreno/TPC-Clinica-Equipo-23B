@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace negocio
 {
-    internal class PacienteNegocio
+    public class PacienteNegocio
     {
 
         public List<Paciente> ListarPaciente()//Vicky se confundio es para la otra etapa, no prestarle atencion ahora
@@ -67,7 +67,7 @@ namespace negocio
             }
             catch (Exception ex)
             {
-                // Se lanza una excepción ante cualquier error
+
                 throw new Exception("Error al listar pacientes", ex);
             }
             finally

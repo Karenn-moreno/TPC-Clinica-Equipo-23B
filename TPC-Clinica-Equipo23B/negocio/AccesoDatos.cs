@@ -7,11 +7,16 @@ using System.Threading.Tasks;
 
 namespace negocio
 {
-    internal class AccesoDatos
+    public class AccesoDatos
     {
         private SqlConnection conexion;
         private SqlCommand comando;
         private SqlDataReader lector;
+
+        public SqlDataReader Lector
+        {
+            get { return lector; }
+        }
 
         public AccesoDatos()
         {
@@ -19,6 +24,11 @@ namespace negocio
             comando = new SqlCommand();
         }
 
+        public void setearConsulta(string consulta)
+        {
+            comando.CommandType = System.Data.CommandType.Text;
+            comando.CommandText = consulta;
+        }
         public void ejecutarLectura()
         {
             comando.Connection = conexion;
