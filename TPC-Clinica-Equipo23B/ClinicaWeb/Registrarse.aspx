@@ -47,15 +47,6 @@
                                 <asp:TextBox ID="idDocument" runat="server" CssClass="form-control form-control-lg" placeholder="Ej: DNI 12345678"></asp:TextBox>
                             </div>
                             <div class="col-12">
-                                <label class="form-label fw-medium">Género</label>
-                                <asp:DropDownList ID="gender" runat="server" CssClass="form-select form-select-lg">
-                                    <asp:ListItem Text="Seleccionar..." />
-                                    <asp:ListItem Text="Masculino" />
-                                    <asp:ListItem Text="Femenino" />
-                                    <asp:ListItem Text="Prefiero no decirlo" />
-                                </asp:DropDownList>
-                            </div>
-                            <div class="col-12">
                                 <label class="form-label fw-medium">Correo electrónico</label>
                                 <asp:TextBox ID="email" runat="server" CssClass="form-control form-control-lg" TextMode="Email" placeholder="tu@correo.com"></asp:TextBox>
                             </div>
