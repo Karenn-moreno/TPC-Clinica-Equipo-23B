@@ -36,7 +36,7 @@ namespace ClinicaWeb
             catch (Exception ex)
             {
                 Session["Error"] = "Error al inicializar la gestión de turnos: " + ex.Message;
-                // Response.Redirect("Error.aspx", false); 
+       
             }
         }
 
@@ -236,10 +236,105 @@ namespace ClinicaWeb
             {
               
                 Session["Error"] = "Error al guardar el turno: " + ex.Message;
-                //Response.Redirect("Error.aspx", false);
+               
+            }
+        }
+
+        private void CargarGrillaTurnos(DateTime fecha)
+        {
+            try
+            {
+                TurnoNegocio negocio = new TurnoNegocio();
+                List<Turno> listaTurnos = negocio.ListarPorFecha(fecha);
+
+               
+                Session["ListaTurnosDia"] = listaTurnos;
+
+            }
+            catch (Exception ex)
+            {
+                Session["Error"] = "Error al cargar la grilla de turnos: " + ex.Message;
+            
+            }
+        }
+        protected void btnGuardarCambiosGrilla_Click(object sender, EventArgs e)
+        {
+
+            if (Session["ListaTurnosDia"] == null)
+            {
+                // No hay datos para procesar o la sesión expiró.
+                return;
+            }
+
+            List<Turno> listaTurnos = (List<Turno>)Session["ListaTurnosDia"];
+            TurnoNegocio turnoNegocio = new TurnoNegocio();
+            bool cambiosGuardados = false;
+
+            DateTime fechaBase = DateTime.Today;
+
+              try
+            {
+                foreach (Turno turno in listaTurnos)
+                {
+                    int idTurno = turno.IdTurno;
+
+                
+                    string horaInicioStr = Request.Form[$"txtHoraInicio_{idTurno}"];
+
+                    
+                    string estadoStr = Request.Form[$"ddlEstado_{idTurno}"];
+
+            
+                    string idMedicoStr = Request.Form[$"ddlMedico_{idTurno}"];
+
+  
+                    if (!string.IsNullOrEmpty(horaInicioStr) && !string.IsNullOrEmpty(estadoStr))
+                    {
+                        // Conversión de la hora
+                        if (TimeSpan.TryParse(horaInicioStr, out TimeSpan nuevaHoraInicio))
+                        {
+                            // La fecha base se combina con la nueva hora
+                            DateTime nuevaFechaHoraInicio = fechaBase.Date.Add(nuevaHoraInicio);
+
+                            // La hora fin se calcula sumando la duración (asumida en 60 minutos)
+                            DateTime nuevaFechaHoraFin = nuevaFechaHoraInicio.Add(TimeSpan.FromMinutes(DURACION_TURNO_MINUTOS));
+
+                            // Conversión del estado
+                            if (Enum.TryParse(estadoStr, true, out EstadoTurno nuevoEstado))
+                            {
+                               
+                                turno.FechaHoraInicio = nuevaFechaHoraInicio;
+                                turno.FechaHoraFin = nuevaFechaHoraFin;
+                                turno.EstadoTurno = nuevoEstado;
+
+                                if (int.TryParse(idMedicoStr, out int nuevoIdMedico))
+                                {
+                                    turno.IdMedico = nuevoIdMedico;
+                                }
+
+                         
+                                turnoNegocio.Modificar(turno);
+                                cambiosGuardados = true;
+                            }
+                        }
+                    }
+                }
+
+                if (cambiosGuardados)
+                {
+                    // Recargar la grilla para reflejar los cambios guardados
+                    CargarGrillaTurnos(fechaBase);
+                   
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Session["Error"] = "Error al guardar los cambios en la grilla: " + ex.Message;
+              
             }
         }
 
 
-}
+    }
 }

@@ -24,6 +24,15 @@ namespace ClinicaWeb
         protected global::System.Web.UI.HtmlControls.HtmlForm form3;
 
         /// <summary>
+        /// Control btnGuardarCambiosGrilla.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnGuardarCambiosGrilla;
+
+        /// <summary>
         /// Control ddlEspecialidad.
         /// </summary>
         /// <remarks>

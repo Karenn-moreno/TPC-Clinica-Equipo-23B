@@ -182,7 +182,9 @@
                                     </table>
                                 </div>
                                 <div class="d-flex justify-content-end mt-3">
-                                    <button class="btn btn-primary">Guardar Cambios</button>
+                                    <asp:Button ID="btnGuardarCambiosGrilla" runat="server"
+                                        Text="Guardar Cambios" CssClass="btn btn-primary"
+                                        OnClick="btnGuardarCambiosGrilla_Click" />
                                 </div>
                             </div>
                         </div>

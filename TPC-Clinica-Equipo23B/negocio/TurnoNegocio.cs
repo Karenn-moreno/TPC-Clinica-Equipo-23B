@@ -216,5 +216,86 @@ namespace negocio
             }
         }
 
+        public Turno ListarPorId(int idTurno)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                datos.setearConsulta(@"
+            SELECT 
+                T.IdTurno, T.FechaHoraInicio, T.FechaHoraFin, T.MotivoDeConsulta, 
+                T.Diagnostico, T.EstadoTurno, 
+                T.IdMedico, M.Nombre AS NombreMedico, M.Apellido AS ApellidoMedico,
+                T.IdPaciente, P.Nombre AS NombrePaciente, P.Apellido AS ApellidoPaciente
+            FROM Turno T
+            INNER JOIN Persona M ON T.IdMedico = M.IdPersona
+            INNER JOIN Persona P ON T.IdPaciente = P.IdPersona
+            WHERE T.IdTurno = @IdTurno");
+
+                datos.setearParametro("@IdTurno", idTurno);
+                datos.ejecutarLectura();
+
+                if (datos.Lector.Read())
+                {
+                    return MapearTurno(datos.Lector);
+                }
+
+                return null; // Retorna null si no se encuentra
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener el turno por ID", ex);
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+        public void Modificar(Turno turno)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                
+                datos.setearConsulta(@"
+            UPDATE Turno SET
+                FechaHoraInicio = @FechaHoraInicio, 
+                FechaHoraFin = @FechaHoraFin, 
+                MotivoDeConsulta = @MotivoDeConsulta, 
+                Diagnostico = @Diagnostico,
+                EstadoTurno = @EstadoTurno, 
+                IdMedico = @IdMedico, 
+                IdPaciente = @IdPaciente
+            WHERE IdTurno = @IdTurno"); // El IdTurno es la clave para saber qué fila actualizar
+
+               
+                datos.setearParametro("@FechaHoraInicio", turno.FechaHoraInicio);
+                datos.setearParametro("@FechaHoraFin", turno.FechaHoraFin);
+
+
+                datos.setearParametro("@MotivoDeConsulta", string.IsNullOrEmpty(turno.MotivoDeConsulta) ? (object)DBNull.Value : turno.MotivoDeConsulta);
+                datos.setearParametro("@Diagnostico", string.IsNullOrEmpty(turno.Diagnostico) ? (object)DBNull.Value : turno.Diagnostico);
+
+              
+                datos.setearParametro("@EstadoTurno", turno.EstadoTurno.ToString());
+
+                datos.setearParametro("@IdMedico", turno.IdMedico);
+                datos.setearParametro("@IdPaciente", turno.IdPaciente);
+                datos.setearParametro("@IdTurno", turno.IdTurno); // Parámetro del WHERE
+
+          
+                datos.ejecutarAccion();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al modificar el turno en la base de datos", ex);
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
     }
 }
