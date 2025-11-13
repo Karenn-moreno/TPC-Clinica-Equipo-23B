@@ -9,7 +9,7 @@ namespace dominio
     public class Paciente : Persona
     {
         
-        public DateTime FechaNacimiento { get; set; } //date?
+        public DateTime FechaNacimiento { get; set; } 
         public ICollection<Turno> Turnos { get; set; } = new List<Turno>();
 
     }
