@@ -102,8 +102,20 @@ namespace negocio
                 datos = new AccesoDatos();
                 datos.setearConsulta("INSERT INTO Paciente (IdPaciente, FechaNacimiento) VALUES (@IdPaciente, @FechaNacimiento)");
                 datos.setearParametro("@IdPaciente", idPersona);
-                datos.setearParametro("@FechaNacimiento", nuevo.FechaNacimiento);
+                
+
+                // ¡SOLUCIÓN! Comprobar la fecha antes de enviarla
+                if (nuevo.FechaNacimiento == DateTime.MinValue)
+                {
+                    datos.setearParametro("@FechaNacimiento", DBNull.Value);
+                }
+                else
+                {
+                    datos.setearParametro("@FechaNacimiento", nuevo.FechaNacimiento);
+                }
+
                 datos.ejecutarAccion();
+               
             }
             catch (Exception ex)
             {
@@ -136,14 +148,23 @@ namespace negocio
                 datos.setearParametro("@Telefono", paciente.Telefono);
                 datos.setearParametro("@Localidad", paciente.Localidad);
                 datos.setearParametro("@Id", paciente.IdPersona);
-                datos.ejecutarAccion();
 
+                datos.ejecutarAccion();
                 datos.cerrarConexion();
 
                 // 2. Actualizar la tabla Paciente
                 datos = new AccesoDatos();
                 datos.setearConsulta("UPDATE Paciente SET FechaNacimiento = @FechaNacimiento WHERE IdPaciente = @Id");
-                datos.setearParametro("@FechaNacimiento", paciente.FechaNacimiento);
+                
+                if (paciente.FechaNacimiento == DateTime.MinValue)
+                {
+                    datos.setearParametro("@FechaNacimiento", DBNull.Value);
+                }
+                else
+                {
+                    datos.setearParametro("@FechaNacimiento", paciente.FechaNacimiento);
+                }
+                
                 datos.setearParametro("@Id", paciente.IdPersona);
                 datos.ejecutarAccion();
             }
