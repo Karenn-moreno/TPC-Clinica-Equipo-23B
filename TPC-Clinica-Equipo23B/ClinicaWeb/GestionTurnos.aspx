@@ -69,7 +69,7 @@
                                 <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
                                     <div class="d-flex align-items-center gap-3">
                                         <h2 class="h5 fw-bold text-dark mb-0">Turnos del Día</h2>
-                                        <input class="form-control form-control-sm w-auto" type="date" value="2024-10-26" />
+                                        <input class="form-control form-control-sm w-auto" type="date" value="2024-10-26" id="txtFechaGrilla" runat="server" autopostback="true" ontextchanged="txtFechaGrilla_TextChanged" />
                                     </div>
                                     <div class="w-100 w-md-auto">
                                         <div class="position-relative">
@@ -79,107 +79,70 @@
                                     </div>
                                 </div>
                                 <div class="table-responsive">
-                                    <table class="table table-striped table-hover align-middle">
-                                        <thead>
-                                            <tr>
-                                                <th class="text-muted fw-semibold py-2" scope="col">Hora</th>
-                                                <th class="text-muted fw-semibold py-2" scope="col">Paciente</th>
-                                                <th class="text-muted fw-semibold py-2" scope="col">Médico</th>
-                                                <th class="text-muted fw-semibold py-2" scope="col">Estado</th>
-                                                <th class="text-muted fw-semibold py-2 text-end" scope="col">Acciones</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>
-                                                    <input class="form-control form-control-sm" type="time" value="09:00" /></td>
-                                                <td class="text-dark">Carlos Rodríguez</td>
-                                                <td>
-                                                    <select class="form-select form-select-sm">
-                                                        <option>Dr. García</option>
-                                                        <option>Dra. López</option>
-                                                        <option>Dr. Martínez</option>
+                                    <%-- Se reemplaza la tabla HTML estática con el GridView --%>
+                                    <asp:GridView ID="gvTurnos" runat="server"
+                                        CssClass="table table-striped table-hover align-middle"
+                                        AutoGenerateColumns="False"
+                                        GridLines="None"
+                                        EmptyDataText="No hay turnos agendados para este día."
+                                        OnRowDataBound="gvTurnos_RowDataBound">
+
+                                        <HeaderStyle CssClass="text-muted fw-semibold py-2" />
+                                        <Columns>
+
+                                            <%-- Hora/Fecha (Editable, name debe ser txtHoraInicio_{IdTurno}) --%>
+                                            <asp:TemplateField HeaderText="Hora">
+                                                <ItemTemplate>
+                                                    <input class="form-control form-control-sm" type="time"
+                                                        name='<%# "txtHoraInicio_" + Eval("IdTurno") %>'
+                                                        value='<%# Eval("FechaHoraInicio", "{0:HH:mm}") %>' />
+                                                </ItemTemplate>
+                                            </asp:TemplateField>
+
+                                            <%-- Paciente (Read-only display) --%>
+                                            <asp:TemplateField HeaderText="Paciente">
+                                                <ItemTemplate>
+                                                    <asp:Label ID="lblPaciente" runat="server"
+                                                        Text='<%# Eval("Paciente.Nombre") + " " + Eval("Paciente.Apellido") %>'></asp:Label>
+                                                </ItemTemplate>
+                                            </asp:TemplateField>
+
+                                            <%-- Médico (Dropdown, name debe ser ddlMedico_{IdTurno}) --%>
+                                            <asp:TemplateField HeaderText="Médico">
+                                                <ItemTemplate>
+                                                    <%-- Se utiliza un control HtmlSelect para controlar el atributo name --%>
+                                                    <select class="form-select form-select-sm"
+                                                        name='<%# "ddlMedico_" + Eval("IdTurno") %>'
+                                                        id='Select1'
+                                                        runat="server">
+                                                        <%-- Opciones cargadas en RowDataBound --%>
                                                     </select>
-                                                </td>
-                                                <td>
-                                                    <select class="form-select form-select-sm">
-                                                        <option class="status-success" selected="">Confirmado</option>
-                                                        <option class="status-warning">Pendiente</option>
-                                                        <option class="status-danger">Cancelado</option>
+                                                </ItemTemplate>
+                                            </asp:TemplateField>
+
+
+                                            <%-- Estado (Dropdown, name debe ser ddlEstado_{IdTurno}) --%>
+                                            <asp:TemplateField HeaderText="Estado">
+                                                <ItemTemplate>
+
+                                                    <select class="form-select form-select-sm"
+                                                        name='<%# "ddlEstado_" + Eval("IdTurno") %>'
+                                                        id='Select2'
+                                                        runat="server">
                                                     </select>
-                                                </td>
-                                                <td class="text-end">
-                                                    <button class="btn btn-sm btn-link text-primary p-0"><span class="material-symbols-outlined">edit</span></button>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <input class="form-control form-control-sm" type="time" value="09:30" /></td>
-                                                <td class="text-dark">Ana Martínez</td>
-                                                <td>
-                                                    <select class="form-select form-select-sm">
-                                                        <option>Dr. García</option>
-                                                        <option selected="">Dra. López</option>
-                                                        <option>Dr. Martínez</option>
-                                                    </select>
-                                                </td>
-                                                <td>
-                                                    <select class="form-select form-select-sm">
-                                                        <option class="status-success">Confirmado</option>
-                                                        <option class="status-warning" selected="">Pendiente</option>
-                                                        <option class="status-danger">Cancelado</option>
-                                                    </select>
-                                                </td>
-                                                <td class="text-end">
-                                                    <button class="btn btn-sm btn-link text-primary p-0"><span class="material-symbols-outlined">edit</span></button>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <input class="form-control form-control-sm" type="time" value="11:00" /></td>
-                                                <td class="text-dark">Javier Gómez</td>
-                                                <td>
-                                                    <select class="form-select form-select-sm">
-                                                        <option selected="">Dr. García</option>
-                                                        <option>Dra. López</option>
-                                                        <option>Dr. Martínez</option>
-                                                    </select>
-                                                </td>
-                                                <td>
-                                                    <select class="form-select form-select-sm">
-                                                        <option class="status-success" selected="">Confirmado</option>
-                                                        <option class="status-warning">Pendiente</option>
-                                                        <option class="status-danger">Cancelado</option>
-                                                    </select>
-                                                </td>
-                                                <td class="text-end">
-                                                    <button class="btn btn-sm btn-link text-primary p-0"><span class="material-symbols-outlined">edit</span></button>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <input class="form-control form-control-sm" type="time" value="12:00" /></td>
-                                                <td class="text-dark">Lucía Fernández</td>
-                                                <td>
-                                                    <select class="form-select form-select-sm">
-                                                        <option>Dr. García</option>
-                                                        <option selected="">Dra. López</option>
-                                                        <option>Dr. Martínez</option>
-                                                    </select>
-                                                </td>
-                                                <td>
-                                                    <select class="form-select form-select-sm">
-                                                        <option class="status-success">Confirmado</option>
-                                                        <option class="status-warning">Pendiente</option>
-                                                        <option class="status-danger" selected="">Cancelado</option>
-                                                    </select>
-                                                </td>
-                                                <td class="text-end">
-                                                    <button class="btn btn-sm btn-link text-primary p-0"><span class="material-symbols-outlined">edit</span></button>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                                </ItemTemplate>
+                                            </asp:TemplateField>
+
+                                            <asp:TemplateField HeaderText="Acciones" ItemStyle-CssClass="text-end">
+                                                <ItemTemplate>
+                                                    <button class="btn btn-sm btn-link text-primary p-0" type="button" data-bs-toggle="modal" data-bs-target="#viewTurnoModal">
+                                                        <span class="material-symbols-outlined">edit</span>
+                                                    </button>
+                                                </ItemTemplate>
+                                            </asp:TemplateField>
+
+                                        </Columns>
+                                    </asp:GridView>
                                 </div>
                                 <div class="d-flex justify-content-end mt-3">
                                     <asp:Button ID="btnGuardarCambiosGrilla" runat="server"
@@ -241,6 +204,8 @@
                     <div class="modal-footer">
                         <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancelar</button>
                         <asp:Button ID="btnGuardarTurno" runat="server" Text="Guardar Turno" CssClass="btn btn-primary" OnClick="btnGuardarTurno_Click" />
+                        <%-- Etiqueta para mensajes de error del formulario de nuevo turno --%>
+                       <asp:Label ID="lblErrorNuevoTurno" runat="server" ForeColor="Red" EnableViewState="false"></asp:Label>
                     </div>
                 </div>
             </div>

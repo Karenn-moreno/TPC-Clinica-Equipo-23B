@@ -1,11 +1,12 @@
-﻿using System;
+﻿using dominio;
+using negocio;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
+using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
-using dominio;
-using negocio;
 
 namespace ClinicaWeb
 {
@@ -19,7 +20,8 @@ namespace ClinicaWeb
             {
                 // La primera carga de la página
                 CargarDatosEstaticos();
-
+                txtFechaGrilla.Value = DateTime.Today.ToString("yyyy-MM-dd");
+                CargarGrillaTurnos(DateTime.Today);
             }
         }
 
@@ -31,19 +33,20 @@ namespace ClinicaWeb
                 CargarEspecialidades();
                 CargarPacientes();
                 CargarMedicos(0);
-
+                CargarMedicosParaGrilla();
+                CargarEstadosParaGrilla();
             }
             catch (Exception ex)
             {
                 Session["Error"] = "Error al inicializar la gestión de turnos: " + ex.Message;
-       
+
             }
         }
 
         private void CargarEspecialidades()
         {
             EspecialidadNegocio especialidadNegocio = new EspecialidadNegocio();
-            List<Especialidad> lista = especialidadNegocio.listar(); 
+            List<Especialidad> lista = especialidadNegocio.listar();
             ddlEspecialidad.DataSource = lista;
             ddlEspecialidad.DataTextField = "Nombre";
             ddlEspecialidad.DataValueField = "IdEspecialidad";
@@ -56,7 +59,8 @@ namespace ClinicaWeb
             PacienteNegocio pacienteNegocio = new PacienteNegocio();
             List<Paciente> lista = pacienteNegocio.Listar();
 
-            ddlPaciente.DataSource = lista.Select(p => new {
+            ddlPaciente.DataSource = lista.Select(p => new
+            {
                 Id = p.IdPersona,
                 NombreCompleto = p.Nombre + " " + p.Apellido
             });
@@ -125,7 +129,7 @@ namespace ClinicaWeb
             TimeSpan inicio = jornadaHoy.HorarioInicio;
             TimeSpan fin = jornadaHoy.HoraFin;
 
-            
+
             while (inicio.Add(TimeSpan.FromMinutes(DURACION_TURNO_MINUTOS)) <= fin)
             {
                 TimeSpan horaFinTurno = inicio.Add(TimeSpan.FromMinutes(DURACION_TURNO_MINUTOS));
@@ -153,8 +157,6 @@ namespace ClinicaWeb
             }
         }
 
-        //MANEJADORES DE EVENTOS (POSTBACK)
-
         protected void ddlEspecialidad_SelectedIndexChanged(object sender, EventArgs e)
         {
             // Recargar médicos filtrando por la especialidad seleccionada.
@@ -162,7 +164,7 @@ namespace ClinicaWeb
             {
                 CargarMedicos(id_especialidad);
             }
-     
+
         }
 
         protected void ddlMedico_SelectedIndexChanged(object sender, EventArgs e)
@@ -197,23 +199,29 @@ namespace ClinicaWeb
 
         protected void btnGuardarTurno_Click(object sender, EventArgs e)
         {
-            // Validaciones
+            // Limpiar mensaje de error previo al intentar guardar
+            if (lblErrorNuevoTurno != null)
+                lblErrorNuevoTurno.Text = "";
+
+            // Validaciones: Asegurarse de que todos los DDL y el campo de fecha tengan valor.
             if (ddlMedico.SelectedValue == "0" || ddlPaciente.SelectedValue == "0" ||
-                string.IsNullOrEmpty(txtFecha.Text) || ddlHorario.SelectedValue == "0")
+                string.IsNullOrEmpty(txtFecha.Text) || ddlHorario.SelectedValue == "0" ||
+                ddlEspecialidad.SelectedValue == "0") // Agregamos ddlEspecialidad para mayor seguridad
             {
-                
-                return;
+                if (lblErrorNuevoTurno != null)
+                    lblErrorNuevoTurno.Text = "Debe seleccionar una Especialidad, un Médico, un Paciente, una Fecha y un Horario.";
+                return; // Sale del método sin procesar
             }
 
             try
             {
-            
+
                 int idMedico = int.Parse(ddlMedico.SelectedValue);
                 int idPaciente = int.Parse(ddlPaciente.SelectedValue);
                 DateTime fechaTurno = DateTime.Parse(txtFecha.Text);
                 TimeSpan horaTurno = TimeSpan.Parse(ddlHorario.SelectedValue);
 
-                //Creación del objeto
+                // Creación del objeto Turno
                 Turno nuevoTurno = new Turno
                 {
                     IdMedico = idMedico,
@@ -222,21 +230,25 @@ namespace ClinicaWeb
                     FechaHoraInicio = fechaTurno.Add(horaTurno),
                     FechaHoraFin = fechaTurno.Add(horaTurno).Add(TimeSpan.FromMinutes(DURACION_TURNO_MINUTOS)),
                     MotivoDeConsulta = txtMotivoConsulta.Text,
-                    Diagnostico = null, // Se deja vacío/nulo al crear
+                    Diagnostico = null,
                     EstadoTurno = EstadoTurno.Nuevo // Estado inicial
                 };
 
-           
+
                 TurnoNegocio turnoNegocio = new TurnoNegocio();
                 turnoNegocio.Agregar(nuevoTurno);
 
-            
+                // Éxito: Recargar la página (Patrón Post-Redirect-Get)
+                // Esto cierra el modal y recarga la grilla con el nuevo turno.
+                Response.Redirect("GestionTurnos.aspx", false);
+
             }
             catch (Exception ex)
             {
-              
+                // En caso de fallo de DB
                 Session["Error"] = "Error al guardar el turno: " + ex.Message;
-               
+                Response.Redirect("Error.aspx", false);
+
             }
         }
 
@@ -247,22 +259,32 @@ namespace ClinicaWeb
                 TurnoNegocio negocio = new TurnoNegocio();
                 List<Turno> listaTurnos = negocio.ListarPorFecha(fecha);
 
-               
+
                 Session["ListaTurnosDia"] = listaTurnos;
+
+                gvTurnos.DataSource = listaTurnos;
+                gvTurnos.DataBind();
 
             }
             catch (Exception ex)
             {
                 Session["Error"] = "Error al cargar la grilla de turnos: " + ex.Message;
-            
+
             }
         }
         protected void btnGuardarCambiosGrilla_Click(object sender, EventArgs e)
         {
 
+
+            DateTime fechaBase = DateTime.Today;
+            if (DateTime.TryParse(txtFechaGrilla.Value, out DateTime fechaSeleccionada))
+            {
+                fechaBase = fechaSeleccionada;
+            }
+
             if (Session["ListaTurnosDia"] == null)
             {
-                // No hay datos para procesar o la sesión expiró.
+                // Manejo de error si no hay turnos cargados
                 return;
             }
 
@@ -270,24 +292,22 @@ namespace ClinicaWeb
             TurnoNegocio turnoNegocio = new TurnoNegocio();
             bool cambiosGuardados = false;
 
-            DateTime fechaBase = DateTime.Today;
-
-              try
+            try
             {
                 foreach (Turno turno in listaTurnos)
                 {
                     int idTurno = turno.IdTurno;
 
-                
+ 
                     string horaInicioStr = Request.Form[$"txtHoraInicio_{idTurno}"];
 
-                    
+
                     string estadoStr = Request.Form[$"ddlEstado_{idTurno}"];
 
-            
+
                     string idMedicoStr = Request.Form[$"ddlMedico_{idTurno}"];
 
-  
+
                     if (!string.IsNullOrEmpty(horaInicioStr) && !string.IsNullOrEmpty(estadoStr))
                     {
                         // Conversión de la hora
@@ -296,13 +316,13 @@ namespace ClinicaWeb
                             // La fecha base se combina con la nueva hora
                             DateTime nuevaFechaHoraInicio = fechaBase.Date.Add(nuevaHoraInicio);
 
-                            // La hora fin se calcula sumando la duración (asumida en 60 minutos)
+                           
                             DateTime nuevaFechaHoraFin = nuevaFechaHoraInicio.Add(TimeSpan.FromMinutes(DURACION_TURNO_MINUTOS));
 
                             // Conversión del estado
                             if (Enum.TryParse(estadoStr, true, out EstadoTurno nuevoEstado))
                             {
-                               
+
                                 turno.FechaHoraInicio = nuevaFechaHoraInicio;
                                 turno.FechaHoraFin = nuevaFechaHoraFin;
                                 turno.EstadoTurno = nuevoEstado;
@@ -311,8 +331,10 @@ namespace ClinicaWeb
                                 {
                                     turno.IdMedico = nuevoIdMedico;
                                 }
+                                // Mantenemos el ID de paciente.
 
-                         
+
+
                                 turnoNegocio.Modificar(turno);
                                 cambiosGuardados = true;
                             }
@@ -324,17 +346,98 @@ namespace ClinicaWeb
                 {
                     // Recargar la grilla para reflejar los cambios guardados
                     CargarGrillaTurnos(fechaBase);
-                   
+
                 }
 
             }
             catch (Exception ex)
             {
                 Session["Error"] = "Error al guardar los cambios en la grilla: " + ex.Message;
-              
+                Response.Redirect("Error.aspx");
             }
         }
 
+        private void CargarMedicosParaGrilla()
+        {
+            MedicoNegocio medicoNegocio = new MedicoNegocio();
+            List<Medico> listaMedicos = medicoNegocio.Listar();
+
+            // Crear una lista anónima para el DDL (Id, NombreCompleto)
+            var medicosDDL = listaMedicos
+               .Select(m => new
+               {
+                   IdMedico = m.IdPersona,
+                   NombreCompleto = "Dr/a. " + m.Nombre + " " + m.Apellido
+               })
+               .ToList();
+
+            Session["ListaMedicosGrilla"] = medicosDDL;
+        }
+
+        // Nuevo método para cargar estados de turno para el DropDownList de la grilla
+        private void CargarEstadosParaGrilla()
+        {
+
+            List<string> estados = Enum.GetNames(typeof(EstadoTurno)).ToList();
+            Session["ListaEstadosTurno"] = estados;
+        }
+
+        protected void txtFechaGrilla_TextChanged(object sender, EventArgs e)
+        {
+            if (DateTime.TryParse(txtFechaGrilla.Value, out DateTime fechaSeleccionada))
+            {
+                CargarGrillaTurnos(fechaSeleccionada);
+            }
+            else
+            {
+                // Manejar error de formato de fecha o recargar con fecha actual/default
+                CargarGrillaTurnos(DateTime.Today);
+                txtFechaGrilla.Value = DateTime.Today.ToString("yyyy-MM-dd");
+            }
+        }
+
+        protected void gvTurnos_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            if (e.Row.RowType == DataControlRowType.DataRow)
+            {
+                Turno turno = (Turno)e.Row.DataItem;
+
+                HtmlSelect ddlMedico = (HtmlSelect)e.Row.FindControl("ddlMedicoGrid_" + turno.IdTurno);
+                if (ddlMedico != null && Session["ListaMedicosGrilla"] != null)
+                {
+                    var listaMedicos = (IEnumerable<dynamic>)Session["ListaMedicosGrilla"];
+
+                    ddlMedico.Items.Clear();
+                    foreach (var medico in listaMedicos)
+                    {
+                        ListItem item = new ListItem(medico.NombreCompleto, medico.IdMedico.ToString());
+                        if (medico.IdMedico == turno.IdMedico)
+                        {
+                            item.Selected = true;
+                        }
+                        ddlMedico.Items.Add(item);
+                    }
+                }
+
+                //Configurar DropDownList de Estado 
+                HtmlSelect ddlEstado = (HtmlSelect)e.Row.FindControl("ddlEstadoGrid_" + turno.IdTurno);
+                if (ddlEstado != null && Session["ListaEstadosTurno"] != null)
+                {
+                    List<string> listaEstados = (List<string>)Session["ListaEstadosTurno"];
+
+                    ddlEstado.Items.Clear();
+                    foreach (string estado in listaEstados)
+                    {
+                        ListItem item = new ListItem(estado, estado);
+                        if (estado == turno.EstadoTurno.ToString())
+                        {
+                            item.Selected = true;
+                        }
+                        ddlEstado.Items.Add(item);
+                    }
+                }
+            }
+        }
 
     }
 }
