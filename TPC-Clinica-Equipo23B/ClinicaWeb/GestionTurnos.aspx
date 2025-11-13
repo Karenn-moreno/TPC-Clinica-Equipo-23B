@@ -190,7 +190,59 @@
                 </main>
             </div>
         </div>
+        <div aria-hidden="true" aria-labelledby="addTurnoModalLabel" class="modal fade" id="addTurnoModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addTurnoModalLabel">Agendar Nuevo Turno</h5>
+                        <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="ddlEspecialidad">Especialidad</label>
+                                <asp:DropDownList ID="ddlEspecialidad" runat="server" CssClass="form-control" AutoPostBack="true" OnSelectedIndexChanged="ddlEspecialidad_SelectedIndexChanged">
+                                </asp:DropDownList>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="ddlMedico">Médico</label>
+                                <asp:DropDownList ID="ddlMedico" runat="server" CssClass="form-control" AutoPostBack="true" OnSelectedIndexChanged="ddlMedico_SelectedIndexChanged">
+                                </asp:DropDownList>
+                            </div>
+                        </div>
 
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="ddlPaciente">Paciente</label>
+                                <asp:DropDownList ID="ddlPaciente" runat="server" CssClass="form-control">
+                                </asp:DropDownList>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="txtFecha">Fecha</label>
+                                <asp:TextBox ID="txtFecha" runat="server" CssClass="form-control" TextMode="Date" AutoPostBack="true" OnTextChanged="txtFecha_TextChanged"></asp:TextBox>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="ddlHorario">Horario Disponible</label>
+                                <asp:DropDownList ID="ddlHorario" runat="server" CssClass="form-control">
+                                </asp:DropDownList>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="txtMotivoConsulta">Motivo de la Consulta</label>
+                                <asp:TextBox ID="txtMotivoConsulta" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="2"></asp:TextBox>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancelar</button>
+                        <asp:Button ID="btnGuardarTurno" runat="server" Text="Guardar Turno" CssClass="btn btn-primary" OnClick="btnGuardarTurno_Click" />
+                    </div>
+                </div>
+            </div>
+        </div>
     </form>
     <script crossorigin="anonymous" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
