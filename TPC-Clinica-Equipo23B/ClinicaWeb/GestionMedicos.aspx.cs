@@ -52,6 +52,7 @@ namespace ClinicaWeb
         {
             try
             {
+                // Crear objeto médico con los datos del modal
                 Medico nuevoMedico = new Medico
                 {
                     Nombre = txtNombre.Text,
@@ -61,10 +62,22 @@ namespace ClinicaWeb
                     EspecialidadesTexto = txtEspecialidad.Text
                 };
 
+                // Llamar a la lógica de negocio para agregar
                 MedicoNegocio negocio = new MedicoNegocio();
-               // negocio.Agregar(nuevoMedico);
+                negocio.Agregar(nuevoMedico);
 
-                CargarGrillaMedicos(); // Recarga la grilla
+                // Recargar la grilla
+                CargarGrillaMedicos();
+
+                // Limpiar modal
+                txtNombre.Text = "";
+                txtApellido.Text = "";
+                txtDni.Text = "";
+                txtMatricula.Text = "";
+                txtEspecialidad.Text = "";
+
+                // Opcional: mostrar mensaje de éxito
+                Response.Write("<script>alert('Médico agregado correctamente');</script>");
             }
             catch (Exception ex)
             {

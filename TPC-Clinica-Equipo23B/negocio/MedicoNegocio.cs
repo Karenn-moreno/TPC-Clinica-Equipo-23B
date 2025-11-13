@@ -72,22 +72,22 @@ namespace negocio
                 while (datos.Lector.Read())
                 {
                     int id = (int)datos.Lector["IdPersona"];
-
-                    // Verificamos si ya existe el médico en la lista (por seguridad)
                     Medico medico = lista.Find(m => m.IdPersona == id);
                     if (medico == null)
                     {
-                        medico = new Medico();
-                        medico.IdPersona = id;
-                        medico.Nombre = (string)datos.Lector["Nombre"];
-                        medico.Apellido = (string)datos.Lector["Apellido"];
+                        medico = new Medico
+                        {
+                            IdPersona = id,
+                            Nombre = (string)datos.Lector["Nombre"],
+                            Apellido = (string)datos.Lector["Apellido"],
+                            EspecialidadesTexto = (string)datos.Lector["EspecialidadesTexto"],
+                            HorariosTexto = (string)datos.Lector["HorariosTexto"]
+                        };
+
                         if (datos.Lector["Email"] != DBNull.Value)
                             medico.Email = (string)datos.Lector["Email"];
                         if (datos.Lector["Telefono"] != DBNull.Value)
                             medico.Telefono = (string)datos.Lector["Telefono"];
-
-                        medico.EspecialidadesTexto = (string)datos.Lector["EspecialidadesTexto"];
-                        medico.HorariosTexto = (string)datos.Lector["HorariosTexto"];
 
                         lista.Add(medico);
                     }
@@ -98,6 +98,69 @@ namespace negocio
             catch (Exception ex)
             {
                 throw new Exception("Error al listar médicos", ex);
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+        public void Agregar(Medico nuevo)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                // Insertar en Persona
+                datos.setearConsulta(@"
+                    INSERT INTO Persona (Nombre, Apellido, Dni, Email, Telefono)
+                    VALUES (@Nombre, @Apellido, @Dni, @Email, @Telefono);
+                    SELECT SCOPE_IDENTITY() AS IdNuevo;
+                ");
+
+                datos.setearParametro("@Nombre", nuevo.Nombre);
+                datos.setearParametro("@Apellido", nuevo.Apellido);
+                datos.setearParametro("@Dni", nuevo.Dni);
+                datos.setearParametro("@Email", string.IsNullOrEmpty(nuevo.Email) ? DBNull.Value : (object)nuevo.Email);
+                datos.setearParametro("@Telefono", string.IsNullOrEmpty(nuevo.Telefono) ? DBNull.Value : (object)nuevo.Telefono);
+
+                datos.ejecutarLectura();
+
+                int idPersona = 0;
+                if (datos.Lector.Read())
+                    idPersona = Convert.ToInt32(datos.Lector["IdNuevo"]);
+
+                datos.cerrarConexion();
+
+                // Insertar en Medico
+                datos = new AccesoDatos();
+                datos.setearConsulta("INSERT INTO Medico (IdMedico, Matricula) VALUES (@IdMedico, @Matricula)");
+                datos.setearParametro("@IdMedico", idPersona);
+                datos.setearParametro("@Matricula", string.IsNullOrEmpty(nuevo.Matricula) ? DBNull.Value : (object)nuevo.Matricula);
+                datos.ejecutarAccion();
+
+                // Insertar Especialidades
+                if (!string.IsNullOrEmpty(nuevo.EspecialidadesTexto))
+                {
+                    // CORRECCIÓN DEL SPLIT
+                    string[] especialidades = nuevo.EspecialidadesTexto
+    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+                    foreach (var esp in especialidades)
+                    {
+                        datos = new AccesoDatos();
+                        datos.setearConsulta(@"
+                            INSERT INTO MedicoEspecialidad (IdMedico, IdEspecialidad)
+                            VALUES (@IdMedico, (SELECT IdEspecialidad FROM Especialidad WHERE Nombre = @Nombre))
+                        ");
+                        datos.setearParametro("@IdMedico", idPersona);
+                        datos.setearParametro("@Nombre", esp.Trim());
+                        datos.ejecutarAccion();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al agregar médico", ex);
             }
             finally
             {
