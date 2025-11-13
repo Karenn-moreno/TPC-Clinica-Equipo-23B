@@ -2,7 +2,7 @@
 
 <!DOCTYPE html>
 <html lang="es">
-<head  runat="server">
+<head runat="server">
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Clínica Salud - Panel de Recepción</title>
@@ -10,9 +10,10 @@
     <link href="~/Content/GestionPacientes.css" rel="stylesheet" type="text/css" />
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
-   
+
 </head>
 <body>
+    <form id="form5" runat="server">
     <div class="d-flex">
         <aside class="sidebar p-3 d-flex flex-column justify-content-between">
             <div>
@@ -44,94 +45,54 @@
                 </a>
             </div>
         </aside>
-        <main class="main-content p-4">
+        <main class="main-content p-4 p-md-5">
             <div class="container-fluid">
-                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
-                    <div>
-                        <h1 class="h3 fw-bold mb-1">Gestión de Pacientes</h1>
-                        <p class="text-muted mb-0">Agrega, visualiza y gestiona la información de los pacientes.</p>
-                    </div>
-                    <button class="btn btn-primary d-flex align-items-center gap-2" data-bs-target="#addPatientModal" data-bs-toggle="modal" type="button">
-                        <span class="material-symbols-outlined">add</span>
-                        <span>Agregar Paciente</span>
-                    </button>
-                </div>
-                <div class="card shadow-sm border-0">
-                    <div class="card-body">
-                        <div class="input-group mb-3" style="max-width: 400px;">
-                            <span class="input-group-text"><span class="material-symbols-outlined">search</span></span>
-                            <input class="form-control" placeholder="Buscar por nombre, apellido o DNI..." type="text" />
-                        </div>
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th scope="col">Nombre</th>
-                                        <th scope="col">DNI</th>
-                                        <th scope="col">Teléfono</th>
-                                        <th scope="col">Email</th>
-                                        <th class="text-end" scope="col">Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Carlos Rodríguez</td>
-                                        <td>12.345.678</td>
-                                        <td>(11) 2345-6789</td>
-                                        <td>carlos.rodriguez@example.com</td>
-                                        <td class="text-end">
-                                            <button class="btn btn-sm btn-outline-secondary" data-bs-target="#viewPatientModal" data-bs-toggle="modal">
-                                                <span class="material-symbols-outlined">visibility</span>
-                                            </button>
-                                            <button class="btn btn-sm btn-outline-primary" data-bs-target="#editPatientModal" data-bs-toggle="modal">
-                                                <span class="material-symbols-outlined">edit</span>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Ana Martínez</td>
-                                        <td>23.456.789</td>
-                                        <td>(11) 3456-7890</td>
-                                        <td>ana.martinez@example.com</td>
-                                        <td class="text-end">
-                                            <button class="btn btn-sm btn-outline-secondary" data-bs-target="#viewPatientModal" data-bs-toggle="modal">
-                                                <span class="material-symbols-outlined">visibility</span>
-                                            </button>
-                                            <button class="btn btn-sm btn-outline-primary" data-bs-target="#editPatientModal" data-bs-toggle="modal">
-                                                <span class="material-symbols-outlined">edit</span>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Javier Gómez</td>
-                                        <td>34.567.890</td>
-                                        <td>(11) 4567-8901</td>
-                                        <td>javier.gomez@example.com</td>
-                                        <td class="text-end">
-                                            <button class="btn btn-sm btn-outline-secondary" data-bs-target="#viewPatientModal" data-bs-toggle="modal">
-                                                <span class="material-symbols-outlined">visibility</span>
-                                            </button>
-                                            <button class="btn btn-sm btn-outline-primary" data-bs-target="#editPatientModal" data-bs-toggle="modal">
-                                                <span class="material-symbols-outlined">edit</span>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Lucía Fernández</td>
-                                        <td>45.678.901</td>
-                                        <td>(11) 5678-9012</td>
-                                        <td>lucia.fernandez@example.com</td>
-                                        <td class="text-end">
-                                            <button class="btn btn-sm btn-outline-secondary" data-bs-target="#viewPatientModal" data-bs-toggle="modal">
-                                                <span class="material-symbols-outlined">visibility</span>
-                                            </button>
-                                            <button class="btn btn-sm btn-outline-primary" data-bs-target="#editPatientModal" data-bs-toggle="modal">
-                                                <span class="material-symbols-outlined">edit</span>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card shadow-sm border-light-subtle">
+                            <div class="card-body">
+                                <div class="table-responsive">
+
+                                    <asp:GridView ID="gvPacientes" runat="server"
+                                        CssClass="table table-hover align-middle"
+                                        AutoGenerateColumns="false"
+                                        GridLines="None"
+                                        EmptyDataText="No se encontraron pacientes."
+                                        OnRowCommand="gvPacientes_RowCommand">
+
+                                        <HeaderStyle CssClass="table-light" />
+                                        <Columns>
+
+                                            <asp:BoundField DataField="Nombre" HeaderText="Nombre" />
+                                            <asp:BoundField DataField="Apellido" HeaderText="Apellido" />
+
+                                            <asp:BoundField DataField="DNI" HeaderText="DNI" />
+                                            <asp:BoundField DataField="Telefono" HeaderText="Teléfono" />
+                                            <asp:BoundField DataField="Email" HeaderText="Email" />
+
+                                            <asp:TemplateField HeaderText="Acciones" ItemStyle-CssClass="text-end">
+                                                <ItemTemplate>
+
+                                                    <asp:LinkButton ID="btnVer" runat="server"
+                                                        CssClass="btn btn-sm btn-outline-secondary me-1"
+                                                        CommandName="VerPaciente"
+                                                        CommandArgument='<%# Eval("IdPersona") %>'>
+                                                <span class="material-symbols-outlined fs-6">visibility</span>
+                                            </asp:LinkButton>
+
+                                                    <asp:LinkButton ID="btnEditar" runat="server"
+                                                        CssClass="btn btn-sm btn-outline-primary"
+                                                        CommandName="EditarPaciente"
+                                                        CommandArgument='<%# Eval("IdPersona") %>'>
+                                                <span class="material-symbols-outlined fs-6">edit</span>
+                                            </asp:LinkButton>
+
+                                                </ItemTemplate>
+                                            </asp:TemplateField>
+                                        </Columns>
+                                    </asp:GridView>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -146,7 +107,7 @@
                     <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
                 </div>
                 <div class="modal-body">
-                    <form>
+                    
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label" for="addNombre">Nombre</label>
@@ -181,7 +142,7 @@
                             <label class="form-label" for="addDireccion">Dirección</label>
                             <input class="form-control" id="addDireccion" type="text" />
                         </div>
-                    </form>
+                    
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancelar</button>
@@ -219,7 +180,7 @@
                     <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
                 </div>
                 <div class="modal-body">
-                    <form>
+                    
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label" for="editNombre">Nombre</label>
@@ -254,7 +215,7 @@
                             <label class="form-label" for="editDireccion">Dirección</label>
                             <input class="form-control" id="editDireccion" type="text" value="Av. Siempre Viva 742" />
                         </div>
-                    </form>
+                    
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancelar</button>
@@ -263,6 +224,7 @@
             </div>
         </div>
     </div>
+        </form>
     <script crossorigin="anonymous" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>

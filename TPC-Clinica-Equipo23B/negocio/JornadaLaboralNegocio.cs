@@ -72,7 +72,7 @@ namespace negocio
                         DiaLaboral dia;
 
 
-                        if (Enum.TryParse(diaString, true, out dia)) // 'true' ignora mayúsculas
+                        if (Enum.TryParse(diaString, true, out dia)) 
 
                         {
 
