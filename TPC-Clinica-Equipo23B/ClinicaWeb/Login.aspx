@@ -13,42 +13,48 @@
 </head>
 <body>
     <form id="form2" runat="server">
-    <div class="container-fluid login-container">
-        <div class="px-4 py-5">
-            <div class="login-card card p-4 p-md-5">
-                <div class="card-body">
-                    <div class="text-center mb-5">
-                        <div class="d-inline-flex align-items-center gap-2">
-                            <span class="material-symbols-outlined logo-icon">health_and_safety</span>       
+        <div class="container-fluid login-container">
+            <div class="px-4 py-5">
+                <div class="login-card card p-4 p-md-5">
+                    <div class="card-body">
+                        <div class="text-center mb-5">
+                            <div class="d-inline-flex align-items-center gap-2">
+                                <span class="material-symbols-outlined logo-icon">health_and_safety</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="text-center mb-4">
-                        <h1 class="h3 mb-2 fw-bold">Inicio de Sesión del Portal</h1>
-                        <p class="text-muted">Bienvenido/a, por favor ingrese sus datos.</p>
-                    </div>
-                    
+                        <div class="text-center mb-4">
+                            <h1 class="h3 mb-2 fw-bold">Inicio de Sesión del Portal</h1>
+                            <p class="text-muted">Bienvenido/a, por favor ingrese sus datos.</p>
+                        </div>
+
                         <div class="mb-3">
-                            <label class="form-label fw-medium" for="emailInput">Correo electrónico</label>
-                            <input class="form-control form-control-lg" id="emailInput" placeholder="Ingrese su correo electrónico" type="email" />
+                            <label class="form-label fw-medium" for="txtEmail">Correo electrónico</label>
+                            <asp:TextBox ID="txtEmail" runat="server" CssClass="form-control form-control-lg" TextMode="Email" placeholder="Ingrese su correo electrónico"></asp:TextBox>
                         </div>
+
                         <div class="mb-3">
-                            <label class="form-label fw-medium" for="passwordInput">Contraseña</label>
-                            <input class="form-control form-control-lg" id="passwordInput" placeholder="Ingrese su contraseña" type="password" />
+                            <label class="form-label fw-medium" for="txtPassword">Contraseña</label>
+                            <asp:TextBox ID="txtPassword" runat="server" CssClass="form-control form-control-lg" TextMode="Password" placeholder="Ingrese su contraseña"></asp:TextBox>
                         </div>
+
+                        <div class="mb-3">
+                            <asp:Literal ID="litErrorLogin" runat="server"  EnableViewState="false" />
+                        </div>
+                        
                         <div class="text-end mb-4">
                             <a class="small" href="#">¿Olvidaste tu contraseña?</a>
                         </div>
                         <div class="d-grid">
-                             <asp:Button ID="btnIngresar" runat="server" CssClass="btn btn-primary btn-lg fw-semibold" Text="Iniciar sesión" OnClick="btnIngresar_Click" />
+                            <asp:Button ID="btnIngresar" runat="server" CssClass="btn btn-primary btn-lg fw-semibold" Text="Iniciar sesión" OnClick="btnIngresar_Click" />
                         </div>
+                    </div>
+                </div>
+                <div class="text-center mt-4">
+                    <p class="text-muted small">© 2024 ClinicaSanare. Todos los derechos reservados.</p>
                 </div>
             </div>
-            <div class="text-center mt-4">
-                <p class="text-muted small">© 2024 ClinicaSanare. Todos los derechos reservados.</p>
-            </div>
         </div>
-    </div>
-        </form>
+    </form>
     <script crossorigin="anonymous" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>

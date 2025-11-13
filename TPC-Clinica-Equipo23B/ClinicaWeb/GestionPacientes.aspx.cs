@@ -36,11 +36,9 @@ namespace ClinicaWeb
             litModalError.Text = "";
             try
             {
-                // 1. Creamos un nuevo objeto Paciente con los datos del modal
-                // (Asumiendo que tienes una clase Paciente en tu proyecto)
+              
                 Paciente nuevoPaciente = new Paciente();
 
-                // 2. Leemos los valores de los TextBox (gracias al Paso 1)
                 nuevoPaciente.Nombre = txtAddNombre.Text;
                 nuevoPaciente.Apellido = txtAddApellido.Text;
                 nuevoPaciente.Dni = txtAddDNI.Text;
@@ -48,33 +46,28 @@ namespace ClinicaWeb
                 nuevoPaciente.Telefono = txtAddTelefono.Text;
                 nuevoPaciente.Localidad = txtAddDireccion.Text;
 
-                // Para la fecha de nacimiento, es bueno convertirla
                 if (!string.IsNullOrEmpty(txtAddNacimiento.Text))
                 {
                     nuevoPaciente.FechaNacimiento = DateTime.Parse(txtAddNacimiento.Text);
                 }
 
-                // 3. Llamamos a la lógica de negocio para guardarlo
-                // (Esto es un ejemplo, debes adaptarlo a tu proyecto)
+                
                 PacienteNegocio negocio = new PacienteNegocio();
-                negocio.Agregar(nuevoPaciente); // Asumiendo que tienes un método Agregar
+                negocio.Agregar(nuevoPaciente); 
 
-                // 4. (IMPORTANTE) Volvemos a cargar la grilla para ver el nuevo paciente
-                CargarGrillaPacientes(); // Necesitarás un método que cargue la grilla
 
-                // (Opcional) Limpiar los campos del modal después de agregar
+                CargarGrillaPacientes(); 
+
+       
                 LimpiarModal();
             }
             catch (Exception ex)
             {
-                // (Importante) Manejar cualquier error
-                // Podrías mostrar un mensaje de error en la página
-                // lblError.Text = "Error al guardar el paciente: " + ex.Message;
+                
                 string errorScript = $"<div class='alert alert-danger'>{ex.Message}</div>";
             }
         }
 
-        // (Opcional pero recomendado) Método para limpiar el modal
         private void LimpiarModal()
         {
             txtAddNombre.Text = "";
