@@ -59,7 +59,7 @@
                                 <h1 class="text-dark h3 fw-bold mb-0">Gestión de Turnos</h1>
                                 <p class="text-secondary mb-0">Administra los turnos de los pacientes de forma rápida y sencilla.</p>
                             </div>
-                            <button class="btn btn-primary btn-sm d-flex align-items-center gap-2">
+                            <button class="btn btn-primary btn-sm d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#addTurnoModal" type="button">
                                 <span class="material-symbols-outlined">add</span>
                                 <span>Nuevo Turno</span>
                             </button>
@@ -190,6 +190,7 @@
                 </main>
             </div>
         </div>
+
     </form>
     <script crossorigin="anonymous" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
