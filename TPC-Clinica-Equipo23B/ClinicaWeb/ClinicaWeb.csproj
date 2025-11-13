@@ -77,7 +77,6 @@
     <Content Include="GestionPacientes.aspx" />
     <Content Include="GestionTurnos.aspx" />
     <Content Include="Global.asax" />
-    <Content Include="Inicio.aspx" />
     <Content Include="Login.aspx" />
     <Content Include="Registrarse.aspx" />
     <Content Include="Web.config" />
@@ -113,13 +112,6 @@
     </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
-    </Compile>
-    <Compile Include="Inicio.aspx.cs">
-      <DependentUpon>Inicio.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Inicio.aspx.designer.cs">
-      <DependentUpon>Inicio.aspx</DependentUpon>
     </Compile>
     <Compile Include="Login.aspx.cs">
       <DependentUpon>Login.aspx</DependentUpon>

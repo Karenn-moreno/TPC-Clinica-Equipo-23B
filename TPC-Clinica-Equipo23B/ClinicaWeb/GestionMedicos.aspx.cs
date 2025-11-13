@@ -17,30 +17,58 @@ namespace ClinicaWeb
             {
                 CargarGrillaMedicos();
             }
-
         }
+
         private void CargarGrillaMedicos()
         {
-            MedicoNegocio negocio = new MedicoNegocio();
-            List<Medico> lista = negocio.Listar();
-            gvMedicos.DataSource = lista;
-            gvMedicos.DataBind();
+            try
+            {
+                MedicoNegocio negocio = new MedicoNegocio();
+                List<Medico> lista = negocio.Listar();
+                gvMedicos.DataSource = lista;
+                gvMedicos.DataBind();
+            }
+            catch (Exception ex)
+            {
+                Response.Write("<script>alert('Error al cargar los médicos: " + ex.Message + "');</script>");
+            }
         }
 
         protected void gvMedicos_RowCommand(object sender, GridViewCommandEventArgs e)
         {
             if (e.CommandName == "GestionarHorarios")
             {
-                // Obtenemos el ID del médico
                 int idMedico = Convert.ToInt32(e.CommandArgument);
-
-                // Redirigimos a la página de horarios
                 Response.Redirect($"GestionHorarios.aspx?idmedico={idMedico}", false);
             }
-
-            if (e.CommandName == "EditarMedico")
+            else if (e.CommandName == "EditarMedico")
             {
-                // Lógica para el modal de editar
+                int idMedico = Convert.ToInt32(e.CommandArgument);
+                // Aquí podés redirigir a un modal o página de edición
+            }
+        }
+
+        protected void btnGuardarMedico_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Medico nuevoMedico = new Medico
+                {
+                    Nombre = txtNombre.Text,
+                    Apellido = txtApellido.Text,
+                    Dni = txtDni.Text,
+                    Matricula = txtMatricula.Text,
+                    EspecialidadesTexto = txtEspecialidad.Text
+                };
+
+                MedicoNegocio negocio = new MedicoNegocio();
+               // negocio.Agregar(nuevoMedico);
+
+                CargarGrillaMedicos(); // Recarga la grilla
+            }
+            catch (Exception ex)
+            {
+                Response.Write("<script>alert('Error al guardar el médico: " + ex.Message + "');</script>");
             }
         }
     }
