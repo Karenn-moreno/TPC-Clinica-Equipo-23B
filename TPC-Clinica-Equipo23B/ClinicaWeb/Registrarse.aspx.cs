@@ -15,7 +15,7 @@ namespace ClinicaWeb
         }
         protected void btnRegistrarse_Click(object sender, EventArgs e)
         {
-            Response.Redirect("Login.aspx", false);
+            Response.Redirect("GestionTurnos.aspx", false);
         }
     }
 }
