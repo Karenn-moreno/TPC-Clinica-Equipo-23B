@@ -179,8 +179,8 @@ namespace ClinicaWeb
                 ddlHorario.Items.Clear();
                 ddlHorario.Items.Insert(0, new ListItem("Seleccione Fecha y Médico", "0"));
             }
-       
-     
+
+
         }
 
         protected void txtFecha_TextChanged(object sender, EventArgs e)
@@ -195,7 +195,7 @@ namespace ClinicaWeb
                 ddlHorario.Items.Clear();
                 ddlHorario.Items.Insert(0, new ListItem("Seleccione Médico", "0"));
             }
-            ScriptManager.RegisterStartupScript(this, this.GetType(), "ReopenModalFecha", "$('#addTurnoModal').modal('show');", true);
+
         }
 
         //GUARDAR TURNO

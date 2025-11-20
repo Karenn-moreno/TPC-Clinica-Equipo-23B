@@ -15,6 +15,7 @@
 </head>
 <body class="bg-background-light dark:bg-background-dark">
     <form id="form3" runat="server">
+        <asp:ScriptManager ID="ScriptManager1" runat="server" />
         <div class="d-flex min-vh-100 w-100 flex-column">
             <div class="d-flex flex-grow-1">
                 <aside class="d-flex flex-column aside-custom p-4 justify-content-between sticky-top vh-100" style="width: 250px;">
@@ -79,7 +80,7 @@
                                     </div>
                                 </div>
                                 <div class="table-responsive">
-                                    <%-- Se reemplaza la tabla HTML estática con el GridView --%>
+                                    >
                                     <asp:GridView ID="gvTurnos" runat="server"
                                         CssClass="table table-striped table-hover align-middle"
                                         AutoGenerateColumns="False"
@@ -89,8 +90,6 @@
 
                                         <HeaderStyle CssClass="text-muted fw-semibold py-2" />
                                         <Columns>
-
-                                            <%-- Hora/Fecha (Editable, name debe ser txtHoraInicio_{IdTurno}) --%>
                                             <asp:TemplateField HeaderText="Hora">
                                                 <ItemTemplate>
                                                     <input class="form-control form-control-sm" type="time"
@@ -98,33 +97,23 @@
                                                         value='<%# Eval("FechaHoraInicio", "{0:HH:mm}") %>' />
                                                 </ItemTemplate>
                                             </asp:TemplateField>
-
-                                            <%-- Paciente (Read-only display) --%>
                                             <asp:TemplateField HeaderText="Paciente">
                                                 <ItemTemplate>
                                                     <asp:Label ID="lblPaciente" runat="server"
                                                         Text='<%# Eval("Paciente.Nombre") + " " + Eval("Paciente.Apellido") %>'></asp:Label>
                                                 </ItemTemplate>
                                             </asp:TemplateField>
-
-                                            <%-- Médico (Dropdown, name debe ser ddlMedico_{IdTurno}) --%>
                                             <asp:TemplateField HeaderText="Médico">
                                                 <ItemTemplate>
-                                                    <%-- Se utiliza un control HtmlSelect para controlar el atributo name --%>
                                                     <select class="form-select form-select-sm"
                                                         name='<%# "ddlMedico_" + Eval("IdTurno") %>'
                                                         id='Select1'
                                                         runat="server">
-                                                        <%-- Opciones cargadas en RowDataBound --%>
                                                     </select>
                                                 </ItemTemplate>
                                             </asp:TemplateField>
-
-
-                                            <%-- Estado (Dropdown, name debe ser ddlEstado_{IdTurno}) --%>
                                             <asp:TemplateField HeaderText="Estado">
                                                 <ItemTemplate>
-
                                                     <select class="form-select form-select-sm"
                                                         name='<%# "ddlEstado_" + Eval("IdTurno") %>'
                                                         id='Select2'
@@ -162,50 +151,55 @@
                         <h5 class="modal-title" id="addTurnoModalLabel">Agendar Nuevo Turno</h5>
                         <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
                     </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label" for="ddlEspecialidad">Especialidad</label>
-                                <asp:DropDownList ID="ddlEspecialidad" runat="server" CssClass="form-control" AutoPostBack="true" OnSelectedIndexChanged="ddlEspecialidad_SelectedIndexChanged">
-                                </asp:DropDownList>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label" for="ddlMedico">Médico</label>
-                                <asp:DropDownList ID="ddlMedico" runat="server" CssClass="form-control" AutoPostBack="true" OnSelectedIndexChanged="ddlMedico_SelectedIndexChanged">
-                                </asp:DropDownList>
-                            </div>
-                        </div>
 
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label" for="ddlPaciente">Paciente</label>
-                                <asp:DropDownList ID="ddlPaciente" runat="server" CssClass="form-control">
-                                </asp:DropDownList>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label" for="txtFecha">Fecha</label>
-                                <asp:TextBox ID="txtFecha" runat="server" CssClass="form-control" TextMode="Date" AutoPostBack="true" OnTextChanged="txtFecha_TextChanged"></asp:TextBox>
-                            </div>
-                        </div>
+                    <asp:UpdatePanel ID="upModalTurno" runat="server">
+                        <ContentTemplate>
 
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label" for="ddlHorario">Horario Disponible</label>
-                                <asp:DropDownList ID="ddlHorario" runat="server" CssClass="form-control">
-                                </asp:DropDownList>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label" for="txtMotivoConsulta">Motivo de la Consulta</label>
-                                <asp:TextBox ID="txtMotivoConsulta" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="2"></asp:TextBox>
-                            </div>
-                        </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label" for="ddlEspecialidad">Especialidad</label>
+                                        <asp:DropDownList ID="ddlEspecialidad" runat="server" CssClass="form-control" AutoPostBack="true" OnSelectedIndexChanged="ddlEspecialidad_SelectedIndexChanged">
+                                        </asp:DropDownList>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label" for="ddlMedico">Médico</label>
+                                        <asp:DropDownList ID="ddlMedico" runat="server" CssClass="form-control" AutoPostBack="true" OnSelectedIndexChanged="ddlMedico_SelectedIndexChanged">
+                                        </asp:DropDownList>
+                                    </div>
+                                </div>
 
-                    </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label" for="ddlPaciente">Paciente</label>
+                                        <asp:DropDownList ID="ddlPaciente" runat="server" CssClass="form-control">
+                                        </asp:DropDownList>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label" for="txtFecha">Fecha</label>
+                                        <asp:TextBox ID="txtFecha" runat="server" CssClass="form-control" TextMode="Date" AutoPostBack="true" OnTextChanged="txtFecha_TextChanged"></asp:TextBox>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label" for="ddlHorario">Horario Disponible</label>
+                                        <asp:DropDownList ID="ddlHorario" runat="server" CssClass="form-control">
+                                        </asp:DropDownList>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label" for="txtMotivoConsulta">Motivo de la Consulta</label>
+                                        <asp:TextBox ID="txtMotivoConsulta" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="2"></asp:TextBox>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </ContentTemplate>
+                    </asp:UpdatePanel>
                     <div class="modal-footer">
                         <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancelar</button>
                         <asp:Button ID="btnGuardarTurno" runat="server" Text="Guardar Turno" CssClass="btn btn-primary" OnClick="btnGuardarTurno_Click" />
-                        <%-- Etiqueta para mensajes de error del formulario de nuevo turno --%>
-                       <asp:Label ID="lblErrorNuevoTurno" runat="server" ForeColor="Red" EnableViewState="false"></asp:Label>
+                        <asp:Label ID="lblErrorNuevoTurno" runat="server" ForeColor="Red" EnableViewState="false"></asp:Label>
                     </div>
                 </div>
             </div>
