@@ -16,5 +16,8 @@ namespace dominio
         public string EspecialidadesTexto { get; set; }
         public string HorariosTexto { get; set; }
 
+        public string Email { get; set; }//agregado ani
+        public string Telefono { get; set; }//agregado ani
+
     }
 }

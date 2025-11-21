@@ -9,6 +9,7 @@ namespace dominio
     public class Usuario : Persona
     {
         public string Password { get; set; }
+        public string Dni { get; set; }   // agregado ani
         public ICollection<UsuarioRol> UsuarioRoles { get; set; } = new List<UsuarioRol>();
     }
 }

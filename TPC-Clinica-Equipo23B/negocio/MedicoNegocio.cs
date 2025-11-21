@@ -110,12 +110,12 @@ namespace negocio
             AccesoDatos datos = new AccesoDatos();
             try
             {
-                // Insertar en Persona
+                // 1️⃣ Insertar en Persona
                 datos.setearConsulta(@"
-                    INSERT INTO Persona (Nombre, Apellido, Dni, Email, Telefono)
-                    VALUES (@Nombre, @Apellido, @Dni, @Email, @Telefono);
-                    SELECT SCOPE_IDENTITY() AS IdNuevo;
-                ");
+            INSERT INTO Persona (Nombre, Apellido, Dni, Email, Telefono)
+            VALUES (@Nombre, @Apellido, @Dni, @Email, @Telefono);
+            SELECT SCOPE_IDENTITY() AS IdNuevo;
+        ");
 
                 datos.setearParametro("@Nombre", nuevo.Nombre);
                 datos.setearParametro("@Apellido", nuevo.Apellido);
@@ -124,34 +124,39 @@ namespace negocio
                 datos.setearParametro("@Telefono", string.IsNullOrEmpty(nuevo.Telefono) ? DBNull.Value : (object)nuevo.Telefono);
 
                 datos.ejecutarLectura();
-
                 int idPersona = 0;
                 if (datos.Lector.Read())
                     idPersona = Convert.ToInt32(datos.Lector["IdNuevo"]);
-
                 datos.cerrarConexion();
 
-                // Insertar en Medico
+                // 2️⃣ Insertar en Usuario
+                datos = new AccesoDatos();
+                datos.setearConsulta("INSERT INTO Usuario (IdUsuario, Password) VALUES (@IdUsuario, @Password)");
+                datos.setearParametro("@IdUsuario", idPersona);
+                datos.setearParametro("@Password", "default123"); // o pedir al usuario
+                datos.ejecutarAccion();
+                datos.cerrarConexion();
+
+                // 3️⃣ Insertar en Medico
                 datos = new AccesoDatos();
                 datos.setearConsulta("INSERT INTO Medico (IdMedico, Matricula) VALUES (@IdMedico, @Matricula)");
                 datos.setearParametro("@IdMedico", idPersona);
                 datos.setearParametro("@Matricula", string.IsNullOrEmpty(nuevo.Matricula) ? DBNull.Value : (object)nuevo.Matricula);
                 datos.ejecutarAccion();
 
-                // Insertar Especialidades
+                // 4️⃣ Insertar Especialidades
                 if (!string.IsNullOrEmpty(nuevo.EspecialidadesTexto))
                 {
-                    // CORRECCIÓN DEL SPLIT
                     string[] especialidades = nuevo.EspecialidadesTexto
-    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                        .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
                     foreach (var esp in especialidades)
                     {
                         datos = new AccesoDatos();
                         datos.setearConsulta(@"
-                            INSERT INTO MedicoEspecialidad (IdMedico, IdEspecialidad)
-                            VALUES (@IdMedico, (SELECT IdEspecialidad FROM Especialidad WHERE Nombre = @Nombre))
-                        ");
+                    INSERT INTO MedicoEspecialidad (IdMedico, IdEspecialidad)
+                    VALUES (@IdMedico, (SELECT IdEspecialidad FROM Especialidad WHERE Nombre = @Nombre))
+                ");
                         datos.setearParametro("@IdMedico", idPersona);
                         datos.setearParametro("@Nombre", esp.Trim());
                         datos.ejecutarAccion();

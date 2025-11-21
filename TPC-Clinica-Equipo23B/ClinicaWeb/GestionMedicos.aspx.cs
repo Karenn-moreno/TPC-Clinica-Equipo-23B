@@ -52,36 +52,36 @@ namespace ClinicaWeb
         {
             try
             {
-                // Crear objeto médico con los datos del modal
                 Medico nuevoMedico = new Medico
                 {
                     Nombre = txtNombre.Text,
                     Apellido = txtApellido.Text,
                     Dni = txtDni.Text,
                     Matricula = txtMatricula.Text,
-                    EspecialidadesTexto = txtEspecialidad.Text
+                    EspecialidadesTexto = txtEspecialidad.Text,
+                    Email = txtEmail.Text,
+                    Telefono = txtTelefono.Text
                 };
 
-                // Llamar a la lógica de negocio para agregar
                 MedicoNegocio negocio = new MedicoNegocio();
                 negocio.Agregar(nuevoMedico);
 
-                // Recargar la grilla
                 CargarGrillaMedicos();
 
-                // Limpiar modal
                 txtNombre.Text = "";
                 txtApellido.Text = "";
                 txtDni.Text = "";
                 txtMatricula.Text = "";
                 txtEspecialidad.Text = "";
+                txtEmail.Text = "";
+                txtTelefono.Text = "";
 
-                // Opcional: mostrar mensaje de éxito
                 Response.Write("<script>alert('Médico agregado correctamente');</script>");
             }
             catch (Exception ex)
             {
-                Response.Write("<script>alert('Error al guardar el médico: " + ex.Message + "');</script>");
+                // Mostrar el mensaje completo para saber dónde falla
+                Response.Write("<script>alert('Error al guardar el médico: " + ex.ToString() + "');</script>");
             }
         }
     }

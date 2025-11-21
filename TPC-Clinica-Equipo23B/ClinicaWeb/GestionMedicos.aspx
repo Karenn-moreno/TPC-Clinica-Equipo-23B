@@ -131,6 +131,16 @@
                                 <asp:TextBox ID="txtEspecialidad" runat="server" CssClass="form-control"></asp:TextBox>
                             </div>
                         </div>
+                        <div class="row">
+    <div class="col-md-6 mb-3">
+        <label class="form-label" for="txtEmail">Email</label>
+        <asp:TextBox ID="txtEmail" runat="server" CssClass="form-control"></asp:TextBox>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label class="form-label" for="txtTelefono">Teléfono</label>
+        <asp:TextBox ID="txtTelefono" runat="server" CssClass="form-control"></asp:TextBox>
+    </div>
+</div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
