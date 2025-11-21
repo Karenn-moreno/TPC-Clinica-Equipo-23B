@@ -194,13 +194,13 @@
                                 </div>
 
                             </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancelar</button>
+                                <asp:Button ID="btnGuardarTurno" runat="server" Text="Guardar Turno" CssClass="btn btn-primary" OnClick="btnGuardarTurno_Click" />
+                                <asp:Label ID="lblErrorNuevoTurno" runat="server" ForeColor="Red" EnableViewState="false"></asp:Label>
+                            </div>
                         </ContentTemplate>
                     </asp:UpdatePanel>
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancelar</button>
-                        <asp:Button ID="btnGuardarTurno" runat="server" Text="Guardar Turno" CssClass="btn btn-primary" OnClick="btnGuardarTurno_Click" />
-                        <asp:Label ID="lblErrorNuevoTurno" runat="server" ForeColor="Red" EnableViewState="false"></asp:Label>
-                    </div>
                 </div>
             </div>
         </div>
