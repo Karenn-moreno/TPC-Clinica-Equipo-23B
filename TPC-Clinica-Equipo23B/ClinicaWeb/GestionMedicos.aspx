@@ -79,9 +79,7 @@
                                         <asp:BoundField DataField="HorariosTexto" HeaderText="Horario" />
                                         <asp:TemplateField HeaderText="Acciones" ItemStyle-CssClass="text-end">
                                             <ItemTemplate>
-                                                <asp:LinkButton ID="btnHorarios" runat="server" CssClass="btn btn-sm btn-outline-primary me-1" CommandName="GestionarHorarios" CommandArgument='<%# Eval("IdPersona") %>'>
-                                                    <span class="material-symbols-outlined fs-6">calendar_month</span> Horarios
-                                                </asp:LinkButton>
+     
                                                 <asp:LinkButton ID="btnEditar" runat="server" CssClass="btn btn-sm btn-outline-secondary" CommandName="EditarMedico" CommandArgument='<%# Eval("IdPersona") %>'>
                                                     <span class="material-symbols-outlined fs-6">edit</span>
                                                 </asp:LinkButton>
@@ -127,9 +125,16 @@
                         </div>
                         <div class="row">
                             <div class="col-md-12 mb-3">
-                                <label class="form-label" for="txtEspecialidad">Especialidad</label>
-                                <asp:TextBox ID="txtEspecialidad" runat="server" CssClass="form-control"></asp:TextBox>
+                                
                             </div>
+
+                            <div class="mb-3">
+    <label class="form-label">Especialidades</label>
+    <asp:CheckBoxList ID="chkEspecialidades" runat="server" 
+                      RepeatDirection="Vertical" CssClass="form-control">
+    </asp:CheckBoxList>
+</div>
+
                         </div>
                         <div class="row">
     <div class="col-md-6 mb-3">
@@ -140,7 +145,47 @@
         <label class="form-label" for="txtTelefono">Teléfono</label>
         <asp:TextBox ID="txtTelefono" runat="server" CssClass="form-control"></asp:TextBox>
     </div>
+      <hr />
+<h5>Horarios de Atención</h5>
+<div class="row mb-3">
+    <div class="col-md-4 mb-3">
+        <label class="form-label" for="ddlDiaLaboral">Día</label>
+        <asp:DropDownList ID="ddlDiaLaboral" runat="server" CssClass="form-control">
+            <asp:ListItem Text="Lunes" Value="Lunes" />
+            <asp:ListItem Text="Martes" Value="Martes" />
+            <asp:ListItem Text="Miércoles" Value="Miercoles" />
+            <asp:ListItem Text="Jueves" Value="Jueves" />
+            <asp:ListItem Text="Viernes" Value="Viernes" />
+            <asp:ListItem Text="Sábado" Value="Sabado" />
+            <asp:ListItem Text="Domingo" Value="Domingo" />
+        </asp:DropDownList>
+    </div>
+    <div class="col-md-3 mb-3">
+        <label class="form-label" for="txtHoraInicio">Hora Inicio</label>
+        <asp:TextBox ID="txtHoraInicio" runat="server" CssClass="form-control" placeholder="HH:MM"></asp:TextBox>
+    </div>
+    <div class="col-md-3 mb-3">
+        <label class="form-label" for="txtHoraFin">Hora Fin</label>
+        <asp:TextBox ID="txtHoraFin" runat="server" CssClass="form-control" placeholder="HH:MM"></asp:TextBox>
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
+        <asp:Button ID="btnAgregarHorario" runat="server" Text="Agregar" CssClass="btn btn-secondary btn-sm" OnClick="btnAgregarHorario_Click" />
+    </div>
 </div>
+
+<div class="table-responsive">
+    <asp:GridView ID="gvHorariosTemp" runat="server" AutoGenerateColumns="false" CssClass="table table-sm" OnRowCommand="gvHorariosTemp_RowCommand">
+        <Columns>
+            <asp:BoundField DataField="DiaLaboral" HeaderText="Día" />
+            <asp:BoundField DataField="HorarioInicio" HeaderText="Inicio" DataFormatString="{0:hh\\:mm}" />
+            <asp:BoundField DataField="HoraFin" HeaderText="Fin" DataFormatString="{0:hh\\:mm}" />
+            <asp:ButtonField Text="Eliminar" CommandName="Eliminar" ButtonType="Button" />
+        </Columns>
+    </asp:GridView>
+</div>                                                                                                                                                         
+
+</div>
+
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>

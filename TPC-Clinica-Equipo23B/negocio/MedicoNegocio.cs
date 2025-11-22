@@ -110,12 +110,12 @@ namespace negocio
             AccesoDatos datos = new AccesoDatos();
             try
             {
-                // 1️⃣ Insertar en Persona
+                // Insertar en Persona
                 datos.setearConsulta(@"
-            INSERT INTO Persona (Nombre, Apellido, Dni, Email, Telefono)
-            VALUES (@Nombre, @Apellido, @Dni, @Email, @Telefono);
-            SELECT SCOPE_IDENTITY() AS IdNuevo;
-        ");
+                    INSERT INTO Persona (Nombre, Apellido, Dni, Email, Telefono)
+                    VALUES (@Nombre, @Apellido, @Dni, @Email, @Telefono);
+                    SELECT SCOPE_IDENTITY() AS IdNuevo;
+                ");
 
                 datos.setearParametro("@Nombre", nuevo.Nombre);
                 datos.setearParametro("@Apellido", nuevo.Apellido);
@@ -129,22 +129,22 @@ namespace negocio
                     idPersona = Convert.ToInt32(datos.Lector["IdNuevo"]);
                 datos.cerrarConexion();
 
-                // 2️⃣ Insertar en Usuario
+                // Insertar en Usuario
                 datos = new AccesoDatos();
                 datos.setearConsulta("INSERT INTO Usuario (IdUsuario, Password) VALUES (@IdUsuario, @Password)");
                 datos.setearParametro("@IdUsuario", idPersona);
-                datos.setearParametro("@Password", "default123"); // o pedir al usuario
+                datos.setearParametro("@Password", "default123");
                 datos.ejecutarAccion();
                 datos.cerrarConexion();
 
-                // 3️⃣ Insertar en Medico
+                // Insertar en Medico
                 datos = new AccesoDatos();
                 datos.setearConsulta("INSERT INTO Medico (IdMedico, Matricula) VALUES (@IdMedico, @Matricula)");
                 datos.setearParametro("@IdMedico", idPersona);
                 datos.setearParametro("@Matricula", string.IsNullOrEmpty(nuevo.Matricula) ? DBNull.Value : (object)nuevo.Matricula);
                 datos.ejecutarAccion();
 
-                // 4️⃣ Insertar Especialidades
+                //  Insertar Especialidades
                 if (!string.IsNullOrEmpty(nuevo.EspecialidadesTexto))
                 {
                     string[] especialidades = nuevo.EspecialidadesTexto
@@ -152,20 +152,37 @@ namespace negocio
 
                     foreach (var esp in especialidades)
                     {
-                        datos = new AccesoDatos();
-                        datos.setearConsulta(@"
-                    INSERT INTO MedicoEspecialidad (IdMedico, IdEspecialidad)
-                    VALUES (@IdMedico, (SELECT IdEspecialidad FROM Especialidad WHERE Nombre = @Nombre))
-                ");
-                        datos.setearParametro("@IdMedico", idPersona);
-                        datos.setearParametro("@Nombre", esp.Trim());
-                        datos.ejecutarAccion();
+                        AgregarEspecialidad(idPersona, esp.Trim());
                     }
                 }
             }
             catch (Exception ex)
             {
                 throw new Exception("Error al agregar médico", ex);
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+        // Nuevo método agregado
+        public void AgregarEspecialidad(int idMedico, string nombreEspecialidad)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                datos.setearConsulta(@"
+                    INSERT INTO MedicoEspecialidad (IdMedico, IdEspecialidad)
+                    VALUES (@IdMedico, (SELECT IdEspecialidad FROM Especialidad WHERE Nombre = @Nombre))
+                ");
+                datos.setearParametro("@IdMedico", idMedico);
+                datos.setearParametro("@Nombre", nombreEspecialidad);
+                datos.ejecutarAccion();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al agregar especialidad al médico", ex);
             }
             finally
             {
