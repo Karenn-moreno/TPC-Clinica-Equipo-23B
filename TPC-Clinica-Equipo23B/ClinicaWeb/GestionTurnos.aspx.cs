@@ -12,7 +12,6 @@ namespace ClinicaWeb
 {
     public partial class GestionTurnos : System.Web.UI.Page
     {
-
         private const int DURACION_TURNO_MINUTOS = 60;
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -72,13 +71,12 @@ namespace ClinicaWeb
 
         private void CargarMedicos(int id_especialidad)
         {
-            ddlMedico.Items.Clear(); // Limpia antes de recargar
-            ddlHorario.Items.Clear(); // Limpia horarios dependientes
+            ddlMedico.Items.Clear(); 
+            ddlHorario.Items.Clear(); 
 
             MedicoNegocio medicoNegocio = new MedicoNegocio();
-            List<Medico> listaMedicos = medicoNegocio.Listar(); // Asume que solo carga datos de Persona/Medico
-
-            // Filtra por el texto concatenado de especialidades
+            List<Medico> listaMedicos = medicoNegocio.Listar(); 
+            
             var medicosFiltrados = listaMedicos
                 .Where(m => id_especialidad == 0 || m.EspecialidadesTexto.Contains(ddlEspecialidad.SelectedItem.Text))
                 .Select(m => new
@@ -97,7 +95,7 @@ namespace ClinicaWeb
 
         private void CargarHorariosDisponibles()
         {
-            ddlHorario.Items.Clear(); // Limpia antes de recargar
+            ddlHorario.Items.Clear(); 
 
             if (!DateTime.TryParse(txtFecha.Text, out DateTime fechaSeleccionada))
                 return;
@@ -105,15 +103,14 @@ namespace ClinicaWeb
             if (!int.TryParse(ddlMedico.SelectedValue, out int idMedico) || idMedico == 0)
                 return;
 
-            // Determinar el DíaLaboral (enum) a partir de la fecha seleccionada
             string diaString = fechaSeleccionada.DayOfWeek.ToString();
             if (!Enum.TryParse(diaString, true, out DiaLaboral dia))
                 return;
 
             JornadaLaboralNegocio jornadaNegocio = new JornadaLaboralNegocio();
-            List<JornadaLaboral> jornadas = jornadaNegocio.ListarPorMedico(idMedico); // Usa JornadaLaboralNegocio
+            List<JornadaLaboral> jornadas = jornadaNegocio.ListarPorMedico(idMedico); 
 
-            // Buscar la jornada para el día específico
+            
             var jornadaHoy = jornadas.FirstOrDefault(j => j.DiaLaboral == dia);
 
             if (jornadaHoy == null)
@@ -122,7 +119,7 @@ namespace ClinicaWeb
                 return;
             }
 
-            // Obtener turnos ya ocupados para ese día y médico
+            
             TurnoNegocio turnoNegocio = new TurnoNegocio();
             List<Turno> turnosOcupados = turnoNegocio.ListarTurnosOcupados(idMedico, fechaSeleccionada);
 
@@ -134,9 +131,9 @@ namespace ClinicaWeb
             {
                 TimeSpan horaFinTurno = inicio.Add(TimeSpan.FromMinutes(DURACION_TURNO_MINUTOS));
 
-                // Verificar si esta franja se superpone con un turno ya ocupado
+                
                 bool ocupado = turnosOcupados.Any(t =>
-                    t.FechaHoraInicio.TimeOfDay == inicio); // Comparar solo la hora de inicio
+                    t.FechaHoraInicio.TimeOfDay == inicio); 
 
                 if (!ocupado)
                 {
@@ -159,7 +156,7 @@ namespace ClinicaWeb
 
         protected void ddlEspecialidad_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Recargar médicos filtrando por la especialidad seleccionada.
+           
             if (int.TryParse(ddlEspecialidad.SelectedValue, out int id_especialidad))
             {
                 CargarMedicos(id_especialidad);
@@ -169,7 +166,6 @@ namespace ClinicaWeb
 
         protected void ddlMedico_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Si hay médico y fecha, se cargan los horarios.
             if (ddlMedico.SelectedValue != "0" && !string.IsNullOrEmpty(txtFecha.Text))
             {
                 CargarHorariosDisponibles();
@@ -185,7 +181,7 @@ namespace ClinicaWeb
 
         protected void txtFecha_TextChanged(object sender, EventArgs e)
         {
-            // Si hay médico y fecha, se cargan los horarios.
+
             if (ddlMedico.SelectedValue != "0" && !string.IsNullOrEmpty(txtFecha.Text))
             {
                 CargarHorariosDisponibles();
@@ -198,23 +194,43 @@ namespace ClinicaWeb
 
         }
 
-        //GUARDAR TURNO
 
         protected void btnGuardarTurno_Click(object sender, EventArgs e)
         {
-            // Limpiar mensaje de error previo al intentar guardar
+     
             if (lblErrorNuevoTurno != null)
                 lblErrorNuevoTurno.Text = "";
 
-            // Validaciones: Asegurarse de que todos los DDL y el campo de fecha tengan valor.
-            if (ddlMedico.SelectedValue == "0" || ddlPaciente.SelectedValue == "0" ||
-                string.IsNullOrEmpty(txtFecha.Text) || ddlHorario.SelectedValue == "0" ||
-                ddlEspecialidad.SelectedValue == "0") // Agregamos ddlEspecialidad para mayor seguridad
+            List<string> errores = new List<string>();
+
+            if (ddlEspecialidad.SelectedValue == "0")
+            {
+                errores.Add("<li>Debe seleccionar una Especialidad.</li>");
+            }
+            if (ddlMedico.SelectedValue == "0")
+            {
+                errores.Add("<li>Debe seleccionar un Médico.</li>");
+            }
+            if (ddlPaciente.SelectedValue == "0")
+            {
+                errores.Add("<li>Debe seleccionar un Paciente.</li>");
+            }
+            if (string.IsNullOrEmpty(txtFecha.Text))
+            {
+                errores.Add("<li>Debe ingresar una Fecha.</li>");
+            }
+            if (ddlHorario.SelectedValue == "0")
+            {
+                errores.Add("<li>Debe seleccionar un Horario disponible.</li>");
+            }
+
+            if (errores.Count > 0)
             {
                 if (lblErrorNuevoTurno != null)
-                    lblErrorNuevoTurno.Text = "Debe seleccionar una Especialidad, un Médico, un Paciente, una Fecha y un Horario.";
-                return; // Sale del método sin procesar
+                    lblErrorNuevoTurno.Text = "<p class='text-danger'>Por favor, complete los siguientes campos obligatorios:</p><ul class='text-danger'>" + string.Join("", errores) + "</ul>";
+                return; 
             }
+          
 
             try
             {
@@ -234,23 +250,60 @@ namespace ClinicaWeb
                     FechaHoraFin = fechaTurno.Add(horaTurno).Add(TimeSpan.FromMinutes(DURACION_TURNO_MINUTOS)),
                     MotivoDeConsulta = txtMotivoConsulta.Text,
                     Diagnostico = null,
-                    EstadoTurno = EstadoTurno.Nuevo // Estado inicial
+                    EstadoTurno = EstadoTurno.Nuevo
                 };
 
 
                 TurnoNegocio turnoNegocio = new TurnoNegocio();
                 turnoNegocio.Agregar(nuevoTurno);
 
-                // Éxito: Recargar la página (Patrón Post-Redirect-Get)
-                // Esto cierra el modal y recarga la grilla con el nuevo turno.
+                PacienteNegocio pacienteNegocio = new PacienteNegocio();
+                List<Paciente> listaPacientes = pacienteNegocio.Listar();
+                Paciente paciente = listaPacientes.FirstOrDefault(p => p.IdPersona == idPaciente);
+
+                MedicoNegocio medicoNegocio = new MedicoNegocio();
+                List<Medico> listaMedicos = medicoNegocio.Listar();
+                Medico medico = listaMedicos.FirstOrDefault(m => m.IdPersona == idMedico);
+
+                string especialidad = ddlEspecialidad.SelectedItem.Text;
+
+                if (paciente != null && medico != null && !string.IsNullOrEmpty(paciente.Email))
+                {
+                    EmailService emailService = new EmailService();
+
+                    string asunto = "Confirmación de Turno en Clínica Sanare";
+                    string fechaHora = nuevoTurno.FechaHoraInicio.ToString("dd/MM/yyyy HH:mm");
+                    string nombrePaciente = paciente.Nombre + " " + paciente.Apellido;
+                    string nombreMedico = "Dr/a. " + medico.Nombre + " " + medico.Apellido;
+
+                    // Cuerpo del correo en formato HTML
+                    string cuerpoHTML = $@"
+                        <html>
+                        <body>
+                            <h2>¡Turno Confirmado!</h2>
+                            <p>Estimado/a {nombrePaciente},</p>
+                            <p>Su turno ha sido agendado exitosamente:</p>
+                            <ul>
+                                <li><strong>Fecha y Hora:</strong> {fechaHora} hs</li>
+                                <li><strong>Profesional:</strong> {nombreMedico}</li>
+                                <li><strong>Especialidad:</strong> {especialidad}</li>
+                                <li><strong>Motivo:</strong> {nuevoTurno.MotivoDeConsulta}</li>
+                            </ul>
+                            <p>Por favor, sea puntual. Atentamente, el Equipo de Clínica Sanare.</p>
+                        </body>
+                        </html>";
+
+                    emailService.armarCorreo(paciente.Email, asunto, cuerpoHTML);
+                    emailService.enviarEmail();
+                }
                 Response.Redirect("GestionTurnos.aspx", false);
 
             }
             catch (Exception ex)
             {
-                // En caso de fallo de DB
-                Session["Error"] = "Error al guardar el turno: " + ex.Message;
-                Response.Redirect("Error.aspx", false);
+                // En caso de fallo de DB o email
+                Session["Error"] = "Error al guardar el turno o enviar el correo: " + ex.Message;
+             
 
             }
         }
@@ -301,7 +354,7 @@ namespace ClinicaWeb
                 {
                     int idTurno = turno.IdTurno;
 
- 
+
                     string horaInicioStr = Request.Form[$"txtHoraInicio_{idTurno}"];
 
 
@@ -319,7 +372,7 @@ namespace ClinicaWeb
                             // La fecha base se combina con la nueva hora
                             DateTime nuevaFechaHoraInicio = fechaBase.Date.Add(nuevaHoraInicio);
 
-                           
+
                             DateTime nuevaFechaHoraFin = nuevaFechaHoraInicio.Add(TimeSpan.FromMinutes(DURACION_TURNO_MINUTOS));
 
                             // Conversión del estado
@@ -442,5 +495,6 @@ namespace ClinicaWeb
             }
         }
 
-    }
+}
+       
 }
