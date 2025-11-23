@@ -55,6 +55,103 @@ namespace negocio
             return turno;
         }
 
+        private string ObtenerNombreDiaExacto(DayOfWeek diaIngles)
+        {
+            // Tu base de datos tiene un CHECK que obliga a usar Mayúscula inicial
+            switch (diaIngles)
+            {
+                case DayOfWeek.Monday: return "Lunes";
+                case DayOfWeek.Tuesday: return "Martes";
+                case DayOfWeek.Wednesday: return "Miercoles"; // Sin tilde según tu script SQL
+                case DayOfWeek.Thursday: return "Jueves";
+                case DayOfWeek.Friday: return "Viernes";
+                case DayOfWeek.Saturday: return "Sabado";     // Sin tilde según tu script SQL
+                case DayOfWeek.Sunday: return "Domingo";
+                default: return "";
+            }
+        }
+
+        public List<string> ObtenerHorariosDisponibles(int idMedico, DateTime fecha)
+        {
+            List<string> horariosDisponibles = new List<string>();
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                string nombreDia = ObtenerNombreDiaExacto(fecha.DayOfWeek);
+                TimeSpan horaInicio = TimeSpan.Zero;
+                TimeSpan horaFin = TimeSpan.Zero;
+                bool trabaja = false;
+
+                // 1. Buscamos el horario de trabajo para ese día específico
+                datos.setearConsulta(@"
+                SELECT 
+                    COALESCE(JL.HoraInicio, TT.HoraInicioDefault) AS Inicio,
+                    COALESCE(JL.HoraFin, TT.HoraFinDefault) AS Fin
+                FROM JornadaLaboral JL
+                LEFT JOIN TurnoDeTrabajo TT ON JL.IdTurnoTrabajo = TT.IdTurnoTrabajo
+                WHERE JL.IdMedico = @IdMedico AND JL.DiaLaboral = @Dia");
+
+                datos.setearParametro("@IdMedico", idMedico);
+                datos.setearParametro("@Dia", nombreDia);
+
+                datos.ejecutarLectura();
+                if (datos.Lector.Read())
+                {
+                    trabaja = true;
+                    horaInicio = (TimeSpan)datos.Lector["Inicio"];
+                    horaFin = (TimeSpan)datos.Lector["Fin"];
+                }
+                datos.cerrarConexion(); // Cerramos para poder ejecutar otra consulta
+
+                if (!trabaja) return horariosDisponibles; // Lista vacía
+
+                // 2. Buscamos qué horas ya están ocupadas
+                // (Hacemos la consulta manual aquí para no depender de llamar a otro método y abrir/cerrar conexiones extra)
+                List<TimeSpan> ocupados = new List<TimeSpan>();
+                datos = new AccesoDatos(); // Nueva instancia limpia
+                datos.setearConsulta(@"
+                SELECT CAST(FechaHoraInicio AS TIME) as Hora 
+                FROM Turno 
+                WHERE IdMedico = @IdMedico 
+                  AND CAST(FechaHoraInicio AS DATE) = CAST(@Fecha AS DATE)
+                  AND EstadoTurno != 'Cancelado'");
+
+                datos.setearParametro("@IdMedico", idMedico);
+                datos.setearParametro("@Fecha", fecha);
+                datos.ejecutarLectura();
+
+                while (datos.Lector.Read())
+                {
+                    ocupados.Add((TimeSpan)datos.Lector["Hora"]);
+                }
+                datos.cerrarConexion();
+
+                // 3. Calculamos los huecos (Lógica del While)
+                TimeSpan horaActual = horaInicio;
+                while (horaActual < horaFin)
+                {
+                    // Si la hora NO está en la lista de ocupados, la agregamos
+                    if (!ocupados.Contains(horaActual))
+                    {
+                        horariosDisponibles.Add(horaActual.ToString(@"hh\:mm"));
+                    }
+                    // Sumamos 1 hora
+                    horaActual = horaActual.Add(new TimeSpan(1, 0, 0));
+                }
+
+                return horariosDisponibles;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+    
         //LISTAR TODOS 
         public List<Turno> Listar()
         {

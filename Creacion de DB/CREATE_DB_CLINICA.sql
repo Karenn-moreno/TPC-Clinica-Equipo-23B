@@ -190,7 +190,6 @@ VALUES (6, 'passmedico456');
 INSERT INTO Usuario (IdUsuario, Password)
 VALUES (1, 'passadmin789');
 
-
 -- ======================================
 -- Insertar datos en la tabla Medico
 -- ======================================

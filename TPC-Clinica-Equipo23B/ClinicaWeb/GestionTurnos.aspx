@@ -70,7 +70,12 @@
                                 <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
                                     <div class="d-flex align-items-center gap-3">
                                         <h2 class="h5 fw-bold text-dark mb-0">Turnos del Día</h2>
-                                        <input class="form-control form-control-sm w-auto" type="date" value="2024-10-26" id="txtFechaGrilla" runat="server" autopostback="true" ontextchanged="txtFechaGrilla_TextChanged" />
+                                        <asp:TextBox ID="txtFechaGrilla" runat="server"
+                                            CssClass="form-control form-control-sm w-auto"
+                                            TextMode="Date"
+                                            AutoPostBack="true"
+                                            OnTextChanged="txtFechaGrilla_TextChanged">
+                                      </asp:TextBox>
                                     </div>
                                     <div class="w-100 w-md-auto">
                                         <div class="position-relative">
@@ -82,6 +87,7 @@
                                 <div class="table-responsive">
                                     >
                                     <asp:GridView ID="gvTurnos" runat="server"
+                                        DataKeyNames="IdTurno"
                                         CssClass="table table-striped table-hover align-middle"
                                         AutoGenerateColumns="False"
                                         GridLines="None"
@@ -107,7 +113,7 @@
                                                 <ItemTemplate>
                                                     <select class="form-select form-select-sm"
                                                         name='<%# "ddlMedico_" + Eval("IdTurno") %>'
-                                                        id='Select1'
+                                                        id="ddlMedicoRow"
                                                         runat="server">
                                                     </select>
                                                 </ItemTemplate>
@@ -116,7 +122,7 @@
                                                 <ItemTemplate>
                                                     <select class="form-select form-select-sm"
                                                         name='<%# "ddlEstado_" + Eval("IdTurno") %>'
-                                                        id='Select2'
+                                                        id="ddlEstadoRow"
                                                         runat="server">
                                                     </select>
                                                 </ItemTemplate>
