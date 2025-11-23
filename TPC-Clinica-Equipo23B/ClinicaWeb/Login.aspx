@@ -25,6 +25,7 @@
                         <div class="text-center mb-4">
                             <h1 class="h3 mb-2 fw-bold">Inicio de Sesión del Portal</h1>
                             <p class="text-muted">Bienvenido/a, por favor ingrese sus datos.</p>
+                          <asp:Literal ID="litMensajeRegistro" runat="server" EnableViewState="false" />
                         </div>
 
                         <div class="mb-3">

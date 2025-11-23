@@ -31,7 +31,7 @@ namespace negocio
             // Mapeo de Usuario
             usuario.Password = (string)lector["Password"];
 
-           
+
 
             return usuario;
         }
@@ -112,8 +112,127 @@ namespace negocio
             }
         }
 
-      
+        // Verifica si ya existe una Persona con ese Email o Dni.
+        public bool ExisteUsuario(string email, string dni)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                datos.setearConsulta("SELECT IdPersona FROM Persona WHERE Email = @Email OR Dni = @Dni");
+                datos.setearParametro("@Email", email);
+                datos.setearParametro("@Dni", dni);
 
+                datos.ejecutarLectura();
 
+                return datos.Lector.Read();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al verificar la existencia del usuario.", ex);
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+        // MÉTODO DE REGISTRO UNIFICADO PARA ROLES ADMINISTRATIVOS
+        public void RegistrarNuevoUsuarioConRol(Persona nuevaPersona, string password, int idRol, string matricula = null)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            int idPersona = 0;
+
+            try
+            {
+                // 1. Insertar en Persona y obtener el ID
+                datos.setearConsulta(@"
+                    INSERT INTO Persona (Nombre, Apellido, Dni, Email, Telefono, Localidad)
+                    VALUES (@Nombre, @Apellido, @Dni, @Email, @Telefono, @Localidad);
+                    SELECT SCOPE_IDENTITY() AS IdNuevo;
+                ");
+
+                datos.setearParametro("@Nombre", nuevaPersona.Nombre);
+                datos.setearParametro("@Apellido", nuevaPersona.Apellido);
+                datos.setearParametro("@Dni", nuevaPersona.Dni);
+                datos.setearParametro("@Email", nuevaPersona.Email);
+                datos.setearParametro("@Telefono", string.IsNullOrEmpty(nuevaPersona.Telefono) ? DBNull.Value : (object)nuevaPersona.Telefono);
+                datos.setearParametro("@Localidad", string.IsNullOrEmpty(nuevaPersona.Localidad) ? DBNull.Value : (object)nuevaPersona.Localidad);
+
+                datos.ejecutarLectura();
+
+                if (datos.Lector.Read())
+                {
+                    idPersona = Convert.ToInt32(datos.Lector["IdNuevo"]);
+                }
+
+                datos.cerrarConexion();
+
+                // 2. Insertar en Usuario
+                datos = new AccesoDatos();
+                datos.setearConsulta("INSERT INTO Usuario (IdUsuario, Password) VALUES (@IdUsuario, @Password)");
+                datos.setearParametro("@IdUsuario", idPersona);
+                datos.setearParametro("@Password", password);
+                datos.ejecutarAccion();
+                datos.cerrarConexion();
+
+                // 3. Insertar en tabla específica (Medico) si el rol es Médico (ID = 2)
+                if (idRol == 2)
+                {
+                    datos = new AccesoDatos();
+                    datos.setearConsulta("INSERT INTO Medico (IdMedico, Matricula) VALUES (@IdMedico, @Matricula)");
+                    datos.setearParametro("@IdMedico", idPersona);
+                    datos.setearParametro("@Matricula", matricula);
+                    datos.ejecutarAccion();
+                    datos.cerrarConexion();
+                }
+
+                // 4. Asignar Rol
+                datos = new AccesoDatos();
+                datos.setearConsulta("INSERT INTO UsuarioRol (IdUsuario, IdRol) VALUES (@IdUsuario, @IdRol)");
+                datos.setearParametro("@IdUsuario", idPersona);
+                datos.setearParametro("@IdRol", idRol);
+                datos.ejecutarAccion();
+                datos.cerrarConexion();
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al completar el registro del usuario con rol.", ex);
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+        public List<Rol> ListarRoles()
+        {
+            List<Rol> lista = new List<Rol>();
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                
+                datos.setearConsulta("SELECT IdRol, TipoRol FROM Rol WHERE IdRol IN (1, 2, 3)");
+                datos.ejecutarLectura();
+
+                while (datos.Lector.Read())
+                {
+                    Rol rol = new Rol();
+                    rol.IdRol = (int)datos.Lector["IdRol"];
+                    rol.TipoRol = (string)datos.Lector["TipoRol"];
+                    lista.Add(rol);
+                }
+                return lista;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al listar roles.", ex);
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+    
 }
 }

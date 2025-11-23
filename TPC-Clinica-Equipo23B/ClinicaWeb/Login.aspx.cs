@@ -13,16 +13,32 @@ namespace ClinicaWeb
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (!IsPostBack)
+            {
 
+                if (!IsPostBack)
+                {
+     
+                    if (Session["registroExitoso"] != null)
+                    {
+                        if (litMensajeRegistro != null)
+                        {
+                            litMensajeRegistro.Text = $"<div class='alert alert-success mt-3' role='alert'>{Session["registroExitoso"]}</div>";
+                            Session.Remove("registroExitoso"); 
+                        }
+                    }
+                }
+
+            }
         }
 
         protected void btnIngresar_Click(object sender, EventArgs e)
         {
-            //Limpiar mensajes de error previos
+  
             if (litErrorLogin != null)
                 litErrorLogin.Text = "";
 
-            // Validaciones a nivel de la capa de presentación (controles vacíos)
+          
             if (string.IsNullOrWhiteSpace(txtEmail.Text) || string.IsNullOrWhiteSpace(txtPassword.Text))
             {
                 if (litErrorLogin != null)
@@ -35,18 +51,17 @@ namespace ClinicaWeb
 
             try
             {
-                // Validar credenciales en la capa de negocio
+                
                 usuario = negocio.ValidarUsuario(txtEmail.Text, txtPassword.Text);
 
                 if (usuario != null)
                 {
-                    // 4. Éxito: Iniciar sesión y redirigir
                     Session.Add("usuario", usuario);
                     Response.Redirect("GestionTurnos.aspx", false);
                 }
                 else
                 {
-                    // 5. Falla de validación: Credenciales incorrectas
+              
                     if (litErrorLogin != null)
                         litErrorLogin.Text = "Usuario o contraseña incorrectos. Verifique sus credenciales e intente de nuevo.";
                 }
@@ -54,11 +69,11 @@ namespace ClinicaWeb
             }
             catch (Exception ex)
             {
-                //Manejo de errores de sistema (conexión, base de datos, etc.)
                 if (litErrorLogin != null)
                     litErrorLogin.Text = "Hubo un error al intentar iniciar sesión. Por favor, intente más tarde.";
 
             }
+
         }
     }
-}
+    }

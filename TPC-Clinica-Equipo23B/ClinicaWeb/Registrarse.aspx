@@ -14,13 +14,16 @@
 </head>
 <body>
     <form id="form1" runat="server">
+
+        <asp:ScriptManager ID="ScriptManager1" runat="server" />
+
         <div class="container-fluid login-container">
             <div class="px-4 py-5">
-                <div class="login-card card p-4 p-md-5 shadow-lg" style="max-width: 500px; margin:auto;">
+                <div class="login-card card p-4 p-md-5 shadow-lg" style="max-width: 500px; margin: auto;">
                     <div class="card-body">
                         <div class="text-center mb-5">
                             <div class="d-inline-flex align-items-center gap-2">
-                                <span class="material-symbols-outlined logo-icon" style="font-size:48px; color:#0d6efd;">health_and_safety</span>       
+                                <span class="material-symbols-outlined logo-icon" style="font-size: 48px; color: #0d6efd;">health_and_safety</span>
                             </div>
                         </div>
 
@@ -46,6 +49,21 @@
                                 <label class="form-label fw-medium">Documento</label>
                                 <asp:TextBox ID="idDocument" runat="server" CssClass="form-control form-control-lg" placeholder="Ej: DNI 12345678"></asp:TextBox>
                             </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-medium">Tipo de Usuario (Rol)</label>
+                                <asp:DropDownList ID="ddlRol" runat="server" CssClass="form-control form-control-lg" AutoPostBack="true" OnSelectedIndexChanged="ddlRol_SelectedIndexChanged" />
+                            </div>
+                            <asp:UpdatePanel ID="upMatricula" runat="server" UpdateMode="Conditional">
+                                <ContentTemplate>
+                                    <div class="col-md-6" id="divMatricula" runat="server" visible="false">
+                                        <label class="form-label fw-medium">Matrícula</label>
+                                        <asp:TextBox ID="txtMatricula" runat="server" CssClass="form-control form-control-lg" placeholder="Solo para Médicos"></asp:TextBox>
+                                    </div>
+                                </ContentTemplate>
+                                <Triggers>
+                                    <asp:AsyncPostBackTrigger ControlID="ddlRol" EventName="SelectedIndexChanged" />
+                                </Triggers>
+                            </asp:UpdatePanel>
                             <div class="col-12">
                                 <label class="form-label fw-medium">Correo electrónico</label>
                                 <asp:TextBox ID="email" runat="server" CssClass="form-control form-control-lg" TextMode="Email" placeholder="tu@correo.com"></asp:TextBox>
@@ -66,7 +84,9 @@
                                 <label class="form-label fw-medium">Confirmar contraseña</label>
                                 <asp:TextBox ID="passwordConfirm" runat="server" CssClass="form-control form-control-lg" TextMode="Password" placeholder="••••••••"></asp:TextBox>
                             </div>
-
+                            <div class="col-12">
+                                <asp:Literal ID="litErrorRegistro" runat="server" EnableViewState="false" />
+                            </div>
                             <div class="col-12 d-grid mt-3">
                                 <asp:Button ID="btnRegistrarse" runat="server" CssClass="btn btn-primary btn-lg fw-semibold" Text="Registrarse" OnClick="btnRegistrarse_Click" />
                             </div>
@@ -74,6 +94,7 @@
 
                         <p class="text-center mt-4 mb-0 text-muted">
                             ¿Ya tienes una cuenta? 
+                           
                             <a href="Login.aspx" class="text-primary fw-semibold">Acceder</a>
                         </p>
                     </div>
