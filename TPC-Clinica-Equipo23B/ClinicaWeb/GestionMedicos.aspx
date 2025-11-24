@@ -67,25 +67,54 @@
                             </button>
                         </div>
 
-                        <!-- Grilla de Médicos -->
-                        <div class="card card-custom p-4 rounded-xl">
-                            <div class="table-responsive">
-                                <asp:GridView ID="gvMedicos" runat="server" AutoGenerateColumns="false" CssClass="table table-hover align-middle" GridLines="None" EmptyDataText="No se encontraron médicos." OnRowCommand="gvMedicos_RowCommand">
-                                    <HeaderStyle CssClass="table-light" />
-                                    <Columns>
-                                        <asp:BoundField DataField="Nombre" HeaderText="Nombre" />
-                                        <asp:BoundField DataField="Apellido" HeaderText="Apellido" />
-                                        <asp:BoundField DataField="EspecialidadesTexto" HeaderText="Especialidad" />
-                                        <asp:BoundField DataField="HorariosTexto" HeaderText="Horario" />
-                                        <asp:TemplateField HeaderText="Acciones" ItemStyle-CssClass="text-end">
-                                            <ItemTemplate>
-     
-                                                <asp:LinkButton ID="btnEditar" runat="server" CssClass="btn btn-sm btn-outline-secondary" CommandName="EditarMedico" CommandArgument='<%# Eval("IdPersona") %>'>
-                                                    <span class="material-symbols-outlined fs-6">edit</span>
-                                                </asp:LinkButton>
-                                            </ItemTemplate>
-                                        </asp:TemplateField>
-                                    </Columns>
+                      <!-- Grilla de Médicos -->
+<div class="card card-custom p-4 rounded-xl">
+    <div class="table-responsive">
+       <asp:GridView ID="gvMedicos" runat="server" AutoGenerateColumns="false"
+    CssClass="table table-hover align-middle" GridLines="None"
+    EmptyDataText="No se encontraron médicos."
+    OnRowCommand="gvMedicos_RowCommand">
+
+    <HeaderStyle CssClass="table-light" />
+
+    <Columns>
+        <asp:BoundField DataField="Nombre" HeaderText="Nombre" />
+        <asp:BoundField DataField="Apellido" HeaderText="Apellido" />
+        <asp:BoundField DataField="EspecialidadesTexto" HeaderText="Especialidad" />
+        <asp:BoundField DataField="HorariosTexto" HeaderText="Horario" />
+
+        <asp:TemplateField HeaderText="Acciones" ItemStyle-CssClass="text-end">
+            <ItemTemplate>
+
+
+                <!-- Botón VER DETALLES -->
+        <asp:LinkButton 
+            ID="btnVerDetalles" 
+            runat="server" 
+            CssClass="btn btn-sm btn-outline-info me-2"
+            CommandName="VerDetallesMedico"
+            CommandArgument='<%# Eval("IdPersona") %>'>
+            <span class="material-symbols-outlined fs-6">visibility</span>
+        </asp:LinkButton> 
+
+
+                <!-- Botón EDITAR -->
+                <asp:LinkButton ID="btnEditar" runat="server" CssClass="btn btn-sm btn-outline-secondary"
+                    CommandName="EditarMedico" CommandArgument='<%# Eval("IdPersona") %>'>
+                    <span class="material-symbols-outlined fs-6">edit</span>
+                </asp:LinkButton>
+
+                <!-- Botón ELIMINAR -->
+                <asp:LinkButton ID="btnEliminar" runat="server" CssClass="btn btn-sm btn-outline-danger ms-2"
+                    CommandName="EliminarMedico" CommandArgument='<%# Eval("IdPersona") %>'
+                    OnClientClick="return confirm('¿Seguro que desea eliminar este médico?');">
+                    <span class="material-symbols-outlined fs-6">delete</span>
+                </asp:LinkButton>
+            </ItemTemplate>
+        </asp:TemplateField>
+    </Columns>
+
+
                                 </asp:GridView>
                             </div>
                         </div>
@@ -194,6 +223,42 @@
                 </div>
             </div>
         </div>
+
+
+         <!-- Modal para ver detalles del médico -->
+<div class="modal fade" id="modalDetallesMedico" tabindex="-1" aria-labelledby="modalDetallesMedicoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalDetallesMedicoLabel">Detalles del Médico</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-2">
+                    <div class="col-md-6"><strong>Nombre:</strong> <asp:Label ID="lblNombre" runat="server" /></div>
+                    <div class="col-md-6"><strong>Apellido:</strong> <asp:Label ID="lblApellido" runat="server" /></div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-6"><strong>DNI:</strong> <asp:Label ID="lblDni" runat="server" /></div>
+                    <div class="col-md-6"><strong>Matrícula:</strong> <asp:Label ID="lblMatricula" runat="server" /></div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-6"><strong>Email:</strong> <asp:Label ID="lblEmail" runat="server" /></div>
+                    <div class="col-md-6"><strong>Teléfono:</strong> <asp:Label ID="lblTelefono" runat="server" /></div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-12"><strong>Especialidades:</strong> <asp:Label ID="lblEspecialidades" runat="server" /></div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-12"><strong>Horarios:</strong> <asp:Label ID="lblHorarios" runat="server" /></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
 
     </form>
     <script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

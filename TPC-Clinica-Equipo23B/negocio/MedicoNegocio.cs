@@ -105,6 +105,42 @@ namespace negocio
             }
         }
 
+        public void Eliminar(int idMedico)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                datos.setearConsulta("DELETE FROM MedicoEspecialidad WHERE IdMedico = @id");
+                datos.setearParametro("@id", idMedico);
+                datos.ejecutarAccion();
+
+                datos.setearConsulta("DELETE FROM JornadaLaboral WHERE IdMedico = @id");
+                datos.setearParametro("@id", idMedico);
+                datos.ejecutarAccion();
+
+                datos.setearConsulta("DELETE FROM Medico WHERE IdMedico = @id");
+                datos.setearParametro("@id", idMedico);
+                datos.ejecutarAccion();
+
+                datos.setearConsulta("DELETE FROM Usuario WHERE IdUsuario = @id");
+                datos.setearParametro("@id", idMedico);
+                datos.ejecutarAccion();
+
+                datos.setearConsulta("DELETE FROM Persona WHERE IdPersona = @id");
+                datos.setearParametro("@id", idMedico);
+                datos.ejecutarAccion();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al eliminar médico", ex);
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+
         public void Agregar(Medico nuevo)
         {
             AccesoDatos datos = new AccesoDatos();
@@ -112,10 +148,10 @@ namespace negocio
             {
                 // Insertar en Persona
                 datos.setearConsulta(@"
-                    INSERT INTO Persona (Nombre, Apellido, Dni, Email, Telefono)
-                    VALUES (@Nombre, @Apellido, @Dni, @Email, @Telefono);
-                    SELECT SCOPE_IDENTITY() AS IdNuevo;
-                ");
+            INSERT INTO Persona (Nombre, Apellido, Dni, Email, Telefono)
+            VALUES (@Nombre, @Apellido, @Dni, @Email, @Telefono);
+            SELECT SCOPE_IDENTITY() AS IdNuevo;
+        ");
 
                 datos.setearParametro("@Nombre", nuevo.Nombre);
                 datos.setearParametro("@Apellido", nuevo.Apellido);
@@ -127,6 +163,10 @@ namespace negocio
                 int idPersona = 0;
                 if (datos.Lector.Read())
                     idPersona = Convert.ToInt32(datos.Lector["IdNuevo"]);
+
+                // **IMPORTANTE:** asignar IdPersona al objeto
+                nuevo.IdPersona = idPersona;
+
                 datos.cerrarConexion();
 
                 // Insertar en Usuario
@@ -144,15 +184,15 @@ namespace negocio
                 datos.setearParametro("@Matricula", string.IsNullOrEmpty(nuevo.Matricula) ? DBNull.Value : (object)nuevo.Matricula);
                 datos.ejecutarAccion();
 
-                //  Insertar Especialidades
+                // Insertar Especialidades usando Id en lugar de nombre
                 if (!string.IsNullOrEmpty(nuevo.EspecialidadesTexto))
                 {
                     string[] especialidades = nuevo.EspecialidadesTexto
                         .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-                    foreach (var esp in especialidades)
+                    foreach (var idEsp in especialidades)
                     {
-                        AgregarEspecialidad(idPersona, esp.Trim());
+                        AgregarEspecialidad(idPersona, Convert.ToInt32(idEsp.Trim()));
                     }
                 }
             }
@@ -166,18 +206,18 @@ namespace negocio
             }
         }
 
-        // Nuevo método agregado
-        public void AgregarEspecialidad(int idMedico, string nombreEspecialidad)
+        // Método modificado para recibir IdEspecialidad
+        public void AgregarEspecialidad(int idMedico, int idEspecialidad)
         {
             AccesoDatos datos = new AccesoDatos();
             try
             {
                 datos.setearConsulta(@"
-                    INSERT INTO MedicoEspecialidad (IdMedico, IdEspecialidad)
-                    VALUES (@IdMedico, (SELECT IdEspecialidad FROM Especialidad WHERE Nombre = @Nombre))
-                ");
+            INSERT INTO MedicoEspecialidad (IdMedico, IdEspecialidad)
+            VALUES (@IdMedico, @IdEspecialidad)
+        ");
                 datos.setearParametro("@IdMedico", idMedico);
-                datos.setearParametro("@Nombre", nombreEspecialidad);
+                datos.setearParametro("@IdEspecialidad", idEspecialidad);
                 datos.ejecutarAccion();
             }
             catch (Exception ex)
@@ -189,5 +229,7 @@ namespace negocio
                 datos.cerrarConexion();
             }
         }
+
+
     }
 }

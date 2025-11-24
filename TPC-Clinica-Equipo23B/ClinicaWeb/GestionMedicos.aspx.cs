@@ -37,18 +37,59 @@ namespace ClinicaWeb
 
         protected void gvMedicos_RowCommand(object sender, GridViewCommandEventArgs e)
         {
-            if (e.CommandName == "GestionarHorarios")
+            try
             {
                 int idMedico = Convert.ToInt32(e.CommandArgument);
-                Response.Redirect($"GestionHorarios.aspx?idmedico={idMedico}", false);
+                MedicoNegocio negocio = new MedicoNegocio();
+
+                if (e.CommandName == "EditarMedico")
+                {
+                    // Aquí podes cargar los datos del médico en el modal de edición si querés
+                }
+                else if (e.CommandName == "EliminarMedico")
+                {
+                    negocio.Eliminar(idMedico);
+
+                    // Mostrar mensaje tipo alert
+                    ClientScript.RegisterStartupScript(this.GetType(), "alert",
+                        "alert('Médico eliminado correctamente');", true);
+
+                    // Recargar grilla para reflejar cambios
+                    CargarGrillaMedicos();
+                }
+                else if (e.CommandName == "VerDetallesMedico")
+                {
+                    // Obtener datos del médico
+                    Medico medico = negocio.Listar().FirstOrDefault(m => m.IdPersona == idMedico);
+                    if (medico != null)
+                    {
+                        lblNombre.Text = medico.Nombre;
+                        lblApellido.Text = medico.Apellido;
+                        lblDni.Text = medico.Dni;
+                        lblEmail.Text = medico.Email;
+                        lblMatricula.Text = medico.Matricula;
+                        lblTelefono.Text = medico.Telefono;
+
+                        // Mostrar especialidades como texto
+                        lblEspecialidades.Text = medico.EspecialidadesTexto;
+                    }
+
+                    // Abrir modal de detalles
+                    ScriptManager.RegisterStartupScript(
+                        this,
+                        GetType(),
+                        "Popup",
+                        "$('#modalDetallesMedico').modal('show');",
+                        true
+                    );
+                }
             }
-            else if (e.CommandName == "EditarMedico")
+            catch (Exception ex)
             {
-                int idMedico = Convert.ToInt32(e.CommandArgument);
-                // Aquí podés redirigir a un modal o página de edición
+                ClientScript.RegisterStartupScript(this.GetType(), "error",
+                    $"alert('Error al procesar la acción: {ex.Message}');", true);
             }
         }
-
 
         protected void btnGuardarMedico_Click(object sender, EventArgs e)
         {
@@ -65,17 +106,17 @@ namespace ClinicaWeb
                     Telefono = txtTelefono.Text
                 };
 
-                // Guardar especialidades seleccionadas
+                // Guardar especialidades seleccionadas usando Id
                 var especialidadesSeleccionadas = chkEspecialidades.Items
                     .Cast<ListItem>()
                     .Where(i => i.Selected)
-                    .Select(i => i.Text);
+                    .Select(i => i.Value);
 
                 nuevoMedico.EspecialidadesTexto = string.Join(",", especialidadesSeleccionadas);
 
                 // Guardar el médico en la base
                 MedicoNegocio negocio = new MedicoNegocio();
-                negocio.Agregar(nuevoMedico);   // 👈 Aquí se genera el IdMedico
+                negocio.Agregar(nuevoMedico);   // genera IdPersona y lo asigna a nuevoMedico
 
                 // Guardar los horarios cargados temporalmente
                 JornadaLaboralNegocio jornadaNegocio = new JornadaLaboralNegocio();
@@ -87,9 +128,8 @@ namespace ClinicaWeb
 
                 // Limpiar lista temporal
                 HorariosTemp.Clear();
-
-                // Refrescar grilla de médicos
-                CargarGrillaMedicos();
+                gvHorariosTemp.DataSource = null;
+                gvHorariosTemp.DataBind();
 
                 // Limpiar controles del formulario
                 txtNombre.Text = "";
@@ -98,8 +138,11 @@ namespace ClinicaWeb
                 txtMatricula.Text = "";
                 txtEmail.Text = "";
                 txtTelefono.Text = "";
-                gvHorariosTemp.DataSource = null;
-                gvHorariosTemp.DataBind();
+                foreach (ListItem item in chkEspecialidades.Items)
+                    item.Selected = false;
+
+                // Refrescar grilla de médicos
+                CargarGrillaMedicos();
 
                 Response.Write("<script>alert('Médico agregado correctamente con sus horarios');</script>");
             }
@@ -127,11 +170,11 @@ namespace ClinicaWeb
         private void CargarEspecialidades()
         {
             EspecialidadNegocio negocio = new EspecialidadNegocio();
-            var lista = negocio.listar(); // devolviendo IdEspecialidad y Nombre
+            var lista = negocio.listar(); // devuelve IdEspecialidad y Nombre
 
             chkEspecialidades.DataSource = lista;
             chkEspecialidades.DataTextField = "Nombre";
-            chkEspecialidades.DataValueField = "IdEspecialidad";
+            chkEspecialidades.DataValueField = "IdEspecialidad"; // importante: usar Id
             chkEspecialidades.DataBind();
         }
 
