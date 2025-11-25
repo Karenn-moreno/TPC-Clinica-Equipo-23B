@@ -1,59 +1,12 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="GestionTurnos.aspx.cs" Inherits="ClinicaWeb.GestionTurnos" %>
+﻿<%@ Page Title="Gestión de Turnos" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeBehind="GestionTurnos.aspx.cs" Inherits="ClinicaWeb.GestionTurnos" %>
 
-<!DOCTYPE html>
-<html class="light" lang="es">
-<head runat="server">
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Clínica Salud - Panel de Recepción</title>
-    <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
-    <link href="~/Content/GestionTurnos.css" rel="stylesheet" type="text/css" />
-    <link href="https://fonts.googleapis.com" rel="preconnect" />
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet" />
-</head>
-<body class="bg-background-light dark:bg-background-dark">
-    <form id="form3" runat="server">
-        <asp:ScriptManager ID="ScriptManager1" runat="server" />
-        <div class="d-flex min-vh-100 w-100 flex-column">
-            <div class="d-flex flex-grow-1">
-                <aside class="d-flex flex-column aside-custom p-4 justify-content-between sticky-top vh-100" style="width: 250px;">
-                    <div class="d-flex flex-column gap-4">
-                        <div class="d-flex gap-3 align-items-center px-2">
-                            <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-circle" data-alt="Clinic logo" style='width: 40px; height: 40px; background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDeAt9T3P2qjZpQj8lzu2zGENu6a5BQkzQtHA1xL-0Lcho4WiUK6Pny13lFsmCHjJ2gzEBYyWcXdDOtEp9qscD0DSuLvg9RWtTUo8QAP_lEZNqMwetgMh1_2z8c_n-jpRmr-YICTx6OruHIpyu6QscEDCyGdloskjEdVKU3Gw7VS2In2IdxNh-bd7rpVckTaFBuunzKao680qp3s9r4kylecoB4650yW-zaDTru_srBHQUrxPubNgEdLU80hNn9z0Pvp0NuogNBX_Ai");'></div>
-                            <div class="d-flex flex-column">
-                                <h1 class="text-dark fs-6 fw-bold mb-0">Clínica Sanare</h1>
-                                <p class="text-secondary small mb-0">Panel de Recepción</p>
-                            </div>
-                        </div>
-                        <nav class="nav flex-column gap-2">
-                            <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-lg active-custom" href="#">
-                                <span class="material-symbols-outlined">calendar_month</span>
-                                <p class="mb-0 small fw-medium">Turnos</p>
-                            </a>
-                            <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-lg text-secondary hover-bg-light" href="/GestionPacientes.aspx">
-                                <span class="material-symbols-outlined">group</span>
-                                <p class="mb-0 small fw-medium">Pacientes</p>
-                            </a>
-                            <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-lg text-secondary hover-bg-light" href="/GestionMedicos.aspx">
-                                <span class="material-symbols-outlined">stethoscope</span>
-                                <p class="mb-0 small fw-medium">Médicos</p>
-                            </a>
-                        </nav>
-                    </div>
-                    <div class="d-flex flex-column gap-1">
-                        <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-lg text-secondary hover-bg-light" href="#">
-                            <span class="material-symbols-outlined">account_circle</span>
-                            <p class="mb-0 small fw-medium">Mi Perfil</p>
-                        </a>
-                        <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-lg text-secondary hover-bg-light" href="/Default.aspx">
-                            <span class="material-symbols-outlined">logout</span>
-                            <p class="mb-0 small fw-medium">Cerrar Sesión</p>
-                        </a>
-                    </div>
-                </aside>
-                <main class="flex-grow-1 p-4">
+<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
+    <link href="Content/GestionTurnos.css" rel="stylesheet" type="text/css" />
+    </asp:Content>
+ 
+<asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
+
+
                     <div class="d-flex flex-column gap-4">
                         <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
                             <div class="d-flex flex-column gap-1">
@@ -85,7 +38,7 @@
                                     </div>
                                 </div>
                                 <div class="table-responsive">
-                                    >
+                                   
                                     <asp:GridView ID="gvTurnos" runat="server"
                                         DataKeyNames="IdTurno"
                                         CssClass="table table-striped table-hover align-middle"
@@ -147,9 +100,7 @@
                             </div>
                         </div>
                     </div>
-                </main>
-            </div>
-        </div>
+
         <div aria-hidden="true" aria-labelledby="addTurnoModalLabel" class="modal fade" id="addTurnoModal" tabindex="-1">
             <div class="modal-dialog modal-dialog-centered modal-lg">
                 <div class="modal-content">
@@ -210,7 +161,4 @@
                 </div>
             </div>
         </div>
-    </form>
-    <script crossorigin="anonymous" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+ </asp:Content>

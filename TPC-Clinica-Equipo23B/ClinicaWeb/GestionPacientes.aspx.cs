@@ -186,7 +186,12 @@ namespace ClinicaWeb
                 string script = $"alert('ERROR AL GUARDAR: {ex.Message}');";
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "ErrorAlert", script, true);
             }
-        }      
+        }
+
+        protected void gvPacientes_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+
+        }
     }
  }
 

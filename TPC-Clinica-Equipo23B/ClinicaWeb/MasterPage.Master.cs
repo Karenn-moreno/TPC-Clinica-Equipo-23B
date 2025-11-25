@@ -1,4 +1,6 @@
-﻿using System;
+﻿using dominio;
+using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -11,7 +13,39 @@ namespace ClinicaWeb
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (!IsPostBack)
+            {
 
+                if (Session["usuario"] == null || Session["rol"] == null)
+                {
+                    if (!(Page is Login) && !(Page is Registrarse))
+                    {
+                        Response.Redirect("Login.aspx", false);
+                    }
+                    return;
+                }
+
+                Usuario user = (Usuario)Session["usuario"];
+                string rol = Session["rol"].ToString().ToUpper();
+
+                menuTurnos.Visible = true;
+                if (rol == "ADMINISTRADOR" || rol == "RECEPCIONISTA")
+                {
+                    menuPacientes.Visible = true;
+                    menuMedicos.Visible = true;
+                }
+                else
+                {                    
+                    menuPacientes.Visible = false;
+                    menuMedicos.Visible = false;
+                }
+            }
+        }
+        protected void btnSalir_Click(object sender, EventArgs e)
+        {
+            Session.Clear();
+            Session.Abandon();
+            Response.Redirect("Default.aspx");
         }
     }
 }

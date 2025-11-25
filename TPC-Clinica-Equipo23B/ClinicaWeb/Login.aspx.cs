@@ -18,13 +18,13 @@ namespace ClinicaWeb
 
                 if (!IsPostBack)
                 {
-     
+
                     if (Session["registroExitoso"] != null)
                     {
                         if (litMensajeRegistro != null)
                         {
                             litMensajeRegistro.Text = $"<div class='alert alert-success mt-3' role='alert'>{Session["registroExitoso"]}</div>";
-                            Session.Remove("registroExitoso"); 
+                            Session.Remove("registroExitoso");
                         }
                     }
                 }
@@ -34,11 +34,11 @@ namespace ClinicaWeb
 
         protected void btnIngresar_Click(object sender, EventArgs e)
         {
-  
+
             if (litErrorLogin != null)
                 litErrorLogin.Text = "";
 
-          
+
             if (string.IsNullOrWhiteSpace(txtEmail.Text) || string.IsNullOrWhiteSpace(txtPassword.Text))
             {
                 if (litErrorLogin != null)
@@ -47,21 +47,33 @@ namespace ClinicaWeb
             }
 
             UsuarioNegocio negocio = new UsuarioNegocio();
-            Usuario usuario;
-
             try
             {
-                
-                usuario = negocio.ValidarUsuario(txtEmail.Text, txtPassword.Text);
+
+                Usuario usuario = negocio.ValidarUsuario(txtEmail.Text, txtPassword.Text);
 
                 if (usuario != null)
                 {
                     Session.Add("usuario", usuario);
+                    string rolNombre = "USUARIO";
+
+                    if (usuario.UsuarioRoles != null && usuario.UsuarioRoles.Count > 0)
+                    {
+                        // Obtenemos el primer rol de la lista
+                        var primerRol = usuario.UsuarioRoles.First().Rol;
+
+                        // Usamos la propiedad TipoRol 
+                        if (primerRol != null && !string.IsNullOrEmpty(primerRol.TipoRol))
+                        {
+                            rolNombre = primerRol.TipoRol.ToUpper();
+                        }
+                    }
+                    Session.Add("rol", rolNombre);
                     Response.Redirect("GestionTurnos.aspx", false);
                 }
                 else
                 {
-              
+
                     if (litErrorLogin != null)
                         litErrorLogin.Text = "Usuario o contraseña incorrectos. Verifique sus credenciales e intente de nuevo.";
                 }
@@ -76,4 +88,4 @@ namespace ClinicaWeb
 
         }
     }
-    }
+}

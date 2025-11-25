@@ -5,55 +5,72 @@
 <html>
 <head runat="server">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Inicio</title>
+    <title>clinica sanare</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="~/Content/GestionTurnos.css" rel="stylesheet" type="text/css" />
     <asp:ContentPlaceHolder ID="head" runat="server"></asp:ContentPlaceHolder>
 </head>
 <body>
-    <form id="form1" runat="server">
-        <nav class="navbar navbar-expand-lg bg-body-tertiary">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="#">Navbar</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="#">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Link</a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Dropdown
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">Action</a></li>
-                                <li><a class="dropdown-item" href="#">Another action</a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item" href="#">Something else here</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-                        </li>
-                    </ul>
-                    
-                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
-                        <button class="btn btn-outline-success" type="submit">Search</button>
-                    
-                </div>
-            </div>
-        </nav>
-        <div>
-            <h1>Menu</h1>
-            <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
-            </asp:ContentPlaceHolder>
-            <footer>Contenido en el footer</footer>
-        </div>
+    <form id="formMaster" runat="server">
+        <asp:ScriptManager ID="ScriptManager1" runat="server" />
+
+        <div class="d-flex min-vh-100 w-100 flex-column">
+            <div class="d-flex flex-grow-1">
+
+                <aside class="d-flex flex-column aside-custom p-4 justify-content-between sticky-top vh-100" style="width: 250px; background-color: #fff; border-right: 1px solid #eee;">
+
+                    <div class="d-flex flex-column gap-4">
+                        <div class="d-flex gap-3 align-items-center px-2">
+                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                <span class="material-symbols-outlined">local_hospital</span>
+                            </div>
+                            <div class="d-flex flex-column">
+                                <h1 class="text-dark fs-6 fw-bold mb-0">Clínica Sanare</h1>
+                                <p class="text-secondary small mb-0">Gestión Integral</p>
+                            </div>
+                        </div>                        
+                            <ul class="nav flex-column gap-2">
+                            <li class="nav-item" id="menuTurnos" runat="server">
+                                <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-lg text-secondary hover-bg-light" href="GestionTurnos.aspx">
+                                    <span class="material-symbols-outlined">calendar_month</span>
+                                    <p class="mb-0 small fw-medium">Turnos</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item" id="menuPacientes" runat="server" visible="false">
+                                <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-lg text-secondary hover-bg-light" href="GestionPacientes.aspx">
+                                    <span class="material-symbols-outlined">group</span>
+                                    <p class="mb-0 small fw-medium">Pacientes</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item" id="menuMedicos" runat="server" visible="false">
+                                <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-lg text-secondary hover-bg-light" href="GestionMedicos.aspx">
+                                    <span class="material-symbols-outlined">stethoscope</span>
+                                    <p class="mb-0 small fw-medium">Médicos</p>
+                                </a>
+                            </li>
+                         </ul>
+                   </div>
+                    <div class="d-flex flex-column gap-1">
+                        <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-lg text-secondary hover-bg-light" href="#">
+                            <span class="material-symbols-outlined">account_circle</span>
+                            <p class="mb-0 small fw-medium">Mi Perfil</p>
+                        </a>
+                        <asp:LinkButton ID="btnSalir" runat="server" OnClick="btnSalir_Click" CssClass="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-lg text-danger hover-bg-light">
+                            <span class="material-symbols-outlined">logout</span>
+                            <p class="mb-0 small fw-medium">Cerrar Sesión</p>
+                        </asp:LinkButton>
+                    </div>
+                </aside>
+                <main class="flex-grow-1 p-4 bg-light">
+                    <asp:ContentPlaceHolder ID="MainContent" runat="server">
+                    </asp:ContentPlaceHolder>
+                </main>
+              </div>
+         </div>
     </form>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </body>

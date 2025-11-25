@@ -42,16 +42,18 @@ namespace negocio
 
             try
             {
-                // NOTA IMPORTANTE: En un entorno de producción, la validación de contraseña 
-                // DEBE hacerse comparando el HASH almacenado en la DB con el HASH de la 
-                // contraseña proporcionada, no con la contraseña en texto plano.
+
 
                 datos.setearConsulta(@"
                     SELECT 
                         P.IdPersona, P.Nombre, P.Apellido, P.Dni, P.Email, P.Telefono, P.Localidad, 
-                        U.Password
+                        U.Password,
+                        R.IdRol,
+                        R.TipoRol
                     FROM Persona P
                     INNER JOIN Usuario U ON P.IdPersona = U.IdUsuario
+                    INNER JOIN UsuarioRol UR ON U.IdUsuario = UR.IdUsuario
+                    INNER JOIN Rol R ON UR.IdRol = R.IdRol
                     WHERE P.Email = @Email AND U.Password = @Password");
 
                 datos.setearParametro("@Email", email);
@@ -61,7 +63,18 @@ namespace negocio
 
                 if (datos.Lector.Read())
                 {
-                    return MapearUsuario(datos.Lector);
+                    Usuario usuario = MapearUsuario(datos.Lector);
+
+                    UsuarioRol usuarioRol = new UsuarioRol();
+                    usuarioRol.Rol = new Rol();
+
+                    if (!(datos.Lector["IdRol"] is DBNull))
+                    usuarioRol.Rol.IdRol = (int)datos.Lector["IdRol"];
+                    if (!(datos.Lector["TipoRol"] is DBNull))
+                    usuarioRol.Rol.TipoRol = (string)datos.Lector["TipoRol"];
+
+                    usuario.UsuarioRoles.Add(usuarioRol);
+                    return usuario;
                 }
 
                 return null; // Credenciales inválidas
