@@ -166,10 +166,13 @@
                     <asp:UpdatePanel ID="upModalMedico" runat="server">
                         <ContentTemplate>
                             <div class="modal-body">
-                            </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <asp:Button ID="btnGuardarMedico" runat="server" Text="Guardar Médico" CssClass="btn btn-primary" OnClick="btnGuardarMedico_Click" />
+                               <!-- TODO: aquí va TODO el formulario (inputs, checkboxes, horarios) -->
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <asp:Button ID="btnGuardarMedico" runat="server" Text="Guardar Médico" 
+                CssClass="btn btn-primary" OnClick="btnGuardarMedico_Click" 
+                UseSubmitBehavior="false" />
                     </div>
                         </ContentTemplate>
                     </asp:UpdatePanel>

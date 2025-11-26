@@ -144,7 +144,10 @@ namespace ClinicaWeb
                 // Refrescar grilla de médicos
                 CargarGrillaMedicos();
 
-                Response.Write("<script>alert('Médico agregado correctamente con sus horarios');</script>");
+                // Cerrar modal y mostrar mensaje
+                string script = "$('#addMedicoModal').modal('hide'); alert('Médico agregado correctamente');";
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "CerrarModal", script, true);
+
             }
             catch (Exception ex)
             {
