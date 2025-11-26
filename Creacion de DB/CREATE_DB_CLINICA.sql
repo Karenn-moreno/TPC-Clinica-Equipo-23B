@@ -14,7 +14,8 @@ CREATE TABLE Persona (
     Dni NVARCHAR(8) NOT NULL UNIQUE,
     Email NVARCHAR(100),
     Telefono NVARCHAR(15),
-    Localidad NVARCHAR(100)
+    Localidad NVARCHAR(100),
+	Activo BIT NOT NULL DEFAULT 1
 );
 
 -- ======================================
@@ -121,7 +122,7 @@ CREATE TABLE JornadaLaboral (
     IdTurnoTrabajo INT NULL,
     HoraInicio TIME,
     HoraFin TIME,
-    DiaLaboral NVARCHAR(20)
+    DiaLaboral NVARCHAR(20)NOT NULL
         CHECK (DiaLaboral IN ('Lunes','Martes','Miercoles','Jueves','Viernes','Sabado','Domingo')),
     FOREIGN KEY (IdMedico) REFERENCES Medico(IdMedico),
     FOREIGN KEY (IdTurnoTrabajo) REFERENCES TurnoDeTrabajo(IdTurnoTrabajo)
@@ -138,9 +139,9 @@ CREATE TABLE Turno (
     FechaHoraFin DATETIME NOT NULL,
     MotivoDeConsulta NVARCHAR(255),
     Diagnostico NVARCHAR(255),
-    EstadoTurno NVARCHAR(20)
-        CONSTRAINT CHK_EstadoTurno CHECK (EstadoTurno IN ('Nuevo','Reprogramado','Cancelado','No asistio','Cerrado'))
-        DEFAULT 'Nuevo',
+    EstadoTurno NVARCHAR(20)NOT NULL
+	    DEFAULT 'Nuevo',
+        CONSTRAINT CHK_EstadoTurno CHECK (EstadoTurno IN ('Nuevo','Reprogramado','Cancelado','No asistio','Cerrado')),       
     FOREIGN KEY (IdMedico) REFERENCES Medico(IdMedico),
     FOREIGN KEY (IdPaciente) REFERENCES Paciente(IdPaciente)
 );
