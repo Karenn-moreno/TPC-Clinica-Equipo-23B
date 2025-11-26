@@ -17,7 +17,7 @@ namespace negocio
         public EmailService()
         {
             server = new SmtpClient();
-            server.Credentials = new NetworkCredential("programacion.correo.prueba@gmail.com", "Peogramacion123");
+            server.Credentials = new NetworkCredential("programacion.correo.prueba@gmail.com", "pgws xrjh qgrh flrf");
             server.EnableSsl = true;
             server.Port = 587; 
             server.Host = "smtp.gmail.com";
@@ -27,7 +27,6 @@ namespace negocio
         {
             email = new MailMessage();
 
-            // Usar el mismo email configurado en las credenciales
             email.From = new MailAddress("programacion.correo.prueba@gmail.com", "Clínica Sanare");
             email.To.Add(emailDestino);
             email.Subject = asunto;
