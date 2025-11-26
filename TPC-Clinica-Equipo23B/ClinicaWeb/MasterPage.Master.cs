@@ -13,18 +13,17 @@ namespace ClinicaWeb
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (!IsPostBack)
+            if (Session["usuario"] == null || Session["rol"] == null)
             {
-
-                if (Session["usuario"] == null || Session["rol"] == null)
+                if (!(Page is Login) && !(Page is Registrarse))
                 {
-                    if (!(Page is Login) && !(Page is Registrarse))
-                    {
-                        Response.Redirect("Login.aspx", false);
-                    }
-                    return;
+                    Response.Redirect("Login.aspx", false);
                 }
+                return;
+            }
 
+            if (!IsPostBack)
+            {               
                 Usuario user = (Usuario)Session["usuario"];
                 string rol = Session["rol"].ToString().ToUpper();
 

@@ -13,8 +13,7 @@ namespace ClinicaWeb
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (!IsPostBack)
-            {
+            
 
                 if (!IsPostBack)
                 {
@@ -29,7 +28,7 @@ namespace ClinicaWeb
                     }
                 }
 
-            }
+            
         }
 
         protected void btnIngresar_Click(object sender, EventArgs e)

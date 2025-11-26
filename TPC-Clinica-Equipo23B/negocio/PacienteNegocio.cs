@@ -26,7 +26,9 @@ namespace negocio
                     FROM 
                         Persona P
                     INNER JOIN 
-                        Paciente PA ON P.IdPersona = PA.IdPaciente");
+                        Paciente PA ON P.IdPersona = PA.IdPaciente
+                    WHERE 
+                       P.Activo = 1");
 
                 datos.ejecutarLectura();
 
@@ -179,7 +181,7 @@ namespace negocio
         }
 
         // 4. ELIMINAR
-        public void Eliminar(int id)
+        public void EliminarFisico(int id)
         {
             AccesoDatos datos = new AccesoDatos();
 
@@ -207,5 +209,67 @@ namespace negocio
             }
         }
 
+        //Eliminacion logica
+        public void EliminarLogico(int id)
+        {
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.setearConsulta(@"SELECT COUNT(*) FROM Turno 
+                               WHERE IdPaciente = @Id 
+                               AND FechaHoraInicio >= CAST(GETDATE() AS DATE)
+                               AND EstadoTurno NOT IN ('Cancelado', 'No asistio')");
+
+                datos.setearParametro("@Id", id);
+                datos.ejecutarLectura();
+
+                if (datos.Lector.Read())
+                {
+                    int turnosPendientes = (int)datos.Lector[0];
+
+                    if (turnosPendientes > 0)
+                    {
+                        throw new Exception("No se puede dar de baja: El paciente tiene turnos futuros pendientes.");
+                    }
+                }
+                datos.cerrarConexion();
+
+                datos = new AccesoDatos();
+
+                datos.setearConsulta("UPDATE Persona SET Activo = 0 WHERE IdPersona = @Id");
+
+                datos.setearParametro("@Id", id);
+
+                datos.ejecutarAccion();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+        //si se quiere volver a reactivar el registro 
+        public void Reactivar(int id)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                datos.setearConsulta("UPDATE Persona SET Activo = 1 WHERE IdPersona = @Id");
+                datos.setearParametro("@Id", id);
+                datos.ejecutarAccion();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
     }
 }
