@@ -42,10 +42,9 @@
                                 <asp:LinkButton ID="btnVerDetalles" runat="server"
                                     CssClass="btn btn-sm btn-outline-info me-2"
                                     CommandName="VerDetallesMedico"
-                                    CommandArgument='<%# Eval("IdPersona") %>'
-                                    OnClientClick="abrirModalVerDetalles(); return false;">
-                                    <span class="material-symbols-outlined fs-6">visibility</span>
-                                </asp:LinkButton>
+                                    CommandArgument='<%# Eval("IdPersona") %>'> 
+    <span class="material-symbols-outlined fs-6">visibility</span>>
+        </asp:LinkButton>
 
                                 <!-- EDITAR -->
                                 <asp:LinkButton ID="btnEditar" runat="server"
@@ -81,7 +80,7 @@
                     <h5 class="modal-title">
                         <span class="material-symbols-outlined align-middle me-2">warning</span>
                         Confirmar Eliminación
-                            </h5>
+                    </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -111,7 +110,7 @@
                     <h5 class="modal-title" id="errorModalLabel">
                         <span class="material-symbols-outlined align-middle me-2">error</span>
                         Atención
-                            </h5>
+                    </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -222,6 +221,7 @@
     </div>
 
     <!-- Modal Ver Detalles -->
+
     <div class="modal fade" id="modalDetallesMedico" tabindex="-1" aria-labelledby="modalDetallesMedicoLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
@@ -231,30 +231,46 @@
                 </div>
                 <div class="modal-body">
                     <div class="row mb-2">
-                        <div class="col-md-6"><strong>Nombre:</strong>
-                            <asp:Label ID="lblNombre" runat="server" /></div>
-                        <div class="col-md-6"><strong>Apellido:</strong>
-                            <asp:Label ID="lblApellido" runat="server" /></div>
+                        <div class="col-md-6">
+                            <strong>Nombre:</strong>
+                            <asp:Label ID="lblNombre" runat="server" />
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Apellido:</strong>
+                            <asp:Label ID="lblApellido" runat="server" />
+                        </div>
                     </div>
                     <div class="row mb-2">
-                        <div class="col-md-6"><strong>DNI:</strong>
-                            <asp:Label ID="lblDni" runat="server" /></div>
-                        <div class="col-md-6"><strong>Matrícula:</strong>
-                            <asp:Label ID="lblMatricula" runat="server" /></div>
+                        <div class="col-md-6">
+                            <strong>DNI:</strong>
+                            <asp:Label ID="lblDni" runat="server" />
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Matrícula:</strong>
+                            <asp:Label ID="lblMatricula" runat="server" />
+                        </div>
                     </div>
                     <div class="row mb-2">
-                        <div class="col-md-6"><strong>Email:</strong>
-                            <asp:Label ID="lblEmail" runat="server" /></div>
-                        <div class="col-md-6"><strong>Teléfono:</strong>
-                            <asp:Label ID="lblTelefono" runat="server" /></div>
+                        <div class="col-md-6">
+                            <strong>Email:</strong>
+                            <asp:Label ID="lblEmail" runat="server" />
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Teléfono:</strong>
+                            <asp:Label ID="lblTelefono" runat="server" />
+                        </div>
                     </div>
                     <div class="row mb-2">
-                        <div class="col-md-12"><strong>Especialidades:</strong>
-                            <asp:Label ID="lblEspecialidades" runat="server" /></div>
+                        <div class="col-md-12">
+                            <strong>Especialidades:</strong>
+                            <asp:Label ID="lblEspecialidades" runat="server" />
+                        </div>
                     </div>
                     <div class="row mb-2">
-                        <div class="col-md-12"><strong>Horarios:</strong>
-                            <asp:Label ID="lblHorarios" runat="server" /></div>
+                        <div class="col-md-12">
+                            <strong>Horarios:</strong>
+                            <asp:Label ID="lblHorarios" runat="server" />
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">

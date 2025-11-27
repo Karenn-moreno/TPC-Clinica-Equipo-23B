@@ -173,33 +173,44 @@ namespace negocio
                 //CARGAR HORARIOS
                 datos = new AccesoDatos();
                 datos.setearConsulta(@"
-            SELECT IdJornada, DiaLaboral, HoraInicio, HoraFin
-            FROM JornadaLaboral
-            WHERE IdMedico = @id
-        ");
+    SELECT IdJornadaLaboral, DiaLaboral, HoraInicio, HoraFin 
+    FROM JornadaLaboral
+    WHERE IdMedico = @id
+");
                 datos.setearParametro("@id", idMedico);
                 datos.ejecutarLectura();
 
                 while (datos.Lector.Read())
                 {
-                    medico.JornadasLaborales.Add(new JornadaLaboral
+                    
+                    JornadaLaboral jornada = new JornadaLaboral();
+
+                    jornada.IdJornadaLaboral = (int)datos.Lector["IdJornadaLaboral"];
+                    jornada.DiaLaboral = (DiaLaboral)Enum.Parse(typeof(DiaLaboral), datos.Lector["DiaLaboral"].ToString());
+
+                    if (datos.Lector["HoraInicio"] != DBNull.Value)
                     {
-                        IdJornadaLaboral = (int)datos.Lector["IdJornada"],
-                        DiaLaboral = (DiaLaboral)Enum.Parse(typeof(DiaLaboral), datos.Lector["DiaLaboral"].ToString()),
-                        HorarioInicio = (TimeSpan)datos.Lector["HoraInicio"],
-                        HoraFin = (TimeSpan)datos.Lector["HoraFin"]
-                    });
+                        jornada.HorarioInicio = (TimeSpan)datos.Lector["HoraInicio"];
+                    }
+
+                    if (datos.Lector["HoraFin"] != DBNull.Value)
+                    {
+                        jornada.HoraFin = (TimeSpan)datos.Lector["HoraFin"];
+                    }
+
+                    medico.JornadasLaborales.Add(jornada);
                 }
                 datos.cerrarConexion();
 
 
                 
                 // EspecialidadesTexto: Convierte la lista de especialidades en un string separado por comas
+                
                 medico.EspecialidadesTexto = string.Join(", ", medico.MedicoEspecialidades
                     .Where(me => me.Especialidad != null)
                     .Select(me => me.Especialidad.Nombre));
 
-                // HorariosTexto: Convierte la lista de jornadas en un string con saltos de línea
+      
                 medico.HorariosTexto = string.Join("<br>", medico.JornadasLaborales.Select(j =>
                     $"{j.DiaLaboral}: {j.HorarioInicio:hh\\:mm} - {j.HoraFin:hh\\:mm}"));
 

@@ -54,10 +54,11 @@ namespace ClinicaWeb
 
                 if (e.CommandName == "EditarMedico")
                 {
-                    // Cargar datos del médico para edición
-                    Medico medico = negocio.Listar().FirstOrDefault(m => m.IdPersona == idMedico);
+                    // Cargar datos del médico para edición usando ObtenerPorId (carga todos los campos)
+                    Medico medico = negocio.ObtenerPorId(idMedico);
                     if (medico != null)
                     {
+                        hfIdMedicoEditar.Value = idMedico.ToString(); // Guardar ID para el guardado
                         txtNombre.Text = medico.Nombre;
                         txtApellido.Text = medico.Apellido;
                         txtDni.Text = medico.Dni;
@@ -66,20 +67,20 @@ namespace ClinicaWeb
                         txtTelefono.Text = medico.Telefono;
 
                         // Marcar especialidades
+                        var especialidadIds = medico.MedicoEspecialidades.Select(me => me.IdEspecialidad.ToString()).ToList();
                         foreach (ListItem item in chkEspecialidades.Items)
                         {
-                            item.Selected = medico.EspecialidadesTexto.Split(',')
-                                              .Contains(item.Value);
+                            item.Selected = especialidadIds.Contains(item.Value);
                         }
 
-                        // Cargar horarios temporales para edición
+                        // Cargar horarios temporales
                         HorariosTemp = medico.JornadasLaborales.ToList();
                         gvHorariosTemp.DataSource = HorariosTemp;
                         gvHorariosTemp.DataBind();
 
-                        // Abrir modal edición
-                        ScriptManager.RegisterStartupScript(this, this.GetType(), "AbrirModal",
-                            "$('#addMedicoModal').modal('show');", true);
+                        // Abrir modal edición llamando a la función JS
+                        ScriptManager.RegisterStartupScript(this, this.GetType(), "AbrirModalEdicion",
+                            "abrirModalAgregarEditar();", true);
                     }
                 }
                 else if (e.CommandName == "EliminarMedico")
@@ -91,7 +92,9 @@ namespace ClinicaWeb
                 }
                 else if (e.CommandName == "VerDetallesMedico")
                 {
-                    Medico medico = negocio.Listar().FirstOrDefault(m => m.IdPersona == idMedico);
+                    // Cargar datos del médico para ver detalles usando ObtenerPorId
+                    Medico medico = negocio.ObtenerPorId(idMedico);
+
                     if (medico != null)
                     {
                         lblNombre.Text = medico.Nombre;
@@ -101,14 +104,14 @@ namespace ClinicaWeb
                         lblEmail.Text = medico.Email;
                         lblTelefono.Text = medico.Telefono;
                         lblEspecialidades.Text = medico.EspecialidadesTexto;
-                        lblHorarios.Text = medico.HorariosTexto;
+                        lblHorarios.Text = medico.HorariosTexto; // Este campo tiene <br/> para formato
 
-                        // Abrir modal usando Bootstrap 5 puro
+                        // Abrir modal usando la función JS definida en el ASPX, después de cargar los datos
                         ScriptManager.RegisterStartupScript(
                             this,
                             this.GetType(),
                             "PopupDetalles",
-                            "var myModal = new bootstrap.Modal(document.getElementById('modalDetallesMedico')); myModal.show();",
+                            "abrirModalVerDetalles();",
                             true
                         );
                     }
