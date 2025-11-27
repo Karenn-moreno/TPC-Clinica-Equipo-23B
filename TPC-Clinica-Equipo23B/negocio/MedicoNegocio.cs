@@ -193,7 +193,7 @@ namespace negocio
                 datos.cerrarConexion();
 
 
-                // GENERAR LOS CAMPOS DE TEXTO PARA EL MODAL (¡CLAVE!)
+                
                 // EspecialidadesTexto: Convierte la lista de especialidades en un string separado por comas
                 medico.EspecialidadesTexto = string.Join(", ", medico.MedicoEspecialidades
                     .Where(me => me.Especialidad != null)

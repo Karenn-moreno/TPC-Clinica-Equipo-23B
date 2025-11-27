@@ -127,41 +127,106 @@ namespace ClinicaWeb
         {
             try
             {
+                //Validaciones
+                List<string> errores = new List<string>();
+
+                // Campos obligatorios
+                if (string.IsNullOrWhiteSpace(txtNombre.Text))
+                    errores.Add("El nombre es obligatorio.");
+                if (string.IsNullOrWhiteSpace(txtApellido.Text))
+                    errores.Add("El apellido es obligatorio.");
+                if (string.IsNullOrWhiteSpace(txtDni.Text))
+                    errores.Add("El DNI es obligatorio.");
+                else if (!long.TryParse(txtDni.Text, out _))
+                    errores.Add("El DNI debe ser numérico.");
+
+                // Email válido
+                if (!string.IsNullOrWhiteSpace(txtEmail.Text))
+                {
+                    try
+                    {
+                        var addr = new System.Net.Mail.MailAddress(txtEmail.Text);
+                    }
+                    catch
+                    {
+                        errores.Add("Email inválido.");
+                    }
+                }
+
+                // Teléfono válido
+                if (!string.IsNullOrWhiteSpace(txtTelefono.Text) && !System.Text.RegularExpressions.Regex.IsMatch(txtTelefono.Text, @"^\+?\d+$"))
+                    errores.Add("Teléfono inválido, solo números y opcional + inicial.");
+
+                // Horarios
+                if (HorariosTemp.Count == 0)
+                    errores.Add("Debe agregar al menos un horario de atención.");
+                else
+                {
+                    foreach (var j in HorariosTemp)
+                    {
+                        if (j.HorarioInicio >= j.HoraFin)
+                        {
+                            errores.Add($"Horario inválido para {j.DiaLaboral}: la hora de inicio debe ser menor a la hora de fin.");
+                        }
+                    }
+                }
+
+                // Mostrar errores si hay y salir
+                if (errores.Any())
+                {
+                    string mensaje = string.Join("\\n", errores);
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "Validaciones", $"mostrarMensajeError('{mensaje}');", true);
+                    return;
+                }
+
+                
+                
                 MedicoNegocio negocio = new MedicoNegocio();
                 Medico medico = new Medico
                 {
-                    Nombre = txtNombre.Text,
-                    Apellido = txtApellido.Text,
-                    Dni = txtDni.Text,
-                    Matricula = txtMatricula.Text,
-                    Email = txtEmail.Text,
-                    Telefono = txtTelefono.Text,
+                    Nombre = txtNombre.Text.Trim(),
+                    Apellido = txtApellido.Text.Trim(),
+                    Dni = txtDni.Text.Trim(),
+                    Matricula = txtMatricula.Text.Trim(),
+                    Email = txtEmail.Text.Trim(),
+                    Telefono = txtTelefono.Text.Trim(),
                     EspecialidadesTexto = string.Join(",", chkEspecialidades.Items.Cast<ListItem>().Where(i => i.Selected).Select(i => i.Value)),
                     JornadasLaborales = HorariosTemp
                 };
+
+                string mensajeExito = "";
 
                 if (!string.IsNullOrEmpty(hfIdMedicoEditar.Value)) // Edición
                 {
                     medico.IdPersona = int.Parse(hfIdMedicoEditar.Value);
                     negocio.Modificar(medico);
-
-                    ScriptManager.RegisterStartupScript(this, this.GetType(), "CerrarModalYMensaje",
-                        "$('#addMedicoModal').modal('hide'); alert('Médico modificado correctamente');", true);
+                    mensajeExito = "Médico modificado correctamente";
                 }
                 else // Nuevo
                 {
                     negocio.Agregar(medico);
-
-                    ScriptManager.RegisterStartupScript(this, this.GetType(), "CerrarModalYMensaje",
-                        "$('#addMedicoModal').modal('hide'); alert('Médico agregado correctamente');", true);
+                    mensajeExito = "Médico agregado correctamente";
                 }
 
+                // Limpiar formulario y recargar grilla
                 LimpiarFormulario();
                 CargarGrillaMedicos();
+
+                // ---------------------------
+                // CERRAR MODAL Y MOSTRAR MENSAJE
+                // ---------------------------
+                string scriptCerrar = $@"
+            var modalEl = document.getElementById('addMedicoModal');
+            var modal = bootstrap.Modal.getInstance(modalEl);
+            if(modal) {{ modal.hide(); }}
+            alert('{mensajeExito}');
+        ";
+                ScriptManager.RegisterStartupScript(upModalMedico, upModalMedico.GetType(), "CerrarModalYMensaje", scriptCerrar, true);
             }
             catch (Exception ex)
             {
-                Response.Write("<script>alert('Error al guardar el médico: " + ex.Message + "');</script>");
+                string mensaje = ex.Message.Replace("'", "").Replace("\n", " ");
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "ErrorUI", $"mostrarMensajeError('{mensaje}');", true);
             }
         }
 
