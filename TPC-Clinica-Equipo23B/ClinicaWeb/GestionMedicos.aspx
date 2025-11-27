@@ -80,6 +80,7 @@
                 <asp:UpdatePanel ID="upModalMedico" runat="server">
                     <ContentTemplate>
                         <div class="modal-body">
+                            <asp:HiddenField ID="hfIdMedicoEditar" runat="server" />
                             <!-- Formulario -->
                             <div class="row">
                                 <div class="col-md-6 mb-3">

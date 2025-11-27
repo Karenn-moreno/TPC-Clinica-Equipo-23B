@@ -104,6 +104,91 @@ namespace negocio
                 datos.cerrarConexion();
             }
         }
+        public Medico ObtenerPorId(int idMedico)
+        {
+            Medico medico = null;
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.setearConsulta(@"
+            SELECT P.IdPersona, P.Nombre, P.Apellido, P.Dni, P.Email, P.Telefono,
+                   M.Matricula
+            FROM Persona P
+            INNER JOIN Medico M ON P.IdPersona = M.IdMedico
+            WHERE P.IdPersona = @id
+        ");
+                datos.setearParametro("@id", idMedico);
+                datos.ejecutarLectura();
+
+                if (datos.Lector.Read())
+                {
+                    medico = new Medico
+                    {
+                        IdPersona = (int)datos.Lector["IdPersona"],
+                        Nombre = (string)datos.Lector["Nombre"],
+                        Apellido = (string)datos.Lector["Apellido"],
+                        Dni = datos.Lector["Dni"].ToString(),
+                        Email = datos.Lector["Email"] != DBNull.Value ? datos.Lector["Email"].ToString() : "",
+                        Telefono = datos.Lector["Telefono"] != DBNull.Value ? datos.Lector["Telefono"].ToString() : "",
+                        Matricula = datos.Lector["Matricula"] != DBNull.Value ? datos.Lector["Matricula"].ToString() : ""
+                    };
+                }
+
+                datos.cerrarConexion();
+
+                // cargar especialidades
+                datos = new AccesoDatos();
+                datos.setearConsulta(@"
+            SELECT ME.IdEspecialidad
+            FROM MedicoEspecialidad ME
+            WHERE ME.IdMedico = @id
+        ");
+                datos.setearParametro("@id", idMedico);
+                datos.ejecutarLectura();
+
+                while (datos.Lector.Read())
+                {
+                    medico.MedicoEspecialidades.Add(new MedicoEspecialidad
+                    {
+                        IdEspecialidad = (int)datos.Lector["IdEspecialidad"]
+                    });
+                }
+
+                datos.cerrarConexion();
+
+                // cargar horarios
+                datos = new AccesoDatos();
+                datos.setearConsulta(@"
+            SELECT IdJornada, DiaLaboral, HoraInicio, HoraFin
+            FROM JornadaLaboral
+            WHERE IdMedico = @id
+        ");
+                datos.setearParametro("@id", idMedico);
+                datos.ejecutarLectura();
+
+                while (datos.Lector.Read())
+                {
+                    medico.JornadasLaborales.Add(new JornadaLaboral
+                    {
+                        IdJornadaLaboral = (int)datos.Lector["IdJornada"],
+                        DiaLaboral = (DiaLaboral)Enum.Parse(typeof(DiaLaboral), datos.Lector["DiaLaboral"].ToString()),
+                        HorarioInicio = (TimeSpan)datos.Lector["HoraInicio"],
+                        HoraFin = (TimeSpan)datos.Lector["HoraFin"]
+                    });
+                }
+
+                return medico;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener médico por ID", ex);
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
 
         public void Eliminar(int idMedico)
         {
@@ -205,6 +290,73 @@ namespace negocio
                 datos.cerrarConexion();
             }
         }
+
+        public void Modificar(Medico medico)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                // Actualizar Persona
+                datos.setearConsulta(@"
+                    UPDATE Persona
+                    SET Nombre = @Nombre,
+                        Apellido = @Apellido,
+                        Dni = @Dni,
+                        Email = @Email,
+                        Telefono = @Telefono
+                    WHERE IdPersona = @IdPersona
+                ");
+                datos.setearParametro("@Nombre", medico.Nombre);
+                datos.setearParametro("@Apellido", medico.Apellido);
+                datos.setearParametro("@Dni", medico.Dni);
+                datos.setearParametro("@Email", string.IsNullOrEmpty(medico.Email) ? DBNull.Value : (object)medico.Email);
+                datos.setearParametro("@Telefono", string.IsNullOrEmpty(medico.Telefono) ? DBNull.Value : (object)medico.Telefono);
+                datos.setearParametro("@IdPersona", medico.IdPersona);
+                datos.ejecutarAccion();
+                datos.cerrarConexion();
+
+                // Actualizar Medico
+                datos = new AccesoDatos();
+                datos.setearConsulta(@"
+                    UPDATE Medico
+                    SET Matricula = @Matricula
+                    WHERE IdMedico = @IdMedico
+                ");
+                datos.setearParametro("@Matricula", string.IsNullOrEmpty(medico.Matricula) ? DBNull.Value : (object)medico.Matricula);
+                datos.setearParametro("@IdMedico", medico.IdPersona);
+                datos.ejecutarAccion();
+                datos.cerrarConexion();
+
+                // Eliminar especialidades existentes
+                datos = new AccesoDatos();
+                datos.setearConsulta("DELETE FROM MedicoEspecialidad WHERE IdMedico = @IdMedico");
+                datos.setearParametro("@IdMedico", medico.IdPersona);
+                datos.ejecutarAccion();
+                datos.cerrarConexion();
+
+                // Insertar nuevas especialidades
+                if (!string.IsNullOrEmpty(medico.EspecialidadesTexto))
+                {
+                    string[] especialidades = medico.EspecialidadesTexto.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var idEsp in especialidades)
+                    {
+                        AgregarEspecialidad(medico.IdPersona, Convert.ToInt32(idEsp.Trim()));
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al modificar médico", ex);
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+
+
 
         // Método modificado para recibir IdEspecialidad
         public void AgregarEspecialidad(int idMedico, int idEspecialidad)

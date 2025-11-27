@@ -58,8 +58,8 @@ namespace ClinicaWeb
                         // Marcar especialidades
                         foreach (ListItem item in chkEspecialidades.Items)
                         {
-                            item.Selected = medico.EspecialidadesTexto.Split(',')
-                                              .Contains(item.Value);
+                            int idEsp = int.Parse(item.Value);
+                            item.Selected = medico.MedicoEspecialidades.Any(me => me.IdEspecialidad == idEsp);
                         }
 
                         // Cargar horarios temporales para edición
@@ -81,7 +81,7 @@ namespace ClinicaWeb
                 }
                 else if (e.CommandName == "VerDetallesMedico")
                 {
-                    Medico medico = negocio.Listar().FirstOrDefault(m => m.IdPersona == idMedico);
+                    Medico medico = negocio.ObtenerPorId(idMedico);
                     if (medico != null)
                     {
                         lblNombre.Text = medico.Nombre;
@@ -128,18 +128,24 @@ namespace ClinicaWeb
                     JornadasLaborales = HorariosTemp
                 };
 
-                // Guardar nuevo médico
-                negocio.Agregar(medico);
+                if (!string.IsNullOrEmpty(hfIdMedicoEditar.Value)) // Edición
+                {
+                    medico.IdPersona = int.Parse(hfIdMedicoEditar.Value);
+                    negocio.Modificar(medico);
 
-                // Limpiar formulario y horarios temporales
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "CerrarModalYMensaje",
+                        "$('#addMedicoModal').modal('hide'); alert('Médico modificado correctamente');", true);
+                }
+                else // Nuevo
+                {
+                    negocio.Agregar(medico);
+
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "CerrarModalYMensaje",
+                        "$('#addMedicoModal').modal('hide'); alert('Médico agregado correctamente');", true);
+                }
+
                 LimpiarFormulario();
-
-                // Recargar grilla
                 CargarGrillaMedicos();
-
-                // Cerrar modal y mostrar mensaje
-                ScriptManager.RegisterStartupScript(this, this.GetType(), "CerrarModalYMensaje",
-                    "alert('Médico agregado correctamente con sus horarios'); $('#addMedicoModal').modal('hide');", true);
             }
             catch (Exception ex)
             {
