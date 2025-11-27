@@ -91,22 +91,62 @@ namespace ClinicaWeb
         protected void btnGuardarPaciente_Click(object sender, EventArgs e)
         {
             litModalError.Text = "";
+            List<string> errores = new List<string>();
+            DateTime fechaNacimiento = DateTime.MinValue;
+
+        
+            if (string.IsNullOrWhiteSpace(txtAddNombre.Text))
+                errores.Add("<li>El campo Nombre es obligatorio.</li>");
+            if (string.IsNullOrWhiteSpace(txtAddApellido.Text))
+                errores.Add("<li>El campo Apellido es obligatorio.</li>");
+            if (string.IsNullOrWhiteSpace(txtAddDNI.Text))
+                errores.Add("<li>El campo DNI es obligatorio.</li>");
+            if (string.IsNullOrWhiteSpace(txtAddNacimiento.Text))
+                errores.Add("<li>El campo Fecha de Nacimiento es obligatorio.</li>");
+
+
+            if (!string.IsNullOrWhiteSpace(txtAddDNI.Text))
+            {
+                if (txtAddDNI.Text.Length != 8 || !txtAddDNI.Text.All(char.IsDigit))
+                {
+                    errores.Add("<li>El DNI debe contener exactamente 8 dígitos.</li>");
+                }
+            }
+
+            if (!string.IsNullOrEmpty(txtAddNacimiento.Text))
+            {
+                if (!DateTime.TryParse(txtAddNacimiento.Text, out fechaNacimiento))
+                {
+                    errores.Add("<li>El formato de la Fecha de Nacimiento no es válido.</li>");
+                }
+                else if (fechaNacimiento >= DateTime.Today)
+                {
+                    errores.Add("<li>La Fecha de Nacimiento no puede ser hoy o una fecha futura.</li>");
+                }
+            }
+
+         
+            if (errores.Count > 0)
+            {
+                litModalError.Text = "<div class='alert alert-danger mb-3'><p class='fw-bold'>Por favor, corrija los siguientes errores:</p><ul style='list-style-type: disc; margin-left: 20px;'>" + string.Join("", errores) + "</ul></div>";
+                string script = "new bootstrap.Modal(document.getElementById('addPatientModal')).show();";
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "reabrirModal", script, true);
+                return;
+            }
+
             try
             {
 
                 Paciente nuevoPaciente = new Paciente();
 
-                nuevoPaciente.Nombre = txtAddNombre.Text;
-                nuevoPaciente.Apellido = txtAddApellido.Text;
-                nuevoPaciente.Dni = txtAddDNI.Text;
-                nuevoPaciente.Email = txtAddEmail.Text;
-                nuevoPaciente.Telefono = txtAddTelefono.Text;
-                nuevoPaciente.Localidad = txtAddDireccion.Text;
+                nuevoPaciente.Nombre = txtAddNombre.Text.Trim();
+                nuevoPaciente.Apellido = txtAddApellido.Text.Trim();
+                nuevoPaciente.Dni = txtAddDNI.Text.Trim();
+                nuevoPaciente.Email = string.IsNullOrEmpty(txtAddEmail.Text) ? null : txtAddEmail.Text.Trim();
+                nuevoPaciente.Telefono = string.IsNullOrEmpty(txtAddTelefono.Text) ? null : txtAddTelefono.Text.Trim();
+                nuevoPaciente.Localidad = string.IsNullOrEmpty(txtAddDireccion.Text) ? null : txtAddDireccion.Text.Trim();
 
-                if (!string.IsNullOrEmpty(txtAddNacimiento.Text))
-                {
-                    nuevoPaciente.FechaNacimiento = DateTime.Parse(txtAddNacimiento.Text);
-                }
+                nuevoPaciente.FechaNacimiento = fechaNacimiento;
 
 
                 PacienteNegocio negocio = new PacienteNegocio();
@@ -114,14 +154,17 @@ namespace ClinicaWeb
 
 
                 CargarGrillaPacientes();
-
-
                 LimpiarModal();
+
+                string scriptCerrar = "var myModalEl = document.getElementById('addPatientModal'); var modal = bootstrap.Modal.getInstance(myModalEl); modal.hide(); limpiarFondosResiduales(); alert('Paciente agregado correctamente.');";
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "cerrarModalExito", scriptCerrar, true);
             }
             catch (Exception ex)
             {
-
-                string errorScript = $"<div class='alert alert-danger'>{ex.Message}</div>";
+                string mensajeError = "Error al guardar: " + ex.Message.Replace("'", "").Replace("\n", " ");
+                litModalError.Text = $"<div class='alert alert-danger'>{mensajeError}</div>";
+                string script = "new bootstrap.Modal(document.getElementById('addPatientModal')).show();";
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "reabrirModalErrorNegocio", script, true);
             }
         }
 
@@ -201,27 +244,92 @@ namespace ClinicaWeb
 
         protected void btnGuardarEdicion_Click(object sender, EventArgs e)
         {
+            List<string> errores = new List<string>();
+            DateTime fechaNacimiento = DateTime.MinValue;
+            int idPaciente;
+
+
+            if (!int.TryParse(hfIdPacienteEditar.Value, out idPaciente))
+            {
+                errores.Add("<li>Error al obtener el ID del paciente para editar.</li>");
+            }
+
+     
+            if (string.IsNullOrWhiteSpace(txtEditNombre.Text))
+                errores.Add("<li>El campo Nombre es obligatorio.</li>");
+            if (string.IsNullOrWhiteSpace(txtEditApellido.Text))
+                errores.Add("<li>El campo Apellido es obligatorio.</li>");
+            if (string.IsNullOrWhiteSpace(txtEditDNI.Text))
+                errores.Add("<li>El campo DNI es obligatorio.</li>");
+            if (string.IsNullOrWhiteSpace(txtEditNacimiento.Text))
+                errores.Add("<li>El campo Fecha de Nacimiento es obligatorio.</li>");
+
+          
+            if (!string.IsNullOrWhiteSpace(txtEditDNI.Text))
+            {
+                if (txtEditDNI.Text.Length != 8 || !txtEditDNI.Text.All(char.IsDigit))
+                {
+                    errores.Add("<li>El DNI debe contener exactamente 8 dígitos.</li>");
+                }
+            }
+
+            if (!string.IsNullOrEmpty(txtEditNacimiento.Text))
+            {
+                if (!DateTime.TryParse(txtEditNacimiento.Text, out fechaNacimiento))
+                {
+                    errores.Add("<li>El formato de la Fecha de Nacimiento no es válido.</li>");
+                }
+                else if (fechaNacimiento >= DateTime.Today)
+                {
+                    errores.Add("<li>La Fecha de Nacimiento no puede ser hoy o una fecha futura.</li>");
+                }
+            }
+
+
+            if (errores.Count > 0)
+            {
+                string mensaje = "Por favor, corrija los siguientes errores:<ul style='text-align: left;'>" + string.Join("", errores) + "</ul>";
+
+                string script = $@"
+                    var modalEditEl = document.getElementById('editPatientModal');
+                    var modalEditInstance = bootstrap.Modal.getInstance(modalEditEl);
+                    if (modalEditInstance) {{ modalEditInstance.hide(); }}
+                    mostrarMensajeError('{mensaje}');
+                    limpiarFondosResiduales();";
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "ErrorValidacionEdicion", script, true);
+                return;
+            }
+
             try
             {
                 dominio.Paciente pacienteModificado = new dominio.Paciente();
-                pacienteModificado.IdPersona = int.Parse(hfIdPacienteEditar.Value);
+                pacienteModificado.IdPersona = idPaciente;
+                pacienteModificado.Nombre = txtEditNombre.Text.Trim();
+                pacienteModificado.Apellido = txtEditApellido.Text.Trim();
+                pacienteModificado.Dni = txtEditDNI.Text.Trim();
+                pacienteModificado.Email = string.IsNullOrEmpty(txtEditEmail.Text) ? null : txtEditEmail.Text.Trim();
+                pacienteModificado.Telefono = string.IsNullOrEmpty(txtEditTelefono.Text) ? null : txtEditTelefono.Text.Trim();
+                pacienteModificado.Localidad = string.IsNullOrEmpty(txtEditDireccion.Text) ? null : txtEditDireccion.Text.Trim();
 
-                pacienteModificado.Nombre = txtEditNombre.Text;
-                pacienteModificado.Apellido = txtEditApellido.Text;
-                pacienteModificado.Dni = txtEditDNI.Text;
-                pacienteModificado.Email = txtEditEmail.Text;
-                pacienteModificado.Telefono = txtEditTelefono.Text;
-                pacienteModificado.Localidad = txtEditDireccion.Text;
-                pacienteModificado.FechaNacimiento = DateTime.Parse(txtEditNacimiento.Text);
+                pacienteModificado.FechaNacimiento = fechaNacimiento;
 
                 negocio.PacienteNegocio negocio = new negocio.PacienteNegocio();
                 negocio.Modificar(pacienteModificado);
-                Response.Redirect(Request.RawUrl);
+
+                CargarGrillaPacientes();
+                string scriptExito = "var myModalEl = document.getElementById('editPatientModal'); var modal = bootstrap.Modal.getInstance(myModalEl); modal.hide(); limpiarFondosResiduales(); alert('Paciente modificado correctamente.');";
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "cerrarModalExito", scriptExito, true);
             }
             catch (Exception ex)
             {
-                Session.Add("error", "Error al modificar: " + ex.Message);
-                string script = $"alert('ERROR AL GUARDAR: {ex.Message}');";
+               
+                string mensajeError = "Error al guardar: " + ex.Message.Replace("'", "").Replace("\n", " ");
+                string script = $@"
+                    var modalEditEl = document.getElementById('editPatientModal');
+                    var modalEditInstance = bootstrap.Modal.getInstance(modalEditEl);
+                    if (modalEditInstance) {{ modalEditInstance.hide(); }}
+                    mostrarMensajeError('{mensajeError}');
+                    limpiarFondosResiduales();";
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "ErrorAlert", script, true);
             }
         }
