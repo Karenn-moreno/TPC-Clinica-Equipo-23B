@@ -78,9 +78,44 @@
             </asp:Panel>
 
             <div class="mt-4">
-                <button class="btn btn-secondary btn-sm" type="button">Cambiar Contraseña</button>
+                <asp:LinkButton ID="btnCambiarPassword" runat="server"
+                    CssClass="btn btn-secondary btn-sm"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalCambioPassword"
+                    CausesValidation="false"
+                    UseSubmitBehavior="false"
+                    formnovalidate="">Cambiar Contraseña</asp:LinkButton>
             </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modalCambioPassword" tabindex="-1" aria-labelledby="modalCambioPasswordLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalCambioPasswordLabel">Cambiar Contraseña</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <asp:Literal ID="litErrorCambioPassword" runat="server" EnableViewState="false" />
 
+                    <div class="mb-3">
+                        <label class="form-label">Contraseña Actual</label>
+                        <asp:TextBox ID="txtPasswordActual" runat="server" CssClass="form-control" TextMode="Password"></asp:TextBox>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Nueva Contraseña</label>
+                        <asp:TextBox ID="txtPasswordNueva" runat="server" CssClass="form-control" TextMode="Password"></asp:TextBox>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Confirmar Nueva Contraseña</label>
+                        <asp:TextBox ID="txtPasswordConfirmacion" runat="server" CssClass="form-control" TextMode="Password"></asp:TextBox>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <asp:Button ID="btnGuardarPassword" runat="server" Text="Guardar Cambios" CssClass="btn btn-primary" OnClick="btnGuardarPassword_Click" />
+                </div>
+            </div>
         </div>
     </div>
 </asp:Content>

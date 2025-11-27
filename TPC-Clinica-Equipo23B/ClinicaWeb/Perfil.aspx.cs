@@ -57,5 +57,76 @@ namespace ClinicaWeb
             }
         }
 
-    }
+        protected void btnGuardarPassword_Click(object sender, EventArgs e)
+        {
+            if (litErrorCambioPassword != null)
+                litErrorCambioPassword.Text = "";
+
+            Usuario user = (Usuario)Session["usuario"];
+            UsuarioNegocio negocio = new UsuarioNegocio();
+            List<string> errores = new List<string>();
+
+            string currentPass = txtPasswordActual.Text.Trim();
+            string newPass = txtPasswordNueva.Text.Trim();
+            string confirmPass = txtPasswordConfirmacion.Text.Trim();
+
+           
+            if (string.IsNullOrEmpty(currentPass))
+                errores.Add("<li>Debe ingresar su contraseña actual.</li>");
+            if (string.IsNullOrEmpty(newPass))
+                errores.Add("<li>Debe ingresar la nueva contraseña.</li>");
+            if (string.IsNullOrEmpty(confirmPass))
+                errores.Add("<li>Debe confirmar la nueva contraseña.</li>");
+            if (newPass.Length > 0 && newPass.Length < 6)
+                errores.Add("<li>La nueva contraseña debe tener al menos 6 caracteres.</li>");
+            if (newPass != confirmPass)
+                errores.Add("<li>La nueva contraseña y la confirmación no coinciden.</li>");
+
+
+            if (errores.Any())
+            {
+                MostrarErrorPassword(errores);
+                return;
+            }
+
+            try
+            {
+        
+                if (!negocio.VerificarPassword(user.IdPersona, currentPass))
+                {
+                    errores.Add("<li>La contraseña actual ingresada es incorrecta.</li>");
+                    MostrarErrorPassword(errores);
+                    return;
+                }
+
+                
+                negocio.ModificarPassword(user.IdPersona, newPass);
+
+                Session.Clear();
+                Session.Abandon();
+
+                Session.Add("registroExitoso", "Contraseña modificada con éxito. Por favor, ingrese con su nueva contraseña.");
+                Response.Redirect("Login.aspx", false);
+
+            }
+            catch (Exception ex)
+            {
+                errores.Add("<li>Ocurrió un error al intentar modificar la contraseña. Por favor, intente más tarde. Detalles: " + ex.Message + "</li>");
+                MostrarErrorPassword(errores);
+            }
+        }
+
+        private void MostrarErrorPassword(List<string> errores)
+        {
+            if (litErrorCambioPassword != null)
+            {
+                litErrorCambioPassword.Text = "<div class='alert alert-danger mb-3'><p class='fw-bold'>Por favor, corrija los siguientes errores:</p><ul style='list-style-type: disc; margin-left: 20px;'>" + string.Join("", errores) + "</ul></div>";
+
+    
+                string script = "var myModal = new bootstrap.Modal(document.getElementById('modalCambioPassword')); myModal.show();";
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "reabrirModalPass", script, true);
+            }
+        }
+
+}
 }

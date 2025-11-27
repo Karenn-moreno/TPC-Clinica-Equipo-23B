@@ -246,6 +246,48 @@ namespace negocio
                 datos.cerrarConexion();
             }
         }
-    
-}
+        public bool VerificarPassword(int idUsuario, string password)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                datos.setearConsulta("SELECT IdUsuario FROM Usuario WHERE IdUsuario = @IdUsuario AND Password = @Password");
+                datos.setearParametro("@IdUsuario", idUsuario);
+                datos.setearParametro("@Password", password);
+
+                datos.ejecutarLectura();
+
+                return datos.Lector.Read();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al verificar la contraseña.", ex);
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+        public void ModificarPassword(int idUsuario, string nuevaPassword)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                datos.setearConsulta("UPDATE Usuario SET Password = @NuevaPassword WHERE IdUsuario = @IdUsuario");
+                datos.setearParametro("@NuevaPassword", nuevaPassword);
+                datos.setearParametro("@IdUsuario", idUsuario);
+                datos.ejecutarAccion();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al modificar la contraseña.", ex);
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+    }
 }

@@ -47,10 +47,6 @@
                         <div class="mb-3">
                             <asp:Literal ID="litErrorLogin" runat="server" EnableViewState="false" />
                         </div>
-
-                        <div class="text-end mb-4">
-                            <a class="small" href="#">¿Olvidaste tu contraseña?</a>
-                        </div>
                         <div class="d-grid">
                             <asp:Button ID="btnIngresar" runat="server" CssClass="btn btn-primary btn-lg fw-semibold" Text="Iniciar sesión" OnClick="btnIngresar_Click" />
                         </div>
