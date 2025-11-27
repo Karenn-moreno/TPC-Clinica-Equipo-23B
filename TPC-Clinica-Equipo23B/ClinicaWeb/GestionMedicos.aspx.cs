@@ -68,8 +68,8 @@ namespace ClinicaWeb
                         // Marcar especialidades
                         foreach (ListItem item in chkEspecialidades.Items)
                         {
-                            int idEsp = int.Parse(item.Value);
-                            item.Selected = medico.MedicoEspecialidades.Any(me => me.IdEspecialidad == idEsp);
+                            item.Selected = medico.EspecialidadesTexto.Split(',')
+                                              .Contains(item.Value);
                         }
 
                         // Cargar horarios temporales para edición
@@ -91,7 +91,7 @@ namespace ClinicaWeb
                 }
                 else if (e.CommandName == "VerDetallesMedico")
                 {
-                    Medico medico = negocio.ObtenerPorId(idMedico);
+                    Medico medico = negocio.Listar().FirstOrDefault(m => m.IdPersona == idMedico);
                     if (medico != null)
                     {
                         lblNombre.Text = medico.Nombre;

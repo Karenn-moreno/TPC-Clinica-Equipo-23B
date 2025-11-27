@@ -214,7 +214,7 @@ namespace negocio
                 datos.cerrarConexion();
             }
         }
-        
+
         public void Agregar(Medico nuevo)
         {
             AccesoDatos datos = new AccesoDatos();
@@ -238,7 +238,7 @@ namespace negocio
                 if (datos.Lector.Read())
                     idPersona = Convert.ToInt32(datos.Lector["IdNuevo"]);
 
-              
+
                 nuevo.IdPersona = idPersona;
 
                 datos.cerrarConexion();
@@ -403,13 +403,13 @@ namespace negocio
             }
         }
 
-       
+
         public void EliminarLogico(int idMedico)
         {
             AccesoDatos datos = new AccesoDatos();
             try
             {
-               
+
                 datos.setearConsulta(@"SELECT COUNT(*) FROM Turno 
                                WHERE IdMedico = @Id 
                                AND FechaHoraInicio >= CAST(GETDATE() AS DATE)
@@ -429,7 +429,7 @@ namespace negocio
                 }
                 datos.cerrarConexion();
 
-                
+
                 datos = new AccesoDatos();
                 datos.setearConsulta("UPDATE Persona SET Activo = 0 WHERE IdPersona = @Id");
                 datos.setearParametro("@Id", idMedico);
@@ -445,7 +445,7 @@ namespace negocio
             }
         }
 
-        
+
         public void Reactivar(int idMedico)
         {
             AccesoDatos datos = new AccesoDatos();
