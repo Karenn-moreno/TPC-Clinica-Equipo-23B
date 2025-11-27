@@ -154,7 +154,7 @@ namespace negocio
                 datos.ejecutarAccion();
                 datos.cerrarConexion();
 
-                // 2. Actualizar la tabla Paciente
+                // Actualizar la tabla Paciente
                 datos = new AccesoDatos();
                 datos.setearConsulta("UPDATE Paciente SET FechaNacimiento = @FechaNacimiento WHERE IdPaciente = @Id");
                 
@@ -180,7 +180,7 @@ namespace negocio
             }
         }
 
-        // 4. ELIMINAR
+        // ELIMINAR
         public void EliminarFisico(int id)
         {
             AccesoDatos datos = new AccesoDatos();

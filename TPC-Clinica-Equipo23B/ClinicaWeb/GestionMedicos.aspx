@@ -13,8 +13,8 @@
                 <h1 class="text-dark h3 fw-bold mb-0">Gestión de Médicos</h1>
                 <p class="text-secondary mb-0">Administra los médicos de la clínica de forma rápida y sencilla.</p>
             </div>
-            <button class="btn btn-primary btn-sm d-flex align-items-center gap-2" 
-                    onclick="abrirModalAgregarEditar();" type="button">
+            <button class="btn btn-primary btn-sm d-flex align-items-center gap-2"
+                onclick="abrirModalAgregarEditar();" type="button">
                 <span class="material-symbols-outlined">add</span>
                 <span>Nuevo Médico</span>
             </button>
@@ -59,15 +59,67 @@
                                 <!-- ELIMINAR -->
                                 <asp:LinkButton ID="btnEliminar" runat="server"
                                     CssClass="btn btn-sm btn-outline-danger ms-2"
-                                    CommandName="EliminarMedico"
-                                    CommandArgument='<%# Eval("IdPersona") %>'
-                                    OnClientClick="return confirm('¿Seguro que desea eliminar este médico?');">
-                                    <span class="material-symbols-outlined fs-6">delete</span>
+                                    OnClientClick='<%# "abrirModalEliminar(" + Eval("IdPersona") + "); return false;" %>'>
+                                            <span class="material-symbols-outlined fs-6">delete</span>
                                 </asp:LinkButton>
                             </ItemTemplate>
                         </asp:TemplateField>
                     </Columns>
                 </asp:GridView>
+            </div>
+        </div>
+    </div>
+
+    <asp:HiddenField ID="hfIdMedicoEliminar" runat="server" />
+
+    <asp:HiddenField ID="HiddenField1" runat="server" />
+
+    <div class="modal fade" id="modalConfirmarEliminar" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">
+                        <span class="material-symbols-outlined align-middle me-2">warning</span>
+                        Confirmar Eliminación
+                            </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Está seguro que desea dar de baja este registro?</p>
+                    <p class="text-muted small">Esta accion deshabilitara el registro</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+
+                    <asp:Button ID="btnConfirmarEliminar" runat="server" Text="Dar de Baja"
+                        CssClass="btn btn-danger" OnClick="btnConfirmarEliminar_Click"
+                        CausesValidation="false" UseSubmitBehavior="false" formnovalidate="" />
+
+                    <asp:Button ID="btnEliminarFisico" runat="server" Text="Eliminar Definitivamente"
+                        CssClass="btn btn-danger" OnClick="btnEliminarFisico_Click"
+                        Style="display: none"
+                        CausesValidation="false" UseSubmitBehavior="false" formnovalidate="" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="errorModalLabel">
+                        <span class="material-symbols-outlined align-middle me-2">error</span>
+                        Atención
+                            </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="mensajeErrorBody" class="fs-5 text-center"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
             </div>
         </div>
     </div>
@@ -179,22 +231,30 @@
                 </div>
                 <div class="modal-body">
                     <div class="row mb-2">
-                        <div class="col-md-6"><strong>Nombre:</strong> <asp:Label ID="lblNombre" runat="server" /></div>
-                        <div class="col-md-6"><strong>Apellido:</strong> <asp:Label ID="lblApellido" runat="server" /></div>
+                        <div class="col-md-6"><strong>Nombre:</strong>
+                            <asp:Label ID="lblNombre" runat="server" /></div>
+                        <div class="col-md-6"><strong>Apellido:</strong>
+                            <asp:Label ID="lblApellido" runat="server" /></div>
                     </div>
                     <div class="row mb-2">
-                        <div class="col-md-6"><strong>DNI:</strong> <asp:Label ID="lblDni" runat="server" /></div>
-                        <div class="col-md-6"><strong>Matrícula:</strong> <asp:Label ID="lblMatricula" runat="server" /></div>
+                        <div class="col-md-6"><strong>DNI:</strong>
+                            <asp:Label ID="lblDni" runat="server" /></div>
+                        <div class="col-md-6"><strong>Matrícula:</strong>
+                            <asp:Label ID="lblMatricula" runat="server" /></div>
                     </div>
                     <div class="row mb-2">
-                        <div class="col-md-6"><strong>Email:</strong> <asp:Label ID="lblEmail" runat="server" /></div>
-                        <div class="col-md-6"><strong>Teléfono:</strong> <asp:Label ID="lblTelefono" runat="server" /></div>
+                        <div class="col-md-6"><strong>Email:</strong>
+                            <asp:Label ID="lblEmail" runat="server" /></div>
+                        <div class="col-md-6"><strong>Teléfono:</strong>
+                            <asp:Label ID="lblTelefono" runat="server" /></div>
                     </div>
                     <div class="row mb-2">
-                        <div class="col-md-12"><strong>Especialidades:</strong> <asp:Label ID="lblEspecialidades" runat="server" /></div>
+                        <div class="col-md-12"><strong>Especialidades:</strong>
+                            <asp:Label ID="lblEspecialidades" runat="server" /></div>
                     </div>
                     <div class="row mb-2">
-                        <div class="col-md-12"><strong>Horarios:</strong> <asp:Label ID="lblHorarios" runat="server" /></div>
+                        <div class="col-md-12"><strong>Horarios:</strong>
+                            <asp:Label ID="lblHorarios" runat="server" /></div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -241,6 +301,25 @@
             }
             myModal.show();
         }
+
+        function abrirModalEliminar(idMedico) {
+            limpiarFondosResiduales();
+            var hiddenField = document.getElementById('<%= hfIdMedicoEliminar.ClientID %>');
+            hiddenField.value = idMedico;
+            var myModal = new bootstrap.Modal(document.getElementById('modalConfirmarEliminar'));
+            myModal.show();
+        }
+
+        function mostrarMensajeError(mensaje) {
+            document.getElementById('mensajeErrorBody').innerText = mensaje;
+            var myModal = new bootstrap.Modal(document.getElementById('errorModal'));
+            myModal.show();
+        }
+
+        var prm = Sys.WebForms.PageRequestManager.getInstance();
+        prm.add_endRequest(function (sender, args) {
+            limpiarFondosResiduales();
+        });
     </script>
 
 </asp:Content>

@@ -159,9 +159,8 @@ CREATE INDEX IX_UsuarioRol_IdUsuario ON UsuarioRol(IdUsuario);
 INSERT INTO Persona (Nombre, Apellido, Dni, Email, Telefono, Localidad)
 VALUES ('Juan', 'Perez', '12345678', 'juan.perez@ejemplo.com', '1122334455', 'Buenos Aires');
 
--- Insertar otra persona solo con los campos obligatorios
-INSERT INTO Persona (Nombre, Apellido, Dni)
-VALUES ('Maria', 'Gomez', '87654321');
+INSERT INTO Persona (Nombre, Apellido, Dni, Email)
+VALUES ('Maria', 'Gomez', '87654321', 'maria.gomez@recepcion.com');
 
 -- Insertar una persona que podría ser un médico (luego se referenciará en Medico/Usuario)
 INSERT INTO Persona (Nombre, Apellido, Dni, Email)
@@ -190,6 +189,10 @@ VALUES (6, 'passmedico456');
 -- Asignamos a Juan Perez (IdPersona = 1) como un usuario administrativo
 INSERT INTO Usuario (IdUsuario, Password)
 VALUES (1, 'passadmin789');
+
+-- Asignamos a Maria Gomez(IdPersona = 2) como un recepcionista
+INSERT INTO Usuario (IdUsuario, Password)
+VALUES (2, 'passrecepcionista');
 
 -- ======================================
 -- Insertar datos en la tabla Medico
@@ -258,6 +261,9 @@ INSERT INTO UsuarioRol (IdUsuario, IdRol) VALUES (3, 2);
 
 -- Anahi Gimenez (IdUsuario = 6) es Medico (2)
 INSERT INTO UsuarioRol (IdUsuario, IdRol) VALUES (6, 2);
+
+-- Maria Gomez (IdUsuario = 2) es Recepcionista (3)
+INSERT INTO UsuarioRol (IdUsuario, IdRol) VALUES (2, 3);
 
 
 -- ======================================

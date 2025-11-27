@@ -16,6 +16,7 @@ namespace negocio
             AccesoDatos datos = new AccesoDatos();
             try
             {
+                // Se modificó la consulta para incluir WHERE P.Activo = 1
                 datos.setearConsulta(@"
                     SELECT 
                         P.IdPersona, P.Nombre, P.Apellido, P.Email, P.Telefono,
@@ -65,6 +66,7 @@ namespace negocio
                         ) AS JL
                         LEFT JOIN TurnoDeTrabajo TT ON JL.IdTurnoTrabajo = TT.IdTurnoTrabajo
                     ) AS J
+                    WHERE P.Activo = 1 -- FILTRO PARA MOSTRAR SÓLO MÉDICOS ACTIVOS
                 ");
 
                 datos.ejecutarLectura();
@@ -111,7 +113,7 @@ namespace negocio
 
             try
             {
-                // 1. CARGA DE DATOS PRINCIPALES (Persona y Médico)
+                // CARGA DE DATOS PRINCIPALES (Persona y Médico)
                 datos.setearConsulta(@"
             SELECT P.IdPersona, P.Nombre, P.Apellido, P.Dni, P.Email, P.Telefono,
                    M.Matricula
@@ -142,7 +144,7 @@ namespace negocio
                 if (medico == null)
                     return null;
 
-                // 2. CARGAR ESPECIALIDADES
+                // CARGAR ESPECIALIDADES
                 EspecialidadNegocio espNegocio = new EspecialidadNegocio();
                 List<Especialidad> listaEspecialidades = espNegocio.listar(); // Obtener la lista de nombres
 
@@ -168,7 +170,7 @@ namespace negocio
                 datos.cerrarConexion();
 
 
-                // 3. CARGAR HORARIOS
+                //CARGAR HORARIOS
                 datos = new AccesoDatos();
                 datos.setearConsulta(@"
             SELECT IdJornada, DiaLaboral, HoraInicio, HoraFin
@@ -191,13 +193,13 @@ namespace negocio
                 datos.cerrarConexion();
 
 
-                // 4. GENERAR LOS CAMPOS DE TEXTO PARA EL MODAL (¡CLAVE!)
-                // a) EspecialidadesTexto: Convierte la lista de especialidades en un string separado por comas
+                // GENERAR LOS CAMPOS DE TEXTO PARA EL MODAL (¡CLAVE!)
+                // EspecialidadesTexto: Convierte la lista de especialidades en un string separado por comas
                 medico.EspecialidadesTexto = string.Join(", ", medico.MedicoEspecialidades
                     .Where(me => me.Especialidad != null)
                     .Select(me => me.Especialidad.Nombre));
 
-                // b) HorariosTexto: Convierte la lista de jornadas en un string con saltos de línea (<br>)
+                // HorariosTexto: Convierte la lista de jornadas en un string con saltos de línea
                 medico.HorariosTexto = string.Join("<br>", medico.JornadasLaborales.Select(j =>
                     $"{j.DiaLaboral}: {j.HorarioInicio:hh\\:mm} - {j.HoraFin:hh\\:mm}"));
 
@@ -212,42 +214,7 @@ namespace negocio
                 datos.cerrarConexion();
             }
         }
-        public void Eliminar(int idMedico)
-        {
-            AccesoDatos datos = new AccesoDatos();
-            try
-            {
-                datos.setearConsulta("DELETE FROM MedicoEspecialidad WHERE IdMedico = @id");
-                datos.setearParametro("@id", idMedico);
-                datos.ejecutarAccion();
-
-                datos.setearConsulta("DELETE FROM JornadaLaboral WHERE IdMedico = @id");
-                datos.setearParametro("@id", idMedico);
-                datos.ejecutarAccion();
-
-                datos.setearConsulta("DELETE FROM Medico WHERE IdMedico = @id");
-                datos.setearParametro("@id", idMedico);
-                datos.ejecutarAccion();
-
-                datos.setearConsulta("DELETE FROM Usuario WHERE IdUsuario = @id");
-                datos.setearParametro("@id", idMedico);
-                datos.ejecutarAccion();
-
-                datos.setearConsulta("DELETE FROM Persona WHERE IdPersona = @id");
-                datos.setearParametro("@id", idMedico);
-                datos.ejecutarAccion();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error al eliminar médico", ex);
-            }
-            finally
-            {
-                datos.cerrarConexion();
-            }
-        }
-
-
+        
         public void Agregar(Medico nuevo)
         {
             AccesoDatos datos = new AccesoDatos();
@@ -271,7 +238,7 @@ namespace negocio
                 if (datos.Lector.Read())
                     idPersona = Convert.ToInt32(datos.Lector["IdNuevo"]);
 
-                // **IMPORTANTE:** asignar IdPersona al objeto
+              
                 nuevo.IdPersona = idPersona;
 
                 datos.cerrarConexion();
@@ -377,9 +344,6 @@ namespace negocio
             }
         }
 
-
-
-
         // Método modificado para recibir IdEspecialidad
         public void AgregarEspecialidad(int idMedico, int idEspecialidad)
         {
@@ -397,6 +361,103 @@ namespace negocio
             catch (Exception ex)
             {
                 throw new Exception("Error al agregar especialidad al médico", ex);
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+        public void EliminarFisico(int idMedico)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                datos.setearConsulta("DELETE FROM MedicoEspecialidad WHERE IdMedico = @id");
+                datos.setearParametro("@id", idMedico);
+                datos.ejecutarAccion();
+
+                datos.setearConsulta("DELETE FROM JornadaLaboral WHERE IdMedico = @id");
+                datos.setearParametro("@id", idMedico);
+                datos.ejecutarAccion();
+
+                datos.setearConsulta("DELETE FROM Medico WHERE IdMedico = @id");
+                datos.setearParametro("@id", idMedico);
+                datos.ejecutarAccion();
+
+                datos.setearConsulta("DELETE FROM Usuario WHERE IdUsuario = @id");
+                datos.setearParametro("@id", idMedico);
+                datos.ejecutarAccion();
+
+                datos.setearConsulta("DELETE FROM Persona WHERE IdPersona = @id");
+                datos.setearParametro("@id", idMedico);
+                datos.ejecutarAccion();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al eliminar médico FÍSICAMENTE", ex);
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+       
+        public void EliminarLogico(int idMedico)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+               
+                datos.setearConsulta(@"SELECT COUNT(*) FROM Turno 
+                               WHERE IdMedico = @Id 
+                               AND FechaHoraInicio >= CAST(GETDATE() AS DATE)
+                               AND EstadoTurno NOT IN ('Cancelado', 'Cerrado', 'NoAsistio')");
+
+                datos.setearParametro("@Id", idMedico);
+                datos.ejecutarLectura();
+
+                if (datos.Lector.Read())
+                {
+                    int turnosPendientes = (int)datos.Lector[0];
+
+                    if (turnosPendientes > 0)
+                    {
+                        throw new Exception("No se puede dar de baja: El médico tiene turnos futuros pendientes.");
+                    }
+                }
+                datos.cerrarConexion();
+
+                
+                datos = new AccesoDatos();
+                datos.setearConsulta("UPDATE Persona SET Activo = 0 WHERE IdPersona = @Id");
+                datos.setearParametro("@Id", idMedico);
+                datos.ejecutarAccion();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+        
+        public void Reactivar(int idMedico)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                datos.setearConsulta("UPDATE Persona SET Activo = 1 WHERE IdPersona = @Id");
+                datos.setearParametro("@Id", idMedico);
+                datos.ejecutarAccion();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
             finally
             {

@@ -13,6 +13,7 @@ namespace ClinicaWeb
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            ConfigurarPermisosBaja();
             if (!IsPostBack)
             {
                 CargarEspecialidades();
@@ -20,6 +21,15 @@ namespace ClinicaWeb
             }
         }
 
+        private void ConfigurarPermisosBaja()
+        {
+            btnEliminarFisico.Style.Add("display", "none");
+
+            if (Session["rol"] != null && Session["rol"].ToString().ToUpper() == "ADMINISTRADOR")
+            {
+                btnEliminarFisico.Style.Remove("display");
+            }
+        }
         private void CargarGrillaMedicos()
         {
             try
@@ -74,9 +84,9 @@ namespace ClinicaWeb
                 }
                 else if (e.CommandName == "EliminarMedico")
                 {
-                    negocio.Eliminar(idMedico);
+                    negocio.EliminarLogico(idMedico);
                     ClientScript.RegisterStartupScript(this.GetType(), "alert",
-                        "alert('Médico eliminado correctamente');", true);
+                        "alert('Médico dado de baja (lógica) correctamente');", true);
                     CargarGrillaMedicos();
                 }
                 else if (e.CommandName == "VerDetallesMedico")
@@ -106,8 +116,10 @@ namespace ClinicaWeb
             }
             catch (Exception ex)
             {
-                ClientScript.RegisterStartupScript(this.GetType(), "error",
-                    $"alert('Error al procesar la acción: {ex.Message}');", true);
+                string mensaje = ex.Message.Replace("'", "").Replace("\n", " ");
+
+                string script = $"mostrarMensajeError('{mensaje}');";
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "ErrorUI", script, true);
             }
         }
 
@@ -226,6 +238,60 @@ namespace ClinicaWeb
                 HorariosTemp.RemoveAt(index);
                 gvHorariosTemp.DataSource = HorariosTemp;
                 gvHorariosTemp.DataBind();
+            }
+        }
+
+        protected void btnConfirmarEliminar_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                int idMedico = Convert.ToInt32(hfIdMedicoEliminar.Value);
+                MedicoNegocio negocio = new MedicoNegocio();
+
+                negocio.EliminarLogico(idMedico);
+
+                CargarGrillaMedicos();
+                string scriptCerrar = "var myModalEl = document.getElementById('modalConfirmarEliminar'); var modal = bootstrap.Modal.getInstance(myModalEl); modal.hide(); limpiarFondosResiduales();";
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "cerrarModal", scriptCerrar, true);
+            }
+            catch (Exception ex)
+            {
+                string mensaje = ex.Message.Replace("'", "").Replace("\n", " ");
+
+                string script = $@"
+                    var modalEl = document.getElementById('modalConfirmarEliminar');
+                    var modalInstance = bootstrap.Modal.getInstance(modalEl);
+                    if (modalInstance) {{ modalInstance.hide(); }}
+                    mostrarMensajeError('{mensaje}');";
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "ErrorUI", script, true);
+            }
+        }
+
+        protected void btnEliminarFisico_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                int idMedico = Convert.ToInt32(hfIdMedicoEliminar.Value);
+                MedicoNegocio negocio = new MedicoNegocio();
+
+                // Lógica de eliminación física (solo Admin)
+                negocio.EliminarFisico(idMedico);
+
+                CargarGrillaMedicos();
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "cerrarModal", "var myModalEl = document.getElementById('modalConfirmarEliminar'); var modal = bootstrap.Modal.getInstance(myModalEl); modal.hide(); limpiarFondosResiduales();", true);
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "alertExito", "alert('El registro fue eliminado definitivamente de la base de datos.');", true);
+
+            }
+            catch (Exception ex)
+            {
+                string mensaje = ex.Message.Replace("'", "").Replace("\n", " ");
+                // Cerrar modal de confirmación y abrir modal de error
+                string script = $@"
+                    var modalEl = document.getElementById('modalConfirmarEliminar');
+                    var modalInstance = bootstrap.Modal.getInstance(modalEl);
+                    if (modalInstance) {{ modalInstance.hide(); }}
+                    mostrarMensajeError('{mensaje}');";
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "ErrorUI", script, true);
             }
         }
     }
