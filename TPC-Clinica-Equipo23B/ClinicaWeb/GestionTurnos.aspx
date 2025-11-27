@@ -121,7 +121,7 @@
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label" for="ddlMedico">Médico</label>
-                                        <asp:DropDownList ID="ddlMedico" runat="server" CssClass="form-control" AutoPostBack="true" OnSelectedIndexChanged="ddlMedico_SelectedIndexChanged">
+                                        <asp:DropDownList ID="ddlMedico" runat="server" CssClass="form-control mi-buscador" AutoPostBack="true" OnSelectedIndexChanged="ddlMedico_SelectedIndexChanged">
                                         </asp:DropDownList>
                                     </div>
                                 </div>
@@ -129,7 +129,7 @@
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label" for="ddlPaciente">Paciente</label>
-                                        <asp:DropDownList ID="ddlPaciente" runat="server" CssClass="form-control">
+                                        <asp:DropDownList ID="ddlPaciente" runat="server" CssClass="form-control mi-buscador">
                                         </asp:DropDownList>
                                     </div>
                                     <div class="col-md-6 mb-3">
@@ -161,4 +161,40 @@
                 </div>
             </div>
         </div>
+    <script type="text/javascript">
+    function iniciarSelect2() {
+        $('.mi-buscador').select2({
+            dropdownParent: $('#addTurnoModal'), 
+            width: '100%',
+            placeholder: "Buscar por Apellido, Nombre o DNI...",
+            allowClear: true,
+            language: {
+                noResults: function() { return "No se encontró el paciente"; }
+            }
+        });
+    }
+
+    // Al cargar la página
+    $(document).ready(function () {
+        iniciarSelect2();
+    });
+
+    // Al recargar el UpdatePanel
+    var prm = Sys.WebForms.PageRequestManager.getInstance();
+    prm.add_endRequest(function () {
+        iniciarSelect2();
+    });
+    </script>
+
+<style>
+    /* Ajuste visual */
+    .select2-container .select2-selection--single {
+        height: 38px !important;
+        padding-top: 5px;
+        border: 1px solid #ced4da;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 36px !important;
+    }
+</style>
  </asp:Content>

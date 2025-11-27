@@ -38,8 +38,16 @@ namespace ClinicaWeb
             {
 
                 PacienteNegocio pacNegocio = new PacienteNegocio();
-                ddlPaciente.DataSource = pacNegocio.Listar();
-                ddlPaciente.DataTextField = "Nombre";
+                List<Paciente>listaPacientes = pacNegocio.Listar();
+
+                var listaPacientesFormateada = listaPacientes.Select(p => new
+                {
+                    IdPersona = p.IdPersona,
+                    NombreCompleto = p.Apellido.ToUpper() + ", " + p.Nombre + " (DNI: " + p.Dni + ")"
+                }).OrderBy(p => p.NombreCompleto).ToList();
+
+                ddlPaciente.DataSource = listaPacientesFormateada;
+                ddlPaciente.DataTextField = "NombreCompleto";
                 ddlPaciente.DataValueField = "IdPersona";
                 ddlPaciente.DataBind();
                 ddlPaciente.Items.Insert(0, new ListItem("Seleccione Paciente", "0"));
@@ -72,8 +80,9 @@ namespace ClinicaWeb
                 .Select(m => new
                 {
                     IdMedico = m.IdPersona,
-                    NombreCompleto = "Dr/a. " + m.Nombre + " " + m.Apellido
+                    NombreCompleto = "Dr/a. " + m.Apellido.ToUpper() + " " + m.Nombre + "- ["+(m.EspecialidadesTexto ?? "Sin Esp.")+"]"
                 })
+                .OrderBy(m => m.NombreCompleto)
                 .ToList();
 
             ddlMedico.DataSource = medicosFiltrados;
@@ -203,14 +212,25 @@ namespace ClinicaWeb
                 DateTime fechaTurno = DateTime.Parse(txtFecha.Text);
                 TimeSpan horaTurno = TimeSpan.Parse(ddlHorario.SelectedValue);
 
-                // Creación del objeto Turno
-                Turno nuevoTurno = new Turno
+                DateTime fechaHoraSeleccionada = fechaTurno.Date.Add(horaTurno);
+
+                if (fechaHoraSeleccionada < DateTime.Now)
+                {
+                    if (lblErrorNuevoTurno != null)
+                    {
+                        lblErrorNuevoTurno.Text = "<div class='alert alert-danger'>No se puede reservar un turno en una fecha u horario pasados.</div>";
+                        lblErrorNuevoTurno.Visible = true;
+                    }
+                    return;
+                }
+                    // Creación del objeto Turno
+                    Turno nuevoTurno = new Turno
                 {
                     IdMedico = idMedico,
                     IdPaciente = idPaciente,
-                    // Combinar fecha (sin hora) con la hora seleccionada (TimeSpan)
-                    FechaHoraInicio = fechaTurno.Add(horaTurno),
-                    FechaHoraFin = fechaTurno.Add(horaTurno).Add(TimeSpan.FromMinutes(DURACION_TURNO_MINUTOS)),
+                    // utiliza la variable calculada de fechaHora
+                    FechaHoraInicio = fechaHoraSeleccionada,
+                    FechaHoraFin = fechaHoraSeleccionada.Add(TimeSpan.FromMinutes(DURACION_TURNO_MINUTOS)),
                     MotivoDeConsulta = txtMotivoConsulta.Text,
                     Diagnostico = null,
                     EstadoTurno = EstadoTurno.Nuevo
