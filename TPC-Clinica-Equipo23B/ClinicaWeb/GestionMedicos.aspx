@@ -13,7 +13,8 @@
                 <h1 class="text-dark h3 fw-bold mb-0">Gestión de Médicos</h1>
                 <p class="text-secondary mb-0">Administra los médicos de la clínica de forma rápida y sencilla.</p>
             </div>
-            <button class="btn btn-primary btn-sm d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#addMedicoModal" type="button">
+            <button class="btn btn-primary btn-sm d-flex align-items-center gap-2" 
+                    onclick="abrirModalAgregarEditar();" type="button">
                 <span class="material-symbols-outlined">add</span>
                 <span>Nuevo Médico</span>
             </button>
@@ -37,30 +38,32 @@
 
                         <asp:TemplateField HeaderText="Acciones" ItemStyle-CssClass="text-end">
                             <ItemTemplate>
-
-                                <!-- Botón VER DETALLES -->
-                                <asp:LinkButton
-                                    ID="btnVerDetalles"
-                                    runat="server"
+                                <!-- VER DETALLES -->
+                                <asp:LinkButton ID="btnVerDetalles" runat="server"
                                     CssClass="btn btn-sm btn-outline-info me-2"
                                     CommandName="VerDetallesMedico"
-                                    CommandArgument='<%# Eval("IdPersona") %>'>
+                                    CommandArgument='<%# Eval("IdPersona") %>'
+                                    OnClientClick="abrirModalVerDetalles(); return false;">
                                     <span class="material-symbols-outlined fs-6">visibility</span>
                                 </asp:LinkButton>
 
-                                <!-- Botón EDITAR -->
-                                <asp:LinkButton ID="btnEditar" runat="server" CssClass="btn btn-sm btn-outline-secondary"
-                                    CommandName="EditarMedico" CommandArgument='<%# Eval("IdPersona") %>'>
+                                <!-- EDITAR -->
+                                <asp:LinkButton ID="btnEditar" runat="server"
+                                    CssClass="btn btn-sm btn-outline-secondary"
+                                    CommandName="EditarMedico"
+                                    CommandArgument='<%# Eval("IdPersona") %>'
+                                    OnClientClick="abrirModalAgregarEditar(); return false;">
                                     <span class="material-symbols-outlined fs-6">edit</span>
                                 </asp:LinkButton>
 
-                                <!-- Botón ELIMINAR -->
-                                <asp:LinkButton ID="btnEliminar" runat="server" CssClass="btn btn-sm btn-outline-danger ms-2"
-                                    CommandName="EliminarMedico" CommandArgument='<%# Eval("IdPersona") %>'
+                                <!-- ELIMINAR -->
+                                <asp:LinkButton ID="btnEliminar" runat="server"
+                                    CssClass="btn btn-sm btn-outline-danger ms-2"
+                                    CommandName="EliminarMedico"
+                                    CommandArgument='<%# Eval("IdPersona") %>'
                                     OnClientClick="return confirm('¿Seguro que desea eliminar este médico?');">
                                     <span class="material-symbols-outlined fs-6">delete</span>
                                 </asp:LinkButton>
-
                             </ItemTemplate>
                         </asp:TemplateField>
                     </Columns>
@@ -84,31 +87,31 @@
                             <!-- Formulario -->
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label" for="txtNombre">Nombre</label>
+                                    <label class="form-label">Nombre</label>
                                     <asp:TextBox ID="txtNombre" runat="server" CssClass="form-control"></asp:TextBox>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label" for="txtApellido">Apellido</label>
+                                    <label class="form-label">Apellido</label>
                                     <asp:TextBox ID="txtApellido" runat="server" CssClass="form-control"></asp:TextBox>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label" for="txtDni">DNI</label>
+                                    <label class="form-label">DNI</label>
                                     <asp:TextBox ID="txtDni" runat="server" CssClass="form-control"></asp:TextBox>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label" for="txtMatricula">Matrícula</label>
+                                    <label class="form-label">Matrícula</label>
                                     <asp:TextBox ID="txtMatricula" runat="server" CssClass="form-control"></asp:TextBox>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label" for="txtEmail">Email</label>
+                                    <label class="form-label">Email</label>
                                     <asp:TextBox ID="txtEmail" runat="server" CssClass="form-control"></asp:TextBox>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label" for="txtTelefono">Teléfono</label>
+                                    <label class="form-label">Teléfono</label>
                                     <asp:TextBox ID="txtTelefono" runat="server" CssClass="form-control"></asp:TextBox>
                                 </div>
                             </div>
@@ -121,7 +124,7 @@
                             <h5>Horarios de Atención</h5>
                             <div class="row mb-3">
                                 <div class="col-md-4 mb-3">
-                                    <label class="form-label" for="ddlDiaLaboral">Día</label>
+                                    <label class="form-label">Día</label>
                                     <asp:DropDownList ID="ddlDiaLaboral" runat="server" CssClass="form-control">
                                         <asp:ListItem Text="Lunes" Value="Lunes" />
                                         <asp:ListItem Text="Martes" Value="Martes" />
@@ -133,11 +136,11 @@
                                     </asp:DropDownList>
                                 </div>
                                 <div class="col-md-3 mb-3">
-                                    <label class="form-label" for="txtHoraInicio">Hora Inicio</label>
+                                    <label class="form-label">Hora Inicio</label>
                                     <asp:TextBox ID="txtHoraInicio" runat="server" CssClass="form-control" placeholder="HH:MM"></asp:TextBox>
                                 </div>
                                 <div class="col-md-3 mb-3">
-                                    <label class="form-label" for="txtHoraFin">Hora Fin</label>
+                                    <label class="form-label">Hora Fin</label>
                                     <asp:TextBox ID="txtHoraFin" runat="server" CssClass="form-control" placeholder="HH:MM"></asp:TextBox>
                                 </div>
                                 <div class="col-md-2 d-flex align-items-end">
@@ -200,5 +203,44 @@
             </div>
         </div>
     </div>
+
+    <!-- Scripts JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        function limpiarFondosResiduales() {
+            var backdrops = document.querySelectorAll('.modal-backdrop');
+            backdrops.forEach(function (backdrop) {
+                backdrop.remove();
+            });
+            document.body.classList.remove('modal-open');
+            document.body.style.removeProperty('padding-right');
+            document.body.style.removeProperty('overflow');
+        }
+
+        function abrirModalAgregarEditar() {
+            limpiarFondosResiduales();
+            var myModal = new bootstrap.Modal(document.getElementById('addMedicoModal'));
+            myModal.show();
+        }
+
+        function abrirModalVerDetalles() {
+            limpiarFondosResiduales();
+            var myModal = new bootstrap.Modal(document.getElementById('modalDetallesMedico'));
+            myModal.show();
+        }
+
+        var prm = Sys.WebForms.PageRequestManager.getInstance();
+        prm.add_endRequest(function (sender, args) {
+            limpiarFondosResiduales();
+        });
+
+        function mostrarMensajeError(mensaje) {
+            var myModal = new bootstrap.Modal(document.getElementById('errorModal'));
+            if (document.getElementById('mensajeErrorBody')) {
+                document.getElementById('mensajeErrorBody').innerText = mensaje;
+            }
+            myModal.show();
+        }
+    </script>
 
 </asp:Content>

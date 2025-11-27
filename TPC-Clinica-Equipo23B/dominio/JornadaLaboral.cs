@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace dominio
 {
-   
+    
     public class JornadaLaboral
     {
         public int IdJornadaLaboral { get; set; }

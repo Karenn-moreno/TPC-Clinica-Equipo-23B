@@ -111,6 +111,7 @@ namespace negocio
 
             try
             {
+                // 1. CARGA DE DATOS PRINCIPALES (Persona y Médico)
                 datos.setearConsulta(@"
             SELECT P.IdPersona, P.Nombre, P.Apellido, P.Dni, P.Email, P.Telefono,
                    M.Matricula
@@ -128,16 +129,23 @@ namespace negocio
                         IdPersona = (int)datos.Lector["IdPersona"],
                         Nombre = (string)datos.Lector["Nombre"],
                         Apellido = (string)datos.Lector["Apellido"],
+                        // Asegurar la carga de DNI y Matrícula:
                         Dni = datos.Lector["Dni"].ToString(),
+                        Matricula = datos.Lector["Matricula"] != DBNull.Value ? datos.Lector["Matricula"].ToString() : "",
                         Email = datos.Lector["Email"] != DBNull.Value ? datos.Lector["Email"].ToString() : "",
                         Telefono = datos.Lector["Telefono"] != DBNull.Value ? datos.Lector["Telefono"].ToString() : "",
-                        Matricula = datos.Lector["Matricula"] != DBNull.Value ? datos.Lector["Matricula"].ToString() : ""
                     };
                 }
 
                 datos.cerrarConexion();
 
-                // cargar especialidades
+                if (medico == null)
+                    return null;
+
+                // 2. CARGAR ESPECIALIDADES
+                EspecialidadNegocio espNegocio = new EspecialidadNegocio();
+                List<Especialidad> listaEspecialidades = espNegocio.listar(); // Obtener la lista de nombres
+
                 datos = new AccesoDatos();
                 datos.setearConsulta(@"
             SELECT ME.IdEspecialidad
@@ -149,15 +157,18 @@ namespace negocio
 
                 while (datos.Lector.Read())
                 {
+                    int idEsp = (int)datos.Lector["IdEspecialidad"];
                     medico.MedicoEspecialidades.Add(new MedicoEspecialidad
                     {
-                        IdEspecialidad = (int)datos.Lector["IdEspecialidad"]
+                        IdEspecialidad = idEsp,
+                        // Vinculamos el objeto Especialidad para obtener el nombre más tarde
+                        Especialidad = listaEspecialidades.FirstOrDefault(e => e.IdEspecialidad == idEsp)
                     });
                 }
-
                 datos.cerrarConexion();
 
-                // cargar horarios
+
+                // 3. CARGAR HORARIOS
                 datos = new AccesoDatos();
                 datos.setearConsulta(@"
             SELECT IdJornada, DiaLaboral, HoraInicio, HoraFin
@@ -177,19 +188,30 @@ namespace negocio
                         HoraFin = (TimeSpan)datos.Lector["HoraFin"]
                     });
                 }
+                datos.cerrarConexion();
+
+
+                // 4. GENERAR LOS CAMPOS DE TEXTO PARA EL MODAL (¡CLAVE!)
+                // a) EspecialidadesTexto: Convierte la lista de especialidades en un string separado por comas
+                medico.EspecialidadesTexto = string.Join(", ", medico.MedicoEspecialidades
+                    .Where(me => me.Especialidad != null)
+                    .Select(me => me.Especialidad.Nombre));
+
+                // b) HorariosTexto: Convierte la lista de jornadas en un string con saltos de línea (<br>)
+                medico.HorariosTexto = string.Join("<br>", medico.JornadasLaborales.Select(j =>
+                    $"{j.DiaLaboral}: {j.HorarioInicio:hh\\:mm} - {j.HoraFin:hh\\:mm}"));
 
                 return medico;
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al obtener médico por ID", ex);
+                throw new Exception("Error al obtener médico por ID.", ex);
             }
             finally
             {
                 datos.cerrarConexion();
             }
         }
-
         public void Eliminar(int idMedico)
         {
             AccesoDatos datos = new AccesoDatos();
