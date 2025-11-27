@@ -30,7 +30,7 @@ namespace ClinicaWeb
                 CargarGrillaTurnos(fechaInicial);
             }
         }
-        
+
 
         private void CargarDesplegablesModal()
         {
@@ -38,7 +38,7 @@ namespace ClinicaWeb
             {
 
                 PacienteNegocio pacNegocio = new PacienteNegocio();
-                List<Paciente>listaPacientes = pacNegocio.Listar();
+                List<Paciente> listaPacientes = pacNegocio.Listar();
 
                 var listaPacientesFormateada = listaPacientes.Select(p => new
                 {
@@ -80,7 +80,7 @@ namespace ClinicaWeb
                 .Select(m => new
                 {
                     IdMedico = m.IdPersona,
-                    NombreCompleto = "Dr/a. " + m.Apellido.ToUpper() + " " + m.Nombre + "- ["+(m.EspecialidadesTexto ?? "Sin Esp.")+"]"
+                    NombreCompleto = "Dr/a. " + m.Apellido.ToUpper() + " " + m.Nombre + "- [" + (m.EspecialidadesTexto ?? "Sin Esp.") + "]"
                 })
                 .OrderBy(m => m.NombreCompleto)
                 .ToList();
@@ -223,8 +223,8 @@ namespace ClinicaWeb
                     }
                     return;
                 }
-                    // Creación del objeto Turno
-                    Turno nuevoTurno = new Turno
+                // Creación del objeto Turno
+                Turno nuevoTurno = new Turno
                 {
                     IdMedico = idMedico,
                     IdPaciente = idPaciente,
@@ -296,7 +296,7 @@ namespace ClinicaWeb
 
                 //Resetear Horario y Médico
                 ddlHorario.Items.Clear();
-                ddlMedico.SelectedIndex = 0; 
+                ddlMedico.SelectedIndex = 0;
 
                 CargarHorariosDisponibles();
 
@@ -346,7 +346,7 @@ namespace ClinicaWeb
             DateTime fechaBase = DateTime.Today;
             if (DateTime.TryParse(txtFechaGrilla.Text, out DateTime f)) fechaBase = f;
 
-            TurnoNegocio negocio = new TurnoNegocio();          
+            TurnoNegocio negocio = new TurnoNegocio();
             List<Turno> listaTurnos = negocio.ListarPorFecha(fechaBase);
             bool cambiosGuardados = false;
 
@@ -425,43 +425,96 @@ namespace ClinicaWeb
             }
         }
 
-        protected void gvTurnos_RowDataBound(object sender, GridViewRowEventArgs e)
+
+        protected void btnEditar_Click(object sender, EventArgs e)
         {
-            if (e.Row.RowType == DataControlRowType.DataRow)
+            try
             {
-                Turno turno = (Turno)e.Row.DataItem;
+                // recupera el id del turno
+                LinkButton btn = (LinkButton)sender;
+                int idTurno = int.Parse(btn.CommandArgument);
 
-                HtmlSelect ddlMedico = (HtmlSelect)e.Row.FindControl("ddlMedicoRow");
-                HtmlSelect ddlEstado = (HtmlSelect)e.Row.FindControl("ddlEstadoRow");
 
-                if (ddlMedico != null)
+                List<Turno> listaTurnos = (List<Turno>)Session["ListaTurnosDia"];
+                Turno turno = listaTurnos.Find(x => x.IdTurno == idTurno);
+
+                if (turno != null)
                 {
-                    MedicoNegocio negocio = new MedicoNegocio();
-                    List<Medico> medicos = negocio.Listar();
+                    //llena el modal con los datos
+                    hfIdTurnoEditar.Value = turno.IdTurno.ToString();
+                    txtEditarPaciente.Text = $"{turno.Paciente.Apellido}, {turno.Paciente.Nombre}";
+                    txtEditarHora.Text = turno.FechaHoraInicio.ToString("HH:mm");
+                    txtEditarMotivo.Text = turno.MotivoDeConsulta;
 
-                    ddlMedico.Items.Clear();
-                    foreach (Medico m in medicos)
-                    {
-                        ListItem item = new ListItem(m.Nombre + " " + m.Apellido, m.IdPersona.ToString());
-
-                        if (m.IdPersona == turno.IdMedico)
-                            item.Selected = true;
-                            ddlMedico.Items.Add(item);
-                    }
-                }
-
-                if (ddlEstado != null)
-                {
-                    ddlEstado.Items.Clear();
+                    // carga los Estados 
+                    ddlEditarEstado.Items.Clear();
                     string[] estados = Enum.GetNames(typeof(EstadoTurno));
                     foreach (string est in estados)
                     {
                         ListItem item = new ListItem(est);
-                        if (est == turno.EstadoTurno.ToString())
-                            item.Selected = true;
-                        ddlEstado.Items.Add(item);
+                        if (est == turno.EstadoTurno.ToString()) item.Selected = true;
+                        ddlEditarEstado.Items.Add(item);
                     }
+                    upEditTurno.Update();
+                    // abre el modal usando JavaScript 
+                    string script = @"
+                try {
+                    var myModalEl = document.getElementById('editTurnoModal');
+                    var modal = bootstrap.Modal.getOrCreateInstance(myModalEl);
+                    modal.show();
+                } catch(e) {
+                    alert('Error JS: ' + e.message);
+                }";
+                ScriptManager.RegisterStartupScript(this, this.GetType(), Guid.NewGuid().ToString(), script, true);
                 }
+            }
+            catch (Exception ex)
+            {
+                Session["Error"] = "Error al cargar edición: " + ex.Message;
+            }
+        }
+
+        protected void btnGuardarEdicion_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                TurnoNegocio negocio = new TurnoNegocio();
+                int idTurno = int.Parse(hfIdTurnoEditar.Value);
+
+                // traigo los valores del turno cargado
+                List<Turno> lista = (List<Turno>)Session["ListaTurnosDia"];
+                Turno turno = lista.FirstOrDefault(t => t.IdTurno == idTurno);
+
+                if (turno != null)
+                {
+                    // 
+                    turno.EstadoTurno = (EstadoTurno)Enum.Parse(typeof(EstadoTurno), ddlEditarEstado.SelectedValue);
+                    turno.MotivoDeConsulta = txtEditarMotivo.Text;
+
+                    // cambio de hora 
+                    if (!string.IsNullOrEmpty(txtEditarHora.Text))
+                    {
+                        TimeSpan nuevaHora = TimeSpan.Parse(txtEditarHora.Text);
+                        // Mantenemos la fecha original
+                        turno.FechaHoraInicio = turno.FechaHoraInicio.Date.Add(nuevaHora);
+                        turno.FechaHoraFin = turno.FechaHoraInicio.AddMinutes(DURACION_TURNO_MINUTOS);
+                    }
+
+                    // 
+                    negocio.Modificar(turno);
+
+                    // recargar la grilla
+                    DateTime fechaGrilla = DateTime.Parse(txtFechaGrilla.Text);
+                    CargarGrillaTurnos(fechaGrilla);
+
+                    // cerramos el modal con js
+                    string script = "var modal = bootstrap.Modal.getInstance(document.getElementById('editTurnoModal')); modal.hide();";
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "CerrarModal", script, true);
+                }
+            }
+            catch (Exception ex)
+            {
+                Session["Error"] = "Error al guardar: " + ex.Message;
             }
         }
     }
