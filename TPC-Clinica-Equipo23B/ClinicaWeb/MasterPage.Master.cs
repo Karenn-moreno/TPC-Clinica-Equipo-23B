@@ -32,12 +32,13 @@ namespace ClinicaWeb
                 {
                     menuPacientes.Visible = true;
                     menuMedicos.Visible = true;
+                    menuUsuarios.Visible = true;
                 }
                 else
                 {                    
                     menuPacientes.Visible = false;
-                    menuMedicos.Visible = false;
-                }
+                    menuMedicos.Visible = false;                   
+                }              
             }
         }
         protected void btnSalir_Click(object sender, EventArgs e)

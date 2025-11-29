@@ -13,7 +13,7 @@
                 <h1 class="text-dark h3 fw-bold mb-0">Gestión de Turnos</h1>
                 <p class="text-secondary mb-0">Administra los turnos de los pacientes de forma rápida y sencilla.</p>
             </div>
-            <button class="btn btn-primary btn-sm d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#addTurnoModal" type="button">
+            <button id="btnNuevoTurno" runat="server" class="btn btn-primary btn-sm d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#addTurnoModal" type="button">
                 <span class="material-symbols-outlined">add</span>
                 <span>Nuevo Turno</span>
             </button>

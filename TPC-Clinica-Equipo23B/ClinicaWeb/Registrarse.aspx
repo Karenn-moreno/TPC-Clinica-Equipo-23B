@@ -19,7 +19,7 @@
 
         <div class="container-fluid login-container">
             <div class="px-4 py-5">
-                <div class="login-card card p-4 p-md-5 shadow-lg" style="max-width: 500px; margin: auto;">
+                <div class="login-card card p-4 p-md-5 shadow-lg" style="max-width: 800px; margin: auto;">
                     <div class="card-body">
                         <div class="text-center mb-5">
                             <div class="d-inline-flex align-items-center gap-2">
@@ -28,18 +28,18 @@
                         </div>
 
                         <div class="text-center mb-4">
-                            <h1 class="h3 mb-2 fw-bold">Registro del Portal</h1>
-                            <p class="text-muted">Complete sus datos para crear una cuenta.</p>
+                            <h1 class="h3 mb-2 fw-bold">Registrar nuevo Usuario</h1>
+                            <p class="text-muted">Complete los datos para crear una cuenta.</p>
                         </div>
 
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label fw-medium">Nombre</label>
-                                <asp:TextBox ID="firstName" runat="server" CssClass="form-control form-control-lg" placeholder="Tu nombre"></asp:TextBox>
+                                <asp:TextBox ID="firstName" runat="server" CssClass="form-control form-control-lg" placeholder="Ingrese el nombre"></asp:TextBox>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-medium">Apellido</label>
-                                <asp:TextBox ID="lastName" runat="server" CssClass="form-control form-control-lg" placeholder="Tu apellido"></asp:TextBox>
+                                <asp:TextBox ID="lastName" runat="server" CssClass="form-control form-control-lg" placeholder="Ingrese el apellido"></asp:TextBox>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-medium">Fecha de nacimiento</label>
@@ -47,7 +47,7 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-medium">Documento</label>
-                                <asp:TextBox ID="idDocument" runat="server" CssClass="form-control form-control-lg" placeholder="Ej: DNI 12345678"></asp:TextBox>
+                                <asp:TextBox ID="idDocument" runat="server" CssClass="form-control form-control-lg" placeholder="Solo números, sin puntos"></asp:TextBox>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-medium">Tipo de Usuario (Rol)</label>
@@ -66,7 +66,7 @@
                             </asp:UpdatePanel>
                             <div class="col-12">
                                 <label class="form-label fw-medium">Correo electrónico</label>
-                                <asp:TextBox ID="email" runat="server" CssClass="form-control form-control-lg" TextMode="Email" placeholder="tu@correo.com"></asp:TextBox>
+                                <asp:TextBox ID="email" runat="server" CssClass="form-control form-control-lg" TextMode="Email" placeholder="usuario@dominio.com"></asp:TextBox>
                             </div>
                             <div class="col-12">
                                 <label class="form-label fw-medium">Teléfono</label>
@@ -74,7 +74,7 @@
                             </div>
                             <div class="col-12">
                                 <label class="form-label fw-medium">Dirección</label>
-                                <asp:TextBox ID="address" runat="server" CssClass="form-control form-control-lg" TextMode="MultiLine" Rows="3" placeholder="Tu dirección completa"></asp:TextBox>
+                                <asp:TextBox ID="address" runat="server" CssClass="form-control form-control-lg" TextMode="MultiLine" Rows="3" placeholder="Calle, Altura, Localidad"></asp:TextBox>
                             </div>
                             <div class="col-12">
                                 <label class="form-label fw-medium">Contraseña</label>
@@ -88,7 +88,7 @@
                                 <asp:Literal ID="litErrorRegistro" runat="server" EnableViewState="false" />
                             </div>
                             <div class="col-12 d-grid mt-3">
-                                <asp:Button ID="btnRegistrarse" runat="server" CssClass="btn btn-primary btn-lg fw-semibold" Text="Registrarse" OnClick="btnRegistrarse_Click" />
+                                <asp:Button ID="btnRegistrarse" runat="server" CssClass="btn btn-primary btn-lg fw-semibold" Text="Registrar" OnClick="btnRegistrarse_Click" />
                             </div>
                         </div>
 

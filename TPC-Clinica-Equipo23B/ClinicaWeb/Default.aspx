@@ -44,10 +44,9 @@
             <div class="card text-center shadow-lg p-4" style="max-width: 400px; width: 90%;">
                 <div class="card-body">
                     <h5 class="card-title mb-4">Portal Administrativo</h5>
-                    <p class="card-text mb-4">Accede o regístrate para gestionar la clínica Sanare.</p>
+                    <p class="card-text mb-4">Accede  para gestionar la clínica Sanare.</p>
                     <div class="d-grid gap-3">
-                       <asp:Button ID="btnAcceder" runat="server" Text="Acceder" CssClass="btn btn-primary btn-lg" OnClick="btnAcceder_Click" />
-                <asp:Button ID="btnRegistrar" runat="server" Text="Registrarse" CssClass="btn btn-secondary btn-lg" OnClick="btnRegistrar_Click" />
+                       <asp:Button ID="btnAcceder" runat="server" Text="Acceder" CssClass="btn btn-primary btn-lg" OnClick="btnAcceder_Click" />         
                     </div>
                 </div>
             </div>

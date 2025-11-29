@@ -15,6 +15,17 @@ namespace ClinicaWeb
         private const int DURACION_TURNO_MINUTOS = 60;
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (Session["usuario"] == null)
+            {
+                Response.Redirect("Login.aspx", false);
+                return;
+            }
+            dominio.Usuario usuario = (dominio.Usuario)Session["usuario"];
+            string rol = Session["rol"].ToString().ToUpper();
+            if (rol == "MEDICO")
+            {
+                btnNuevoTurno.Visible = false;
+            }
             if (!IsPostBack)
             {
                 // La primera carga de la página
