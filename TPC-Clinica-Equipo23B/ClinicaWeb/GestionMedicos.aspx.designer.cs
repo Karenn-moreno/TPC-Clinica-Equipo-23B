@@ -15,6 +15,33 @@ namespace ClinicaWeb
     {
 
         /// <summary>
+        /// Control txtBuscarEspecialidad.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtBuscarEspecialidad;
+
+        /// <summary>
+        /// Control btnBuscarEspecialidad.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnBuscarEspecialidad;
+
+        /// <summary>
+        /// Control btnLimpiarEspecialidad.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnLimpiarEspecialidad;
+
+        /// <summary>
         /// Control gvMedicos.
         /// </summary>
         /// <remarks>

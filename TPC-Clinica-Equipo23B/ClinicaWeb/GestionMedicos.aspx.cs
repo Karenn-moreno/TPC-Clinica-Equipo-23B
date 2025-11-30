@@ -21,6 +21,54 @@ namespace ClinicaWeb
             }
         }
 
+
+
+
+
+
+
+        private string QuitarAcentos(string texto)
+        {
+            if (string.IsNullOrEmpty(texto))
+                return texto;
+
+            byte[] bytes = System.Text.Encoding.GetEncoding("ISO-8859-8").GetBytes(texto);
+            return System.Text.Encoding.UTF8.GetString(bytes);
+        }
+
+        protected void btnBuscarEspecialidad_Click(object sender, EventArgs e)
+        {
+            string filtro = QuitarAcentos(txtBuscarEspecialidad.Text.Trim().ToLower());
+
+            MedicoNegocio negocio = new MedicoNegocio();
+            List<Medico> lista = negocio.Listar();
+
+            if (!string.IsNullOrWhiteSpace(filtro))
+            {
+                lista = lista.Where(x =>
+                    x.EspecialidadesTexto != null &&
+                    QuitarAcentos(x.EspecialidadesTexto.ToLower()).Contains(filtro)
+                ).ToList();
+            }
+
+            gvMedicos.DataSource = lista;
+            gvMedicos.DataBind();
+        }
+
+        protected void btnLimpiarEspecialidad_Click(object sender, EventArgs e)
+        {
+            txtBuscarEspecialidad.Text = "";
+
+            MedicoNegocio negocio = new MedicoNegocio();
+            gvMedicos.DataSource = negocio.Listar();
+            gvMedicos.DataBind();
+        }
+
+
+
+
+
+
         private void ConfigurarPermisosBaja()
         {
             btnEliminarFisico.Style.Add("display", "none");

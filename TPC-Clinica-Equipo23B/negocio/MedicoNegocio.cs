@@ -182,7 +182,7 @@ namespace negocio
 
                 while (datos.Lector.Read())
                 {
-                    
+
                     JornadaLaboral jornada = new JornadaLaboral();
 
                     jornada.IdJornadaLaboral = (int)datos.Lector["IdJornadaLaboral"];
@@ -203,14 +203,14 @@ namespace negocio
                 datos.cerrarConexion();
 
 
-                
+
                 // EspecialidadesTexto: Convierte la lista de especialidades en un string separado por comas
-                
+
                 medico.EspecialidadesTexto = string.Join(", ", medico.MedicoEspecialidades
                     .Where(me => me.Especialidad != null)
                     .Select(me => me.Especialidad.Nombre));
 
-      
+
                 medico.HorariosTexto = string.Join("<br>", medico.JornadasLaborales.Select(j =>
                     $"{j.DiaLaboral}: {j.HorarioInicio:hh\\:mm} - {j.HoraFin:hh\\:mm}"));
 

@@ -1,5 +1,6 @@
 ﻿<%@ Page Title="Gestión de Médicos" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeBehind="GestionMedicos.aspx.cs" Inherits="ClinicaWeb.GestionMedicos" %>
 
+
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="Content/GestionMedicos.css" rel="stylesheet" type="text/css" />
 </asp:Content>
@@ -11,6 +12,33 @@
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
             <div class="d-flex flex-column gap-1">
                 <h1 class="text-dark h3 fw-bold mb-0">Gestión de Médicos</h1>
+
+
+
+               
+
+                <div class="d-flex gap-2 align-items-center mt-3">
+    <asp:TextBox ID="txtBuscarEspecialidad" runat="server"
+        CssClass="form-control form-control-sm"
+        Placeholder="Buscar medico por especialidad..."
+        Width="250px"></asp:TextBox>
+
+    <asp:Button ID="btnBuscarEspecialidad" runat="server"
+        Text="Buscar"
+        CssClass="btn btn-primary btn-sm"
+        OnClick="btnBuscarEspecialidad_Click" />
+
+    <asp:Button ID="btnLimpiarEspecialidad" runat="server"
+        Text="Limpiar"
+        CssClass="btn btn-secondary btn-sm"
+        OnClick="btnLimpiarEspecialidad_Click" />
+</div>
+
+
+
+
+
+
                 <p class="text-secondary mb-0">Administra los médicos de la clínica de forma rápida y sencilla.</p>
             </div>
             <button class="btn btn-primary btn-sm d-flex align-items-center gap-2"
@@ -19,6 +47,7 @@
                 <span>Nuevo Médico</span>
             </button>
         </div>
+
 
         <!-- Grilla de Médicos -->
         <div class="card card-custom p-4 rounded-xl">
