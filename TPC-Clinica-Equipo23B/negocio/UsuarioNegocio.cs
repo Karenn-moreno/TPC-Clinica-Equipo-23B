@@ -89,6 +89,23 @@ namespace negocio
             }
         }
 
+        private static string GenerarContrasenaAleatoria(int longitud = 8)
+        {
+            const string caracteres = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+            StringBuilder sb = new StringBuilder();
+            Random random = new Random();
+
+            for (int i = 0; i < longitud; i++)
+            {
+                sb.Append(caracteres[random.Next(caracteres.Length)]);
+            }
+
+            return sb.ToString();
+        }
+
+        
+  
+
         // Método auxiliar para buscar un usuario por su ID (útil para la sesión)
         public Usuario BuscarPorId(int id)
         {
@@ -148,6 +165,18 @@ namespace negocio
                 datos.cerrarConexion();
             }
         }
+        
+        public string RegistrarNuevoUsuarioConRolYGenerarPassword(Persona nuevaPersona, int idRol, string matricula = null, List<int> especialidades = null, List<JornadaLaboral> jornadas = null)
+        {
+
+            string tempPassword = GenerarContrasenaAleatoria();
+
+     
+            RegistrarNuevoUsuarioConRol(nuevaPersona, tempPassword, idRol, matricula, especialidades, jornadas);
+
+            
+            return tempPassword;
+        }
 
         // MÉTODO DE REGISTRO UNIFICADO PARA ROLES ADMINISTRATIVOS
         public void RegistrarNuevoUsuarioConRol(Persona nuevaPersona, string password, int idRol, string matricula = null, List<int> especialidades = null,List<JornadaLaboral> jornadas=null)
@@ -181,6 +210,7 @@ namespace negocio
                 datos.cerrarConexion();
 
                 // 2. Insertar en Usuario
+                string hashedPassword = SeguridadService.HashPassword(password);//contraseña aleatoria
                 datos = new AccesoDatos();
                 datos.setearConsulta("INSERT INTO Usuario (IdUsuario, Password) VALUES (@IdUsuario, @Password)");
                 datos.setearParametro("@IdUsuario", idPersona);
@@ -236,7 +266,7 @@ namespace negocio
                     }
                 }
 
-                // 4. Asignar Rol
+                //Asignar Rol
                 datos = new AccesoDatos();
                 datos.setearConsulta("INSERT INTO UsuarioRol (IdUsuario, IdRol) VALUES (@IdUsuario, @IdRol)");
                 datos.setearParametro("@IdUsuario", idPersona);

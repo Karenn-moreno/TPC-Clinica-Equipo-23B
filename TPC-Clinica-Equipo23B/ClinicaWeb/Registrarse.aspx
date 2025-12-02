@@ -170,14 +170,6 @@
                                 <asp:TextBox ID="address" runat="server" CssClass="form-control form-control-lg" TextMode="MultiLine" Rows="3" placeholder="Calle, Altura, Localidad"></asp:TextBox>
                             </div>
                             <div class="col-12">
-                                <label class="form-label fw-medium">Contraseña</label>
-                                <asp:TextBox ID="password" runat="server" CssClass="form-control form-control-lg" TextMode="Password" placeholder="••••••••"></asp:TextBox>
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label fw-medium">Confirmar contraseña</label>
-                                <asp:TextBox ID="passwordConfirm" runat="server" CssClass="form-control form-control-lg" TextMode="Password" placeholder="••••••••"></asp:TextBox>
-                            </div>
-                            <div class="col-12">
                                 <asp:Literal ID="litErrorRegistro" runat="server" EnableViewState="false" />
                             </div>
                             <div class="col-12 d-grid mt-3">

@@ -98,6 +98,7 @@ namespace ClinicaWeb
 
             List<string> errores = new List<string>();
 
+            // Validaciones de campos obligatorios
             if (string.IsNullOrWhiteSpace(firstName.Text))
                 errores.Add("<li>El campo Nombre es obligatorio.</li>");
             if (string.IsNullOrWhiteSpace(lastName.Text))
@@ -108,14 +109,8 @@ namespace ClinicaWeb
                 errores.Add("<li>El campo Correo electrónico es obligatorio.</li>");
             if (ddlRol.SelectedValue == "0")
                 errores.Add("<li>Debe seleccionar un Tipo de Usuario (Rol).</li>");
-            if (string.IsNullOrWhiteSpace(password.Text))
-                errores.Add("<li>El campo Contraseña es obligatorio.</li>");
-            if (string.IsNullOrWhiteSpace(passwordConfirm.Text))
-                errores.Add("<li>El campo Confirmar Contraseña es obligatorio.</li>");
-            if (password.Text != passwordConfirm.Text)
-                errores.Add("<li>Las contraseñas no coinciden.</li>");
-            if (password.Text.Length > 0 && password.Text.Length < 6)
-                errores.Add("<li>La contraseña debe tener al menos 6 caracteres.</li>");
+
+            // Validaciones de contraseña (ELIMINADAS)
 
             if (ddlRol.SelectedValue == "2" && string.IsNullOrWhiteSpace(txtMatricula.Text))
                 errores.Add("<li>Para el rol Médico, el campo Matrícula es obligatorio.</li>");
@@ -155,6 +150,7 @@ namespace ClinicaWeb
                 string matricula = null;
                 List<int> listaEspecialidades = new List<int>();
                 List<JornadaLaboral> listaJornadas = new List<JornadaLaboral>();
+
                 if (idRol == 2)
                 {
                     matricula = txtMatricula.Text.Trim();
@@ -171,15 +167,47 @@ namespace ClinicaWeb
                         listaJornadas = (List<JornadaLaboral>)Session["ListaJornadas"];
                     }
                 }
-                usuarioNegocio.RegistrarNuevoUsuarioConRol(
-                nuevaPersona,
-                password.Text.Trim(),
-                idRol,
-                matricula,
-                listaEspecialidades,
-                listaJornadas);
 
-                Session.Add("registroExitoso", "¡Registro completado! Ahora puede iniciar sesión con su correo y contraseña.");
+                // LLAMADA AL NUEVO MÉTODO Y OBTENCIÓN DE PASSWORD
+                string tempPassword = usuarioNegocio.RegistrarNuevoUsuarioConRolYGenerarPassword(
+                    nuevaPersona,
+                    idRol,
+                    matricula,
+                    listaEspecialidades,
+                    listaJornadas);
+
+                // ENVÍO DE EMAIL CON CONTRASEÑA GENERADA
+                try
+                {
+                    EmailService emailService = new EmailService();
+                    string asunto = "¡Bienvenido/a a Clínica Sanare! Acceso a su cuenta";
+                    string cuerpoHTML = $@"
+                        <html>
+                        <body>
+                            <h2>¡Bienvenido/a, {nuevaPersona.Nombre}!</h2>
+                            <p>Su cuenta en el Portal Administrativo de Clínica Sanare ha sido creada exitosamente.</p>
+                            <p>Sus credenciales para el primer acceso son:</p>
+                            <ul>
+                                <li><strong>Usuario (Email):</strong> {nuevaPersona.Email}</li>
+                                <li><strong>Contraseña Temporal:</strong> <b>{tempPassword}</b></li>
+                            </ul>
+                            <p>Por motivos de seguridad, le recomendamos cambiar esta contraseña después del primer acceso.</p>
+                            <p>Puede iniciar sesión aquí: <a href=""http://susitio.com/Login.aspx"">Ir al Portal</a></p>
+                            <p>Atentamente, el Equipo de Clínica Sanare.</p>
+                        </body>
+                        </html>";
+
+                    emailService.armarCorreo(nuevaPersona.Email, asunto, cuerpoHTML);
+                    emailService.enviarEmail();
+
+                    Session.Add("registroExitoso", "¡Registro completado! Se ha enviado una contraseña temporal a su correo electrónico.");
+                }
+                catch (Exception exEmail)
+                {
+                   
+                    Session.Add("registroExitoso", "¡Registro completado! **ADVERTENCIA**: No se pudo enviar el correo de bienvenida. Contacte a soporte para obtener su contraseña temporal.");
+                }
+
                 Response.Redirect("Login.aspx", false);
             }
             catch (Exception ex)
