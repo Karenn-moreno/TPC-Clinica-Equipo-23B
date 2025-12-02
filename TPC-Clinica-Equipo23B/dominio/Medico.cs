@@ -14,10 +14,48 @@ namespace dominio
         public ICollection<JornadaLaboral> JornadasLaborales { get; set; } = new List<JornadaLaboral>();
         public ICollection<Turno> Turnos { get; set; } = new List<Turno>();
         public string EspecialidadesTexto { get; set; }
-        public string HorariosTexto { get; set; }
+        private string _horariosTexto;
 
-        public string Email { get; set; }//agregado ani
-        public string Telefono { get; set; }//agregado ani
+        public string HorariosTexto
+        {
+            get
+            {
+
+                //    usamos la lógica inteligente de agrupación
+                if (JornadasLaborales != null && JornadasLaborales.Count > 0)
+                {
+                    try
+                    {
+                        // agrupa por coincidencia de horas de Inicio y Fin
+                        var grupos = JornadasLaborales
+                            .GroupBy(j => new { j.HorarioInicio, j.HoraFin })
+                            .Select(g => new
+                            {
+                                // une los días con comas
+                                Dias = string.Join(", ", g.Select(x => x.DiaLaboral.ToString())),
+
+                                // formatea la hora 
+                                Horario = $"{g.Key.HorarioInicio.ToString(@"hh\:mm")} - {g.Key.HoraFin.ToString(@"hh\:mm")}"
+                            });
+
+
+                        return string.Join("<br/>", grupos.Select(x => $"<b>{x.Dias}</b>: {x.Horario}"));
+                    }
+                    catch
+                    {
+                        return "Error al procesar horarios";
+                    }
+                }
+                return _horariosTexto ?? "Sin horarios asignados";
+            }
+            set
+            {
+                // Permite asignar el valor manualmente si fuera necesario
+                _horariosTexto = value;
+            }
+        }
+    
+
 
 
     }

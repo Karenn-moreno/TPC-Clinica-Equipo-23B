@@ -19,16 +19,14 @@ namespace ClinicaWeb
                     litErrorRegistro.Text = "";
 
                 CargarRoles();
-            }
+                CargarDias();
+                CargarTurnos();
+                
+                if (Session["ListaJornadas"] == null)
+                    Session["ListaJornadas"] = new List<JornadaLaboral>();
 
-            if (ddlRol.SelectedValue == "2")
-            {
-                divMatricula.Visible = true;
-            }
-            else
-            {
-                divMatricula.Visible = false;
-            }
+                pnlDatosMedico.Visible = false;
+            }           
         }
 
         private void CargarRoles()
@@ -42,10 +40,55 @@ namespace ClinicaWeb
             ddlRol.DataBind();
             ddlRol.Items.Insert(0, new ListItem("Seleccione un Rol", "0"));
         }
+        private void CargarEspecialidades()
+        {
+            try
+            {
+                EspecialidadNegocio negocio = new EspecialidadNegocio();
+                List<Especialidad> lista = negocio.listar();
+                lbxEspecialidades.DataSource = lista;
+                lbxEspecialidades.DataTextField = "Nombre";
+                lbxEspecialidades.DataValueField = "IdEspecialidad";
+                lbxEspecialidades.DataBind();
+            }
+            catch (Exception ex)
+            {
+                if (litErrorRegistro != null)
+                    litErrorRegistro.Text = "<div class='alert alert-danger'>Error al cargar especialidades: " + ex.Message + "</div>";
+            }
+        }
 
+        private void CargarDias()
+        {
+            ListBox2.DataSource = Enum.GetNames(typeof(DiaLaboral));
+            ListBox2.DataBind();
+        }
+
+        private void CargarTurnos()
+        {
+            TurnoDeTrabajoNegocio turnoTrabajoNegocio = new TurnoDeTrabajoNegocio();
+            ddlTurno.DataSource = turnoTrabajoNegocio.listar();
+            ddlTurno.DataTextField = "TipoDeTurno";
+            ddlTurno.DataValueField = "IdTurnoTrabajo";
+            ddlTurno.DataBind();
+            ddlTurno.Items.Insert(0, new ListItem("Personalizado / Seleccione", "0"));
+        }
         protected void ddlRol_SelectedIndexChanged(object sender, EventArgs e)
         {
             txtMatricula.Text = "";
+            if (ddlRol.SelectedValue == "2")
+            {
+                pnlDatosMedico.Visible = true;
+                if (lbxEspecialidades.Items.Count == 0)
+                {
+                    CargarEspecialidades();
+                }
+            }
+            else
+            {
+                pnlDatosMedico.Visible = false;
+                lbxEspecialidades.ClearSelection();
+            }
         }
 
         protected void btnRegistrarse_Click(object sender, EventArgs e)
@@ -84,7 +127,7 @@ namespace ClinicaWeb
                 return;
             }
 
-  
+
             try
             {
                 UsuarioNegocio usuarioNegocio = new UsuarioNegocio();
@@ -109,13 +152,35 @@ namespace ClinicaWeb
                     Telefono = phone.Text.Trim(),
                     Localidad = address.Text.Trim()
                 };
+                string matricula = null;
+                List<int> listaEspecialidades = new List<int>();
+                List<JornadaLaboral> listaJornadas = new List<JornadaLaboral>();
+                if (idRol == 2)
+                {
+                    matricula = txtMatricula.Text.Trim();
 
-                string matricula = (idRol == 2) ? txtMatricula.Text.Trim() : null;
-                usuarioNegocio.RegistrarNuevoUsuarioConRol(nuevaPersona, password.Text.Trim(), idRol, matricula);
+                    foreach (ListItem item in lbxEspecialidades.Items)
+                    {
+                        if (item.Selected)
+                        {
+                            listaEspecialidades.Add(int.Parse(item.Value));
+                        }
+                    }
+                    if (Session["ListaJornadas"] != null)
+                    {
+                        listaJornadas = (List<JornadaLaboral>)Session["ListaJornadas"];
+                    }
+                }
+                usuarioNegocio.RegistrarNuevoUsuarioConRol(
+                nuevaPersona,
+                password.Text.Trim(),
+                idRol,
+                matricula,
+                listaEspecialidades,
+                listaJornadas);
 
                 Session.Add("registroExitoso", "¡Registro completado! Ahora puede iniciar sesión con su correo y contraseña.");
                 Response.Redirect("Login.aspx", false);
-
             }
             catch (Exception ex)
             {
@@ -131,5 +196,119 @@ namespace ClinicaWeb
                 litErrorRegistro.Text = "<div class='alert alert-danger'><p>Por favor, corrija los siguientes errores:</p><ul style='list-style-type: disc; margin-left: 20px;'>" + string.Join("", errores) + "</ul></div>";
             }
         }
-}
+
+        protected void btnGuardarEspecialidad_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Especialidad nueva = new Especialidad();
+                nueva.Nombre = txtNuevaEspecialidad.Text;
+                EspecialidadNegocio negocio = new EspecialidadNegocio();
+                negocio.agregar(nueva);
+
+                txtNuevaEspecialidad.Text = string.Empty;
+                CargarEspecialidades();
+
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "CerrarModalScript",
+                "var myModalEl = document.getElementById('modalNuevaEspecialidad'); var modal = bootstrap.Modal.getInstance(myModalEl); modal.hide();", true);
+
+            }
+            catch (Exception ex)
+            {
+                // Si hay error marcar con mensaje
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "ErrorEspecialidad",
+                    $"alert('Error al guardar: {ex.Message}');", true);
+            }
+
+        }
+
+        protected void ddlTurno_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int idTurno = int.Parse(ddlTurno.SelectedValue);
+
+            if (idTurno > 0)
+            {
+                TurnoDeTrabajoNegocio negocio = new TurnoDeTrabajoNegocio();
+                TurnoDeTrabajo turno = negocio.obtenerPorId(idTurno);
+
+                if (turno != null)
+                {
+                    txtHoraInicio.Text = turno.HoraInicioDefault.ToString(@"hh\:mm");
+                    txtHoraFin.Text = turno.HoraFinDefault.ToString(@"hh\:mm");
+                }
+            }
+            else
+            {
+                txtHoraInicio.Text = "";
+                txtHoraFin.Text = "";
+            }
+        }
+     
+
+        protected void btnAgregarHorario_Click(object sender, EventArgs e)
+        {
+            try 
+            { 
+            if (string.IsNullOrEmpty(txtHoraInicio.Text) || string.IsNullOrEmpty(txtHoraFin.Text))
+            {
+                lblErrorHorario.Text = "Debe ingresar hora de inicio y fin.";
+                lblErrorHorario.Visible = true;
+                return;
+            }
+            List<JornadaLaboral> listaTemporal = (List<JornadaLaboral>)Session["ListaJornadas"];
+
+            bool haySeleccion = false;
+                foreach (ListItem item in ListBox2.Items)
+                {
+                    if (item.Selected)
+                    {
+                        haySeleccion = true;
+                        JornadaLaboral jornada = new JornadaLaboral();
+                        jornada.DiaLaboral = (DiaLaboral)Enum.Parse(typeof(DiaLaboral), item.Text); // O simplemente string si tu propiedad es string
+                        jornada.HorarioInicio = TimeSpan.Parse(txtHoraInicio.Text);
+                        jornada.HoraFin = TimeSpan.Parse(txtHoraFin.Text);
+
+                        if (ddlTurno.SelectedValue != "0")
+                        {
+                            jornada.IdTurnoTrabajo = int.Parse(ddlTurno.SelectedValue);
+                        }
+                        listaTemporal.Add(jornada);
+                        item.Selected = false;
+                    }
+                }
+
+                if (!haySeleccion)
+                {
+                    lblErrorHorario.Text = "Debe seleccionar al menos un día de la lista.";
+                    lblErrorHorario.Visible = true;
+                    return;
+                }
+                Session["ListaJornadas"] = listaTemporal;
+                ActualizarGrillaHorarios();
+
+                lblErrorHorario.Visible = false;
+            }
+            catch (Exception ex)
+            {
+                lblErrorHorario.Text = "Error al agregar: " + ex.Message;
+                lblErrorHorario.Visible = true;
+            }
+        }
+
+        private void ActualizarGrillaHorarios()
+        {
+            List<JornadaLaboral> lista = (List<JornadaLaboral>)Session["ListaJornadas"];
+            gvHorarios.DataSource = lista;
+            gvHorarios.DataBind();
+        }
+        protected void gvHorarios_RowDeleting(object sender, GridViewDeleteEventArgs e)
+        {
+            List<JornadaLaboral> lista = (List<JornadaLaboral>)Session["ListaJornadas"];
+            lista.RemoveAt(e.RowIndex);
+
+            // Guardar y refrescar!
+            Session["ListaJornadas"] = lista;
+            ActualizarGrillaHorarios();
+        }
+    }
 }

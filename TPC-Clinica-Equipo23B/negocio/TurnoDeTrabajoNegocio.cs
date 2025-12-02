@@ -18,14 +18,14 @@ namespace negocio
             try
             {
                 datos.setearConsulta(@"
-                    SELECT IdTurnoDeTrabajo, TipoDeTurno, HoraInicioDefault, HoraFinDefault 
+                    SELECT IdTurnoTrabajo, TipoDeTurno, HoraInicioDefault, HoraFinDefault 
                     FROM TurnoDeTrabajo");
 
                 datos.ejecutarLectura();
                 while (datos.Lector.Read())
                 {
                     TurnoDeTrabajo turno = new TurnoDeTrabajo();
-                    turno.IdTurnoDeTrabajo = (int)datos.Lector["IdTurnoDeTrabajo"];
+                    turno.IdTurnoTrabajo = (int)datos.Lector["IdTurnoTrabajo"];
                     turno.TipoDeTurno = (string)datos.Lector["TipoDeTurno"];
                     turno.HoraInicioDefault = (TimeSpan)datos.Lector["HoraInicioDefault"];
                     turno.HoraFinDefault = (TimeSpan)datos.Lector["HoraFinDefault"];
@@ -43,5 +43,45 @@ namespace negocio
                 datos.cerrarConexion();
             }
         }
+
+        public TurnoDeTrabajo obtenerPorId(int id)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                datos.setearConsulta("SELECT IdTurnoTrabajo, TipoDeTurno, HoraInicioDefault, HoraFinDefault FROM TurnoDeTrabajo WHERE IdTurnoTrabajo = @id");
+                datos.setearParametro("@id", id);
+
+                datos.ejecutarLectura();
+
+                TurnoDeTrabajo turno = null;
+
+                if (datos.Lector.Read())
+                {
+                    turno = new TurnoDeTrabajo();
+
+                    // Mapeo
+                    turno.IdTurnoTrabajo = (int)datos.Lector["IdTurnoTrabajo"];
+
+                    if (!(datos.Lector["TipoDeTurno"] is DBNull))
+                        turno.TipoDeTurno = (string)datos.Lector["TipoDeTurno"];
+
+                    turno.HoraInicioDefault = (TimeSpan)datos.Lector["HoraInicioDefault"];
+                    turno.HoraFinDefault = (TimeSpan)datos.Lector["HoraFinDefault"];
+                }
+
+                return turno;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+
     }
 }

@@ -8,7 +8,7 @@ namespace dominio
 {
     public class TurnoDeTrabajo
     {
-        public int IdTurnoDeTrabajo { get; set; }
+        public int IdTurnoTrabajo { get; set; }
         public string TipoDeTurno { get; set; }
         public TimeSpan HoraInicioDefault { get; set; }
         public TimeSpan HoraFinDefault { get; set; }

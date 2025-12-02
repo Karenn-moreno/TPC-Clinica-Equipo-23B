@@ -150,7 +150,7 @@ namespace negocio
         }
 
         // MÉTODO DE REGISTRO UNIFICADO PARA ROLES ADMINISTRATIVOS
-        public void RegistrarNuevoUsuarioConRol(Persona nuevaPersona, string password, int idRol, string matricula = null)
+        public void RegistrarNuevoUsuarioConRol(Persona nuevaPersona, string password, int idRol, string matricula = null, List<int> especialidades = null,List<JornadaLaboral> jornadas=null)
         {
             AccesoDatos datos = new AccesoDatos();
             int idPersona = 0;
@@ -197,6 +197,43 @@ namespace negocio
                     datos.setearParametro("@Matricula", matricula);
                     datos.ejecutarAccion();
                     datos.cerrarConexion();
+                    if (especialidades != null && especialidades.Count > 0)
+                    {
+                        foreach (int idEspecialidad in especialidades)
+                        {
+                            datos = new AccesoDatos();
+                            datos.setearConsulta("INSERT INTO MedicoEspecialidad (IdMedico, IdEspecialidad) VALUES (@IdMedico, @IdEspecialidad)");
+                            datos.setearParametro("@IdMedico", idPersona);
+                            datos.setearParametro("@IdEspecialidad", idEspecialidad);
+                            datos.ejecutarAccion();
+                            datos.cerrarConexion();
+                        }
+                    }
+                    if (jornadas != null && jornadas.Count > 0)
+                    {
+                        foreach (JornadaLaboral jornada in jornadas)
+                        {
+                            datos = new AccesoDatos();
+                            datos.setearConsulta(@"
+                        INSERT INTO JornadaLaboral (IdMedico, DiaLaboral, HoraInicio, HoraFin, IdTurnoTrabajo) 
+                        VALUES (@IdMedico, @Dia, @Inicio, @Fin, @IdTurno)
+                    ");
+
+                            datos.setearParametro("@IdMedico", idPersona);
+                            datos.setearParametro("@Dia", jornada.DiaLaboral.ToString()); 
+                            datos.setearParametro("@Inicio", jornada.HorarioInicio);
+                            datos.setearParametro("@Fin", jornada.HoraFin);
+
+                            // Manejo de nulo para IdTurnoTrabajo
+                            if (jornada.IdTurnoTrabajo.HasValue && jornada.IdTurnoTrabajo.Value > 0)
+                                datos.setearParametro("@IdTurno", jornada.IdTurnoTrabajo.Value);
+                            else
+                                datos.setearParametro("@IdTurno", DBNull.Value);
+
+                            datos.ejecutarAccion();
+                            datos.cerrarConexion();
+                        }
+                    }
                 }
 
                 // 4. Asignar Rol

@@ -43,9 +43,8 @@ namespace ClinicaWeb
                 pnlMedico.Visible = true;
                 MedicoNegocio medicoNegocio = new MedicoNegocio();
 
-                
-                Medico medicoCompleto = medicoNegocio.Listar()
-                    .FirstOrDefault(m => m.IdPersona == user.IdPersona);
+
+                Medico medicoCompleto = medicoNegocio.ObtenerPorId(user.IdPersona);
 
                 if (medicoCompleto != null)
                 {

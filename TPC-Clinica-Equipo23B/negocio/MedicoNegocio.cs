@@ -19,7 +19,7 @@ namespace negocio
                 // Se modificó la consulta para incluir WHERE P.Activo = 1
                 datos.setearConsulta(@"
                     SELECT 
-                        P.IdPersona, P.Nombre, P.Apellido, P.Email, P.Telefono,
+                        P.IdPersona, P.Nombre, P.Apellido, P.Email, P.Telefono,M.matricula,
                         ISNULL(E.ListaEspecialidades, 'Sin Asignar') AS EspecialidadesTexto,
                         ISNULL(J.ListaHorarios, 'Sin Horarios') AS HorariosTexto
                     FROM 
@@ -37,37 +37,38 @@ namespace negocio
                             ME.IdMedico = M.IdMedico
                     ) AS E
                     OUTER APPLY (
-                        SELECT 
-                            STRING_AGG(
-                                CONCAT(
-                                    JL.DiaLaboral,  
-                                    ' ', 
-                                    CONVERT(VARCHAR(5), ISNULL(JL.HoraInicio, TT.HoraInicioDefault), 108),
-                                    '-', 
-                                    CONVERT(VARCHAR(5), ISNULL(JL.HoraFin, TT.HoraFinDefault), 108)
-                                ), 
-                                ', '
-                            ) 
-                            WITHIN GROUP (ORDER BY 
-                                CASE JL.DiaLaboral
-                                    WHEN 'Lunes' THEN 1
-                                    WHEN 'Martes' THEN 2
-                                    WHEN 'Miercoles' THEN 3  
-                                    WHEN 'Jueves' THEN 4
-                                    WHEN 'Viernes' THEN 5
-                                    WHEN 'Sabado' THEN 6    
-                                    WHEN 'Domingo' THEN 7
-                                END
-                            ) AS ListaHorarios
-                        FROM (
-                            SELECT DISTINCT DiaLaboral, HoraInicio, HoraFin, IdTurnoTrabajo
-                            FROM JornadaLaboral
-                            WHERE IdMedico = M.IdMedico
-                        ) AS JL
-                        LEFT JOIN TurnoDeTrabajo TT ON JL.IdTurnoTrabajo = TT.IdTurnoTrabajo
-                    ) AS J
-                    WHERE P.Activo = 1 -- FILTRO PARA MOSTRAR SÓLO MÉDICOS ACTIVOS
-                ");
+                       SELECT 
+            STRING_AGG(GrupoHorario, ' <br> ') WITHIN GROUP (ORDER BY MinDiaIdx) AS ListaHorarios
+        FROM (
+            SELECT 
+                STRING_AGG(DiaLaboral, ', ') WITHIN GROUP (ORDER BY DiaIdx) + ' ' +
+                CONVERT(VARCHAR(5), ISNULL(HoraInicio, '00:00'), 108) + '-' + 
+                CONVERT(VARCHAR(5), ISNULL(HoraFin, '00:00'), 108) as GrupoHorario,
+                MIN(DiaIdx) as MinDiaIdx
+            FROM (
+                SELECT DISTINCT
+                    JL.DiaLaboral,
+                    ISNULL(JL.HoraInicio, TT.HoraInicioDefault) as HoraInicio,
+                    ISNULL(JL.HoraFin, TT.HoraFinDefault) as HoraFin,
+                    CASE JL.DiaLaboral
+                        WHEN 'Lunes' THEN 1
+                        WHEN 'Martes' THEN 2
+                        WHEN 'Miercoles' THEN 3
+                        WHEN 'Jueves' THEN 4
+                        WHEN 'Viernes' THEN 5
+                        WHEN 'Sabado' THEN 6
+                        WHEN 'Domingo' THEN 7
+                    END as DiaIdx
+                FROM JornadaLaboral JL
+                LEFT JOIN TurnoDeTrabajo TT ON JL.IdTurnoTrabajo = TT.IdTurnoTrabajo
+                WHERE JL.IdMedico = M.IdMedico
+            ) T1
+            GROUP BY HoraInicio, HoraFin
+        ) T2
+    ) AS J
+    WHERE P.Activo = 1
+    ORDER BY P.Apellido ASC, P.Nombre ASC
+");
 
                 datos.ejecutarLectura();
 
@@ -145,27 +146,28 @@ namespace negocio
                     return null;
 
                 // CARGAR ESPECIALIDADES
-                EspecialidadNegocio espNegocio = new EspecialidadNegocio();
-                List<Especialidad> listaEspecialidades = espNegocio.listar(); // Obtener la lista de nombres
+
 
                 datos = new AccesoDatos();
                 datos.setearConsulta(@"
-            SELECT ME.IdEspecialidad
+            SELECT E.IdEspecialidad, E.Nombre 
             FROM MedicoEspecialidad ME
-            WHERE ME.IdMedico = @id
-        ");
+            INNER JOIN Especialidad E ON ME.IdEspecialidad = E.IdEspecialidad
+            WHERE ME.IdMedico = @id");
                 datos.setearParametro("@id", idMedico);
                 datos.ejecutarLectura();
 
                 while (datos.Lector.Read())
                 {
-                    int idEsp = (int)datos.Lector["IdEspecialidad"];
-                    medico.MedicoEspecialidades.Add(new MedicoEspecialidad
-                    {
-                        IdEspecialidad = idEsp,
-                        // Vinculamos el objeto Especialidad para obtener el nombre más tarde
-                        Especialidad = listaEspecialidades.FirstOrDefault(e => e.IdEspecialidad == idEsp)
-                    });
+                    MedicoEspecialidad me = new MedicoEspecialidad();
+                    me.IdMedico = idMedico;
+                    me.IdEspecialidad = (int)datos.Lector["IdEspecialidad"];
+
+                    me.Especialidad = new Especialidad();
+                    me.Especialidad.IdEspecialidad = me.IdEspecialidad;
+                    me.Especialidad.Nombre = (string)datos.Lector["Nombre"];
+
+                    medico.MedicoEspecialidades.Add(me);
                 }
                 datos.cerrarConexion();
 
@@ -182,37 +184,46 @@ namespace negocio
 
                 while (datos.Lector.Read())
                 {
+                    JornadaLaboral j = new JornadaLaboral();
+                    j.IdJornadaLaboral = (int)datos.Lector["IdJornadaLaboral"];
 
-                    JornadaLaboral jornada = new JornadaLaboral();
-
-                    jornada.IdJornadaLaboral = (int)datos.Lector["IdJornadaLaboral"];
-                    jornada.DiaLaboral = (DiaLaboral)Enum.Parse(typeof(DiaLaboral), datos.Lector["DiaLaboral"].ToString());
+                    string diaTexto = (string)datos.Lector["DiaLaboral"];
+                    j.DiaLaboral = (DiaLaboral)Enum.Parse(typeof(DiaLaboral), diaTexto);
 
                     if (datos.Lector["HoraInicio"] != DBNull.Value)
                     {
-                        jornada.HorarioInicio = (TimeSpan)datos.Lector["HoraInicio"];
+                        j.HorarioInicio = (TimeSpan)datos.Lector["HoraInicio"];
                     }
 
                     if (datos.Lector["HoraFin"] != DBNull.Value)
                     {
-                        jornada.HoraFin = (TimeSpan)datos.Lector["HoraFin"];
+                        j.HoraFin = (TimeSpan)datos.Lector["HoraFin"];
                     }
-
-                    medico.JornadasLaborales.Add(jornada);
+                    medico.JornadasLaborales.Add(j);
                 }
                 datos.cerrarConexion();
 
+                if (medico.MedicoEspecialidades != null && medico.MedicoEspecialidades.Count > 0)
+                {
+                    medico.EspecialidadesTexto = string.Join(", ", medico.MedicoEspecialidades
+                        .Where(me => me.Especialidad != null)
+                        .Select(me => me.Especialidad.Nombre));
+                }
+                else
+                {
+                    medico.EspecialidadesTexto = "Sin asignar";
+                }
 
 
-                // EspecialidadesTexto: Convierte la lista de especialidades en un string separado por comas
-
-                medico.EspecialidadesTexto = string.Join(", ", medico.MedicoEspecialidades
-                    .Where(me => me.Especialidad != null)
-                    .Select(me => me.Especialidad.Nombre));
-
-
-                medico.HorariosTexto = string.Join("<br>", medico.JornadasLaborales.Select(j =>
-                    $"{j.DiaLaboral}: {j.HorarioInicio:hh\\:mm} - {j.HoraFin:hh\\:mm}"));
+                if (medico.JornadasLaborales != null && medico.JornadasLaborales.Count > 0)
+                {
+                    medico.HorariosTexto = string.Join("<br>", medico.JornadasLaborales.Select(j =>
+                        $"{j.DiaLaboral}: {j.HorarioInicio:hh\\:mm} - {j.HoraFin:hh\\:mm}"));
+                }
+                else
+                {
+                    medico.HorariosTexto = "Sin horarios";
+                }
 
                 return medico;
             }
@@ -278,6 +289,23 @@ namespace negocio
                     foreach (var idEsp in especialidades)
                     {
                         AgregarEspecialidad(idPersona, Convert.ToInt32(idEsp.Trim()));
+                    }
+                }
+                if (nuevo.JornadasLaborales != null && nuevo.JornadasLaborales.Count > 0)
+                {
+                    foreach (JornadaLaboral jornada in nuevo.JornadasLaborales)
+                    {
+                        datos = new AccesoDatos();
+
+                        datos.setearConsulta("INSERT INTO JornadaLaboral (IdMedico, DiaLaboral, HoraInicio, HoraFin) VALUES (@IdMedico, @Dia, @Inicio, @Fin)");
+
+                        datos.setearParametro("@IdMedico", idPersona);
+                        datos.setearParametro("@Dia", jornada.DiaLaboral.ToString());
+                        datos.setearParametro("@Inicio", jornada.HorarioInicio);
+                        datos.setearParametro("@Fin", jornada.HoraFin);
+
+                        datos.ejecutarAccion();
+                        datos.cerrarConexion();
                     }
                 }
             }

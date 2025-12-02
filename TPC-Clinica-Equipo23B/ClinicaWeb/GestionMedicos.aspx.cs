@@ -36,7 +36,7 @@ namespace ClinicaWeb
             return System.Text.Encoding.UTF8.GetString(bytes);
         }
 
-        protected void btnBuscarEspecialidad_Click(object sender, EventArgs e)
+      /*  protected void btnBuscarEspecialidad_Click(object sender, EventArgs e)
         {
             string filtro = QuitarAcentos(txtBuscarEspecialidad.Text.Trim().ToLower());
 
@@ -53,16 +53,16 @@ namespace ClinicaWeb
 
             gvMedicos.DataSource = lista;
             gvMedicos.DataBind();
-        }
+        }*/
 
-        protected void btnLimpiarEspecialidad_Click(object sender, EventArgs e)
+     /*   protected void btnLimpiarEspecialidad_Click(object sender, EventArgs e)
         {
             txtBuscarEspecialidad.Text = "";
 
             MedicoNegocio negocio = new MedicoNegocio();
             gvMedicos.DataSource = negocio.Listar();
             gvMedicos.DataBind();
-        }
+        }*/
 
 
 
@@ -313,12 +313,20 @@ namespace ClinicaWeb
 
         private void CargarEspecialidades()
         {
+            try
+            {
             EspecialidadNegocio negocio = new EspecialidadNegocio();
             var lista = negocio.listar();
             chkEspecialidades.DataSource = lista;
             chkEspecialidades.DataTextField = "Nombre";
             chkEspecialidades.DataValueField = "IdEspecialidad";
             chkEspecialidades.DataBind();
+            }
+            catch (Exception ex)
+            {
+                Session.Add("error", ex.ToString());
+            }
+
         }
 
         protected void btnAgregarHorario_Click(object sender, EventArgs e)
@@ -409,6 +417,11 @@ namespace ClinicaWeb
                     mostrarMensajeError('{mensaje}');";
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "ErrorUI", script, true);
             }
+        }
+
+        protected void btnBuscar_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
