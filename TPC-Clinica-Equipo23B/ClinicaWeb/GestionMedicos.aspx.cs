@@ -58,38 +58,7 @@ namespace ClinicaWeb
             return System.Text.Encoding.UTF8.GetString(bytes);
         }
 
-      /*  protected void btnBuscarEspecialidad_Click(object sender, EventArgs e)
-        {
-            string filtro = QuitarAcentos(txtBuscarEspecialidad.Text.Trim().ToLower());
-
-            MedicoNegocio negocio = new MedicoNegocio();
-            List<Medico> lista = negocio.Listar();
-
-            if (!string.IsNullOrWhiteSpace(filtro))
-            {
-                lista = lista.Where(x =>
-                    x.EspecialidadesTexto != null &&
-                    QuitarAcentos(x.EspecialidadesTexto.ToLower()).Contains(filtro)
-                ).ToList();
-            }
-
-            gvMedicos.DataSource = lista;
-            gvMedicos.DataBind();
-        }*/
-
-     /*   protected void btnLimpiarEspecialidad_Click(object sender, EventArgs e)
-        {
-            txtBuscarEspecialidad.Text = "";
-
-            MedicoNegocio negocio = new MedicoNegocio();
-            gvMedicos.DataSource = negocio.Listar();
-            gvMedicos.DataBind();
-        }*/
-
-
-
-
-
+     
 
         private void ConfigurarPermisosBaja()
         {
@@ -114,6 +83,29 @@ namespace ClinicaWeb
                 Response.Write("<script>alert('Error al cargar los médicos: " + ex.Message + "');</script>");
             }
         }
+
+
+        protected void btnBuscar_Click(object sender, EventArgs e)
+        {
+            string filtro = QuitarAcentos(txtFiltro.Text.Trim().ToLower());
+
+            MedicoNegocio negocio = new MedicoNegocio();
+            List<Medico> lista = negocio.Listar();
+
+            if (!string.IsNullOrWhiteSpace(filtro))
+            {
+                lista = lista.Where(x =>
+                    (x.Nombre != null && QuitarAcentos(x.Nombre.ToLower()).Contains(filtro)) ||
+                    (x.Apellido != null && QuitarAcentos(x.Apellido.ToLower()).Contains(filtro)) ||
+                    (x.EspecialidadesTexto != null && QuitarAcentos(x.EspecialidadesTexto.ToLower()).Contains(filtro))
+                ).ToList();
+            }
+
+            gvMedicos.DataSource = lista;
+            gvMedicos.DataBind();
+        }
+
+
 
         protected void gvMedicos_RowCommand(object sender, GridViewCommandEventArgs e)
         {
@@ -441,9 +433,6 @@ namespace ClinicaWeb
             }
         }
 
-        protected void btnBuscar_Click(object sender, EventArgs e)
-        {
 
-        }
     }
 }
