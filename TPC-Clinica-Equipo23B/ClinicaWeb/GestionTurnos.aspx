@@ -6,14 +6,14 @@
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
 
-          <!-- msj error -->
-<asp:Literal ID="litErrorRol" runat="server" EnableViewState="false"></asp:Literal>
+    <!-- msj error -->
+    <asp:Literal ID="litErrorRol" runat="server" EnableViewState="false"></asp:Literal>
 
-<!-- Contenido principal -->
-<asp:Panel ID="pnlContenido" runat="server">
+    <!-- Contenido principal -->
+    <asp:Panel ID="pnlContenido" runat="server">
 
-    <!-- Todo lo que se carga en la página de Turnos -->
-</asp:Panel>
+        <!-- Todo lo que se carga en la página de Turnos -->
+    </asp:Panel>
 
     <div class="d-flex flex-column gap-4">
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
@@ -52,8 +52,7 @@
                         CssClass="table table-striped table-hover align-middle"
                         AutoGenerateColumns="False"
                         GridLines="None"
-                        EmptyDataText="No hay turnos agendados para este día."
-                       >
+                        EmptyDataText="No hay turnos agendados para este día.">
 
                         <HeaderStyle CssClass="text-muted fw-semibold py-2" />
                         <Columns>
@@ -83,8 +82,8 @@
                                 <ItemTemplate>
                                     <asp:LinkButton ID="btnEditar" runat="server" CssClass="btn btn-sm btn-link text-primary p-0"
                                         OnClick="btnEditar_Click"
-                                         UseSubmitBehavior="false"
-                                         formnovalidate=""
+                                        UseSubmitBehavior="false"
+                                        formnovalidate=""
                                         CommandArgument='<%# Eval("IdTurno") %>'>
                                         <span class="material-symbols-outlined">edit</span>
                                     </asp:LinkButton>
@@ -92,7 +91,7 @@
                             </asp:TemplateField>
                         </Columns>
                     </asp:GridView>
-                </div>               
+                </div>
             </div>
         </div>
     </div>
@@ -166,44 +165,50 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
-            <asp:UpdatePanel ID="upEditTurno" runat="server" UpdateMode="Conditional">
-                <ContentTemplate>
+                <asp:UpdatePanel ID="upEditTurno" runat="server" UpdateMode="Conditional">
+                    <ContentTemplate>
 
-                    <div class="modal-body">
-                        <asp:HiddenField ID="hfIdTurnoEditar" runat="server" />
+                        <div class="modal-body">
+                            <asp:HiddenField ID="hfIdTurnoEditar" runat="server" />
 
-                        <div class="mb-3">
-                            <label class="form-label text-muted small">Paciente</label>
-                            <asp:TextBox ID="txtEditarPaciente" runat="server" CssClass="form-control" ReadOnly="true"></asp:TextBox>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Estado</label>
-                                <asp:DropDownList ID="ddlEditarEstado" runat="server" CssClass="form-control"></asp:DropDownList>
+                            <div class="mb-3">
+                                <label class="form-label text-muted small">Paciente</label>
+                                <asp:TextBox ID="txtEditarPaciente" runat="server" CssClass="form-control" ReadOnly="true"></asp:TextBox>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Hora</label>
-                                <asp:TextBox ID="txtEditarHora" runat="server" CssClass="form-control" TextMode="Time"></asp:TextBox>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Estado</label>
+                                    <asp:DropDownList ID="ddlEditarEstado" runat="server" CssClass="form-control"></asp:DropDownList>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Hora</label>
+                                    <asp:TextBox ID="txtEditarHora" runat="server" CssClass="form-control" TextMode="Time"></asp:TextBox>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold text-primary">Observaciones / Motivo</label>
+                                <asp:TextBox ID="txtEditarMotivo" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold text-primary">Diagnóstico Médico</label>
+                                <asp:TextBox ID="txtEditarDiagnostico" runat="server" CssClass="form-control"
+                                    TextMode="MultiLine" Rows="4"
+                                    Placeholder="Escriba el diagnóstico y evolución aquí..."></asp:TextBox>
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Observaciones / Motivo</label>
-                            <asp:TextBox ID="txtEditarMotivo" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancelar</button>
+                            <asp:Button ID="btnGuardarEdicion" runat="server" Text="Guardar Cambios" CssClass="btn btn-success" OnClick="btnGuardarEdicion_Click" UseSubmitBehavior="false"
+                                formnovalidate="" />
                         </div>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancelar</button>
-                        <asp:Button ID="btnGuardarEdicion" runat="server" Text="Guardar Cambios" CssClass="btn btn-success" OnClick="btnGuardarEdicion_Click" UseSubmitBehavior="false"
-                            formnovalidate="" />
-                    </div>
-                </ContentTemplate>
-            </asp:UpdatePanel>
-         </div>
-     </div>
-  </div>
+                    </ContentTemplate>
+                </asp:UpdatePanel>
+            </div>
+        </div>
+    </div>
     <script type="text/javascript">
         function iniciarSelect2() {
             $('.mi-buscador').select2({
@@ -236,6 +241,7 @@
             padding-top: 5px;
             border: 1px solid #ced4da;
         }
+
         .select2-container--default .select2-selection--single .select2-selection__arrow {
             height: 36px !important;
         }

@@ -349,7 +349,16 @@ namespace ClinicaWeb
                 TurnoNegocio negocio = new TurnoNegocio();
                 List<Turno> listaTurnos = negocio.ListarPorFecha(fecha);
 
-
+                if (Session["usuario"] != null && Session["rol"] != null)
+                {
+                    string rol = Session["rol"].ToString().ToUpper();
+                    dominio.Usuario usuarioLogueado = (dominio.Usuario)Session["usuario"];
+                    if (rol == "MEDICO")
+                    {
+                        //  linq para filtrar donde el IdMedico del turno coincida con el ID del usuario
+                        listaTurnos = listaTurnos.Where(t => t.IdMedico == usuarioLogueado.IdPersona).ToList();
+                    }
+                }
                 Session["ListaTurnosDia"] = listaTurnos;
 
                 gvTurnos.DataSource = listaTurnos;
@@ -468,6 +477,7 @@ namespace ClinicaWeb
                     txtEditarPaciente.Text = $"{turno.Paciente.Apellido}, {turno.Paciente.Nombre}";
                     txtEditarHora.Text = turno.FechaHoraInicio.ToString("HH:mm");
                     txtEditarMotivo.Text = turno.MotivoDeConsulta;
+                    txtEditarDiagnostico.Text = turno.Diagnostico;
 
                     // carga los Estados 
                     ddlEditarEstado.Items.Clear();
@@ -477,6 +487,39 @@ namespace ClinicaWeb
                         ListItem item = new ListItem(est);
                         if (est == turno.EstadoTurno.ToString()) item.Selected = true;
                         ddlEditarEstado.Items.Add(item);
+                    }
+                   //bloquea en estado Cerrado
+                    bool estaCerrado = turno.EstadoTurno.ToString().Equals("Cerrado", StringComparison.OrdinalIgnoreCase);
+                    if (estaCerrado)
+                    {
+                        txtEditarMotivo.Enabled = false;
+                        txtEditarDiagnostico.Enabled = false; 
+                        txtEditarHora.Enabled = false;
+                        ddlEditarEstado.Enabled = false;
+                        btnGuardarEdicion.Visible = false;
+                    }
+                    else
+                    {
+                        string rol = Session["rol"] != null ? Session["rol"].ToString().ToUpper() : "RECEPCIONISTA";
+                        if (rol == "MEDICO")
+                        {
+                            txtEditarPaciente.ReadOnly = true;
+                            txtEditarHora.Enabled = false;
+
+                            txtEditarDiagnostico.Enabled = true;
+                            txtEditarMotivo.Enabled = false;
+                            ddlEditarEstado.Enabled = true;
+                        }
+                        else
+                        {
+
+                            txtEditarPaciente.ReadOnly = true;
+                            txtEditarHora.Enabled = true;
+                            txtEditarMotivo.Enabled = true;
+                            txtEditarDiagnostico.Enabled = false;
+                            ddlEditarEstado.Enabled = true;
+                        }                    
+                        btnGuardarEdicion.Visible = true;
                     }
                     upEditTurno.Update();
                     // abre el modal usando JavaScript 
@@ -513,7 +556,7 @@ namespace ClinicaWeb
                     // 
                     turno.EstadoTurno = (EstadoTurno)Enum.Parse(typeof(EstadoTurno), ddlEditarEstado.SelectedValue);
                     turno.MotivoDeConsulta = txtEditarMotivo.Text;
-
+                    turno.Diagnostico = txtEditarDiagnostico.Text;
                     // cambio de hora 
                     if (!string.IsNullOrEmpty(txtEditarHora.Text))
                     {
