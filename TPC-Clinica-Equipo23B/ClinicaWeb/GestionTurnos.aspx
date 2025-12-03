@@ -6,6 +6,14 @@
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
 
+          <!-- msj error -->
+<asp:Literal ID="litErrorRol" runat="server" EnableViewState="false"></asp:Literal>
+
+<!-- Contenido principal -->
+<asp:Panel ID="pnlContenido" runat="server">
+
+    <!-- Todo lo que se carga en la página de Turnos -->
+</asp:Panel>
 
     <div class="d-flex flex-column gap-4">
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">

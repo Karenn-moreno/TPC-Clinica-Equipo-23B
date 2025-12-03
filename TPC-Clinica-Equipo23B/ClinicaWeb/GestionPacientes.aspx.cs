@@ -14,6 +14,27 @@ namespace ClinicaWeb
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+
+            // Validar que haya sesion
+            if (Session["usuario"] == null)
+            {
+                Response.Redirect("Login.aspx", false);
+                return;
+            }
+
+            // Validar rol del usuario
+            if (Session["rol"] != null && Session["rol"].ToString().ToUpper() == "MEDICO")
+            {
+                // Guardar mensaje en sesion
+                Session["error"] = "No tienes permisos para acceder a la Gestión de Pacientes.";
+
+               
+                Response.Redirect("GestionTurnos.aspx", false);
+                return;
+            }
+
+
+
             ConfigurarPermisosBaja();
             if (!IsPostBack)
             {

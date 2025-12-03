@@ -7,6 +7,13 @@
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
 
+
+          <!-- msj error -->
+    <asp:Label ID="lblMensajeError" runat="server"></asp:Label>
+<asp:Panel ID="pnlContenido" runat="server">
+
+    </asp:Panel>
+
     <!--agrega updatePanel -->
     <asp:UpdatePanel ID="UpdatePanelMedico" runat="server">
         <ContentTemplate>

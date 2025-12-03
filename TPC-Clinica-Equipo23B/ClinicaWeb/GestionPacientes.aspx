@@ -6,6 +6,14 @@
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
 
+      <!-- msj error -->
+    <asp:Literal ID="litErrorRol" runat="server" EnableViewState="false"></asp:Literal>
+
+<asp:Panel ID="pnlContenido" runat="server">
+    
+
+</asp:Panel>
+
     <asp:UpdatePanel ID="UpdatePanel1" runat="server">
         <ContentTemplate>
             <main class="main-content p-4 p-md-5">
