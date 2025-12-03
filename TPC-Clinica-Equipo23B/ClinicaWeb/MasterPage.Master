@@ -57,7 +57,7 @@
                                 </a>
                             </li>
                             <li class="nav-item" id="menuUsuarios" runat="server" visible="false">
-                                <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-lg text-secondary hover-bg-light" href="Registrarse.aspx">
+                                <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-lg text-secondary hover-bg-light" href="GestionUsuarios.aspx">
                                     <span class="material-symbols-outlined">manage_accounts</span>
                                     <p class="mb-0 small fw-medium">Usuarios</p>
                                 </a>

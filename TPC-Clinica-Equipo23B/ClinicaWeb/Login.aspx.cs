@@ -81,7 +81,7 @@ namespace ClinicaWeb
             catch (Exception ex)
             {
                 if (litErrorLogin != null)
-                    litErrorLogin.Text = "Hubo un error al intentar iniciar sesión. Por favor, intente más tarde.";
+                    litErrorLogin.Text = "Hubo un error al intentar iniciar sesión. Por favor, intente más tarde." + ex.Message;
 
             }
 

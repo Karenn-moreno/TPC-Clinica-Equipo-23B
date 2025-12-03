@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 
 namespace negocio
 {
+    public class UsuarioConRol : Usuario
+    {
+        public string RolNombre { get; set; }
+    }
     public class UsuarioNegocio
     {
         private Usuario MapearUsuario(SqlDataReader lector)
@@ -34,6 +38,67 @@ namespace negocio
 
 
             return usuario;
+        }
+
+        public List<UsuarioConRol> ListarUsuariosConRol()
+        {
+            List<UsuarioConRol> lista = new List<UsuarioConRol>();
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                //listar Usuarios (Admin, Medico, Recepcionista) 
+                datos.setearConsulta(@"
+                    SELECT 
+                        P.IdPersona, P.Nombre, P.Apellido, P.Dni, P.Email, P.Telefono, P.Localidad, 
+                        U.Password,
+                        R.TipoRol
+                    FROM Persona P
+                    INNER JOIN Usuario U ON P.IdPersona = U.IdUsuario
+                    INNER JOIN UsuarioRol UR ON U.IdUsuario = UR.IdUsuario
+                    INNER JOIN Rol R ON UR.IdRol = R.IdRol
+                    LEFT JOIN Paciente PA ON P.IdPersona = PA.IdPaciente
+                    WHERE P.Activo = 1 
+                    AND PA.IdPaciente IS NULL -- Excluye a los pacientes
+                    ORDER BY P.Apellido ASC
+                ");
+
+                datos.ejecutarLectura();
+
+                while (datos.Lector.Read())
+                {
+                    UsuarioConRol usuario = new UsuarioConRol();
+
+                    // Mapeo de Persona
+                    usuario.IdPersona = (int)datos.Lector["IdPersona"];
+                    usuario.Nombre = (string)datos.Lector["Nombre"];
+                    usuario.Apellido = (string)datos.Lector["Apellido"];
+                    usuario.Email = (string)datos.Lector["Email"];
+
+                    if (datos.Lector["Dni"] != DBNull.Value)
+                        usuario.Dni = (string)datos.Lector["Dni"];
+                    if (datos.Lector["Telefono"] != DBNull.Value)
+                        usuario.Telefono = (string)datos.Lector["Telefono"];
+                    if (datos.Lector["Localidad"] != DBNull.Value)
+                        usuario.Localidad = (string)datos.Lector["Localidad"];
+
+                    // Mapeo de Usuario y Rol
+                    usuario.Password = (string)datos.Lector["Password"];
+                    usuario.RolNombre = (string)datos.Lector["TipoRol"];
+
+                    lista.Add(usuario);
+                }
+
+                return lista;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al listar usuarios con rol.", ex);
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
         }
 
         public Usuario ValidarUsuario(string email, string password)
@@ -103,9 +168,7 @@ namespace negocio
             return sb.ToString();
         }
 
-        
-  
-
+     
         // Método auxiliar para buscar un usuario por su ID (útil para la sesión)
         public Usuario BuscarPorId(int id)
         {
@@ -186,7 +249,7 @@ namespace negocio
 
             try
             {
-                // 1. Insertar en Persona y obtener el ID
+                // Insertar en Persona y obtener el ID
                 datos.setearConsulta(@"
                     INSERT INTO Persona (Nombre, Apellido, Dni, Email, Telefono, Localidad)
                     VALUES (@Nombre, @Apellido, @Dni, @Email, @Telefono, @Localidad);
@@ -316,15 +379,26 @@ namespace negocio
         public bool VerificarPassword(int idUsuario, string password)
         {
             AccesoDatos datos = new AccesoDatos();
+            string hashAlmacenado = null;
             try
             {
-                datos.setearConsulta("SELECT IdUsuario FROM Usuario WHERE IdUsuario = @IdUsuario AND Password = @Password");
+                
+                datos.setearConsulta("SELECT Password FROM Usuario WHERE IdUsuario = @IdUsuario");
                 datos.setearParametro("@IdUsuario", idUsuario);
-                datos.setearParametro("@Password", password);
-
                 datos.ejecutarLectura();
 
-                return datos.Lector.Read();
+                if (datos.Lector.Read())
+                {
+                    hashAlmacenado = (string)datos.Lector["Password"];
+                }
+                datos.cerrarConexion();
+
+                if (string.IsNullOrEmpty(hashAlmacenado))
+                    return false;
+
+                
+                return SeguridadService.VerificarPassword(password, hashAlmacenado);
+
             }
             catch (Exception ex)
             {
@@ -341,8 +415,11 @@ namespace negocio
             AccesoDatos datos = new AccesoDatos();
             try
             {
+                
+                string hashedPassword = SeguridadService.HashPassword(nuevaPassword);
+
                 datos.setearConsulta("UPDATE Usuario SET Password = @NuevaPassword WHERE IdUsuario = @IdUsuario");
-                datos.setearParametro("@NuevaPassword", nuevaPassword);
+                datos.setearParametro("@NuevaPassword", hashedPassword);
                 datos.setearParametro("@IdUsuario", idUsuario);
                 datos.ejecutarAccion();
             }
@@ -355,6 +432,96 @@ namespace negocio
                 datos.cerrarConexion();
             }
         }
+        public void ModificarPersona(Persona persona)
+        {
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.setearConsulta(@"
+                    UPDATE Persona 
+                    SET Nombre = @Nombre, Apellido = @Apellido, Dni = @Dni, 
+                        Email = @Email, Telefono = @Telefono, Localidad = @Localidad
+                    WHERE IdPersona = @Id");
+
+                datos.setearParametro("@Nombre", persona.Nombre);
+                datos.setearParametro("@Apellido", persona.Apellido);
+                datos.setearParametro("@Dni", persona.Dni);
+                datos.setearParametro("@Email", persona.Email);
+                datos.setearParametro("@Telefono", string.IsNullOrEmpty(persona.Telefono) ? DBNull.Value : (object)persona.Telefono);
+                datos.setearParametro("@Localidad", string.IsNullOrEmpty(persona.Localidad) ? DBNull.Value : (object)persona.Localidad);
+                datos.setearParametro("@Id", persona.IdPersona);
+
+                datos.ejecutarAccion();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al modificar la persona en la base de datos.", ex);
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+        // Baja Lógica para Usuarios
+        public void EliminarLogicoUsuario(int id)
+        {
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.setearConsulta("UPDATE Persona SET Activo = 0 WHERE IdPersona = @Id");
+                datos.setearParametro("@Id", id);
+                datos.ejecutarAccion();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al dar de baja (lógica) al usuario.", ex);
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+        // Baja Definitiva (Física) 
+        public void EliminarFisicoUsuario(int idUsuario)
+        {
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                // Eliminar de UsuarioRol
+                datos.setearConsulta("DELETE FROM UsuarioRol WHERE IdUsuario = @Id");
+                datos.setearParametro("@Id", idUsuario);
+                datos.ejecutarAccion();
+                datos.cerrarConexion();
+
+                //Eliminar de Usuario
+                datos = new AccesoDatos();
+                datos.setearConsulta("DELETE FROM Usuario WHERE IdUsuario = @Id");
+                datos.setearParametro("@Id", idUsuario);
+                datos.ejecutarAccion();
+                datos.cerrarConexion();
+
+                //Eliminar de Persona
+                datos = new AccesoDatos();
+                datos.setearConsulta("DELETE FROM Persona WHERE IdPersona = @Id");
+                datos.setearParametro("@Id", idUsuario);
+                datos.ejecutarAccion();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al eliminar definitivamente el usuario.", ex);
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+
 
     }
 }

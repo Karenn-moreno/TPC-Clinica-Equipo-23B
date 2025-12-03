@@ -98,7 +98,7 @@ namespace ClinicaWeb
 
             List<string> errores = new List<string>();
 
-            // Validaciones de campos obligatorios
+       
             if (string.IsNullOrWhiteSpace(firstName.Text))
                 errores.Add("<li>El campo Nombre es obligatorio.</li>");
             if (string.IsNullOrWhiteSpace(lastName.Text))
@@ -109,8 +109,6 @@ namespace ClinicaWeb
                 errores.Add("<li>El campo Correo electrónico es obligatorio.</li>");
             if (ddlRol.SelectedValue == "0")
                 errores.Add("<li>Debe seleccionar un Tipo de Usuario (Rol).</li>");
-
-            // Validaciones de contraseña (ELIMINADAS)
 
             if (ddlRol.SelectedValue == "2" && string.IsNullOrWhiteSpace(txtMatricula.Text))
                 errores.Add("<li>Para el rol Médico, el campo Matrícula es obligatorio.</li>");
@@ -168,7 +166,7 @@ namespace ClinicaWeb
                     }
                 }
 
-                // LLAMADA AL NUEVO MÉTODO Y OBTENCIÓN DE PASSWORD
+         
                 string tempPassword = usuarioNegocio.RegistrarNuevoUsuarioConRolYGenerarPassword(
                     nuevaPersona,
                     idRol,
@@ -176,7 +174,6 @@ namespace ClinicaWeb
                     listaEspecialidades,
                     listaJornadas);
 
-                // ENVÍO DE EMAIL CON CONTRASEÑA GENERADA
                 try
                 {
                     EmailService emailService = new EmailService();
@@ -192,7 +189,6 @@ namespace ClinicaWeb
                                 <li><strong>Contraseña Temporal:</strong> <b>{tempPassword}</b></li>
                             </ul>
                             <p>Por motivos de seguridad, le recomendamos cambiar esta contraseña después del primer acceso.</p>
-                            <p>Puede iniciar sesión aquí: <a href=""http://susitio.com/Login.aspx"">Ir al Portal</a></p>
                             <p>Atentamente, el Equipo de Clínica Sanare.</p>
                         </body>
                         </html>";
@@ -205,7 +201,7 @@ namespace ClinicaWeb
                 catch (Exception exEmail)
                 {
                    
-                    Session.Add("registroExitoso", "¡Registro completado! **ADVERTENCIA**: No se pudo enviar el correo de bienvenida. Contacte a soporte para obtener su contraseña temporal.");
+                    Session.Add("registroExitoso", "¡Registro completado! **ADVERTENCIA**: No se pudo enviar el correo de bienvenida. Contacte a soporte para obtener su contraseña temporal." + exEmail.Message);
                 }
 
                 Response.Redirect("Login.aspx", false);
