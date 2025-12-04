@@ -33,7 +33,16 @@ namespace ClinicaWeb
         {
             UsuarioNegocio negocio = new UsuarioNegocio();
             List<Rol> listaRoles = negocio.ListarRoles();
-
+            if (Session["usuario"] != null)
+            {
+                Usuario usuarioLogueado = (Usuario)Session["usuario"];
+                bool esRecepcionista = usuarioLogueado.UsuarioRoles.Any(ur => ur.Rol != null && ur.Rol.TipoRol.ToUpper() == "RECEPCIONISTA");
+                if (esRecepcionista)
+                {
+                    // filtrar para usar solo medico
+                    listaRoles = listaRoles.Where(r => r.TipoRol.ToUpper() == "MEDICO").ToList();
+                }
+            }
             ddlRol.DataSource = listaRoles;
             ddlRol.DataTextField = "TipoRol";
             ddlRol.DataValueField = "IdRol";

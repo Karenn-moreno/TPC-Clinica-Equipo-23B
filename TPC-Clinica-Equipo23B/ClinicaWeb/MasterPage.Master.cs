@@ -28,17 +28,20 @@ namespace ClinicaWeb
                 string rol = Session["rol"].ToString().ToUpper();
 
                 menuTurnos.Visible = true;
+                
+                menuPacientes.Visible = false;
+                menuMedicos.Visible = false;
+                menuUsuarios.Visible = false;
+                //desocultamos menus segun rol
                 if (rol == "ADMINISTRADOR" || rol == "RECEPCIONISTA")
                 {
                     menuPacientes.Visible = true;
                     menuMedicos.Visible = true;
+                }
+                if (rol == "ADMINISTRADOR")
+                {
                     menuUsuarios.Visible = true;
                 }
-                else
-                {                    
-                    menuPacientes.Visible = false;
-                    menuMedicos.Visible = false;                   
-                }              
             }
         }
         protected void btnSalir_Click(object sender, EventArgs e)

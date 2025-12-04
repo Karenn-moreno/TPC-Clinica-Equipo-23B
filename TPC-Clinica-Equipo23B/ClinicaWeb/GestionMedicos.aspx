@@ -8,10 +8,9 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
 
 
-          <!-- msj error -->
+    <!-- msj error -->
     <asp:Label ID="lblMensajeError" runat="server"></asp:Label>
-<asp:Panel ID="pnlContenido" runat="server">
-
+    <asp:Panel ID="pnlContenido" runat="server">
     </asp:Panel>
 
     <!--agrega updatePanel -->
@@ -25,11 +24,10 @@
                         <h1 class="text-dark h3 fw-bold mb-2">Gestión de Médicos</h1>
                         <p class="text-secondary mb-0">Administra los médicos de la clínica de forma rápida y sencilla.</p>
                     </div>
-                    <button class="btn btn-primary btn-sm d-flex align-items-center gap-2"
-                        onclick="abrirModalAgregarEditar();" type="button">
+                    <a href="Registrarse.aspx" class="btn btn-primary btn-sm d-flex align-items-center gap-2" role="button">
                         <span class="material-symbols-outlined">add</span>
-                        <span>Nuevo Médico</span>
-                    </button>
+                        <span>Nuevo Medico</span>
+                    </a>
                 </div>
                 <div class="container-fluid">
                     <div class="row">
@@ -310,51 +308,51 @@
     <!-- Scripts JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script type="text/javascript">
-    function limpiarFondosResiduales() {
-        var backdrops = document.querySelectorAll('.modal-backdrop');
-        backdrops.forEach(function (backdrop) {
-            backdrop.remove();
+        function limpiarFondosResiduales() {
+            var backdrops = document.querySelectorAll('.modal-backdrop');
+            backdrops.forEach(function (backdrop) {
+                backdrop.remove();
+            });
+            document.body.classList.remove('modal-open');
+            document.body.style.removeProperty('padding-right');
+            document.body.style.removeProperty('overflow');
+        }
+
+        function abrirModalAgregarEditar() {
+            limpiarFondosResiduales();
+            var myModal = new bootstrap.Modal(document.getElementById('addMedicoModal'));
+            myModal.show();
+        }
+
+        function abrirModalVerDetalles() {
+            limpiarFondosResiduales();
+            var myModal = new bootstrap.Modal(document.getElementById('modalDetallesMedico'));
+            myModal.show();
+        }
+
+        function abrirModalEliminar(idMedico) {
+            limpiarFondosResiduales();
+            var hiddenField = document.getElementById('<%= hfIdMedicoEliminar.ClientID %>');
+            if (hiddenField) {
+                hiddenField.value = idMedico;
+            }
+            var myModal = new bootstrap.Modal(document.getElementById('modalConfirmarEliminar'));
+            myModal.show();
+        }
+
+        function mostrarMensajeError(mensaje) {
+            var labelError = document.getElementById('mensajeErrorBody');
+            if (labelError) {
+                labelError.innerText = mensaje;
+            }
+            var myModal = new bootstrap.Modal(document.getElementById('errorModal'));
+            myModal.show();
+        }
+
+        // Lógica para el UpdatePanel
+        var prm = Sys.WebForms.PageRequestManager.getInstance();
+        prm.add_endRequest(function (sender, args) {
+            limpiarFondosResiduales();
         });
-        document.body.classList.remove('modal-open');
-        document.body.style.removeProperty('padding-right');
-        document.body.style.removeProperty('overflow');
-    }
-
-    function abrirModalAgregarEditar() {
-        limpiarFondosResiduales();
-        var myModal = new bootstrap.Modal(document.getElementById('addMedicoModal'));
-        myModal.show();
-    }
-
-    function abrirModalVerDetalles() {
-        limpiarFondosResiduales();
-        var myModal = new bootstrap.Modal(document.getElementById('modalDetallesMedico'));
-        myModal.show();
-    }
-
-    function abrirModalEliminar(idMedico) {
-        limpiarFondosResiduales();
-        var hiddenField = document.getElementById('<%= hfIdMedicoEliminar.ClientID %>');
-        if (hiddenField) {
-            hiddenField.value = idMedico;
-        }
-        var myModal = new bootstrap.Modal(document.getElementById('modalConfirmarEliminar'));
-        myModal.show();
-    }
-
-    function mostrarMensajeError(mensaje) {
-        var labelError = document.getElementById('mensajeErrorBody');
-        if (labelError) {
-            labelError.innerText = mensaje;
-        }
-        var myModal = new bootstrap.Modal(document.getElementById('errorModal'));
-        myModal.show();
-    }
-
-    // Lógica para el UpdatePanel
-    var prm = Sys.WebForms.PageRequestManager.getInstance();
-    prm.add_endRequest(function (sender, args) {
-        limpiarFondosResiduales();
-    });
-</script>
+    </script>
 </asp:Content>
