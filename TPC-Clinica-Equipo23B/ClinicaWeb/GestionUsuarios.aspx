@@ -43,7 +43,7 @@
                                             </asp:LinkButton>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="table-responsive">
                                         <asp:GridView ID="gvUsuarios" runat="server"
                                             CssClass="table table-hover align-middle"
@@ -58,7 +58,7 @@
                                                 <asp:BoundField DataField="Apellido" HeaderText="Apellido" />
                                                 <asp:BoundField DataField="Email" HeaderText="Email" />
                                                 <asp:BoundField DataField="RolNombre" HeaderText="Rol" />
-                                                
+
                                                 <asp:TemplateField HeaderText="Acciones" ItemStyle-CssClass="text-end">
                                                     <ItemTemplate>
                                                         <asp:LinkButton ID="btnVer" runat="server"
@@ -120,7 +120,6 @@
                                     </div>
                                 </div>
                             </div>
-                            
                             <div aria-hidden="true" aria-labelledby="editUserModalLabel" class="modal fade" id="editUserModal" tabindex="-1">
                                 <div class="modal-dialog modal-dialog-centered modal-lg">
                                     <div class="modal-content">
@@ -129,7 +128,7 @@
                                             <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
                                         </div>
                                         <div class="modal-body">
-                                            
+
                                             <div class="mb-3">
                                                 <label class="form-label">Tipo de Usuario (Rol)</label>
                                                 <asp:TextBox ID="txtEditRol" runat="server" CssClass="form-control" ReadOnly="true" />
@@ -139,10 +138,20 @@
                                                 <div class="col-md-6 mb-3">
                                                     <label class="form-label">Nombre</label>
                                                     <asp:TextBox ID="txtEditNombre" runat="server" CssClass="form-control" />
+                                                    <asp:RequiredFieldValidator runat="server" ControlToValidate="txtEditNombre"
+                                                        ErrorMessage="* Obligatorio"
+                                                        CssClass="text-danger small"
+                                                        ValidationGroup="EditarUsuario"
+                                                        Display="Dynamic" />
                                                 </div>
                                                 <div class="col-md-6 mb-3">
                                                     <label class="form-label">Apellido</label>
                                                     <asp:TextBox ID="txtEditApellido" runat="server" CssClass="form-control" />
+                                                    <asp:RequiredFieldValidator runat="server" ControlToValidate="txtEditApellido"
+                                                        ErrorMessage="* Obligatorio"
+                                                        CssClass="text-danger small"
+                                                        ValidationGroup="EditarUsuario"
+                                                        Display="Dynamic" />
                                                 </div>
                                             </div>
 
@@ -150,13 +159,23 @@
                                                 <div class="col-md-6 mb-3">
                                                     <label class="form-label">DNI</label>
                                                     <asp:TextBox ID="txtEditDNI" runat="server" CssClass="form-control" />
+                                                    <asp:RequiredFieldValidator runat="server" ControlToValidate="txtEditDNI"
+                                                        ErrorMessage="* Obligatorio"
+                                                        CssClass="text-danger small"
+                                                        ValidationGroup="EditarUsuario"
+                                                        Display="Dynamic" />
                                                 </div>
                                                 <div class="col-md-6 mb-3">
                                                     <label class="form-label">Email</label>
                                                     <asp:TextBox ID="txtEditEmail" runat="server" CssClass="form-control" TextMode="Email" />
+                                                    <asp:RequiredFieldValidator runat="server" ControlToValidate="txtEditEmail"
+                                                        ErrorMessage="* Obligatorio"
+                                                        CssClass="text-danger small"
+                                                        ValidationGroup="EditarUsuario"
+                                                        Display="Dynamic" />
                                                 </div>
                                             </div>
-                                            
+
                                             <div class="row">
                                                 <div class="col-md-6 mb-3">
                                                     <label class="form-label">Teléfono</label>
@@ -172,7 +191,9 @@
                                             <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancelar</button>
                                             <asp:Button ID="btnGuardarEdicion" runat="server" Text="Guardar Cambios"
                                                 CssClass="btn btn-primary" OnClick="btnGuardarEdicion_Click"
-                                                CausesValidation="false" formnovalidate="" />
+                                                ValidationGroup="EditarUsuario"
+                                                OnClientClick="return Page_ClientValidate('EditarUsuario');"
+                                                CausesValidation="true" formnovalidate="" />
                                         </div>
                                     </div>
                                 </div>
@@ -185,13 +206,20 @@
                                             <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
                                         </div>
                                         <div class="modal-body">
-                                            <p><strong>Rol:</strong> <asp:Label ID="lblVerRol" runat="server" CssClass="badge bg-primary" /></p>
-                                            <p><strong>Nombre:</strong> <asp:Label ID="lblVerNombre" runat="server" /></p>
-                                            <p><strong>Apellido:</strong> <asp:Label ID="lblVerApellido" runat="server" /></p>
-                                            <p><strong>DNI:</strong> <asp:Label ID="lblVerDNI" runat="server" /></p>
-                                            <p><strong>Email:</strong> <asp:Label ID="lblVerEmail" runat="server" /></p>
-                                            <p><strong>Teléfono:</strong> <asp:Label ID="lblVerTelefono" runat="server" /></p>
-                                            <p><strong>Localidad:</strong> <asp:Label ID="lblVerLocalidad" runat="server" /></p>
+                                            <p><strong>Rol:</strong>
+                                                <asp:Label ID="lblVerRol" runat="server" CssClass="badge bg-primary" /></p>
+                                            <p><strong>Nombre:</strong>
+                                                <asp:Label ID="lblVerNombre" runat="server" /></p>
+                                            <p><strong>Apellido:</strong>
+                                                <asp:Label ID="lblVerApellido" runat="server" /></p>
+                                            <p><strong>DNI:</strong>
+                                                <asp:Label ID="lblVerDNI" runat="server" /></p>
+                                            <p><strong>Email:</strong>
+                                                <asp:Label ID="lblVerEmail" runat="server" /></p>
+                                            <p><strong>Teléfono:</strong>
+                                                <asp:Label ID="lblVerTelefono" runat="server" /></p>
+                                            <p><strong>Localidad:</strong>
+                                                <asp:Label ID="lblVerLocalidad" runat="server" /></p>
                                         </div>
                                         <div class="modal-footer">
                                             <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cerrar</button>
@@ -258,7 +286,7 @@
             limpiarFondosResiduales();
         });
         function mostrarMensajeError(mensaje) {
-            document.getElementById('mensajeErrorBody').innerText = mensaje;
+            document.getElementById('mensajeErrorBody').innerHTML = mensaje;
             var myModal = new bootstrap.Modal(document.getElementById('errorModal'));
             myModal.show();
         }

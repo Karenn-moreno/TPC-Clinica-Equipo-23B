@@ -176,6 +176,7 @@ namespace ClinicaWeb
                     string mensajeValidacion = "Por favor, corrija los siguientes errores:<ul style='text-align: left;'>" + string.Join("", errores) + "</ul>";
                     string scriptErrorValidacion = $@"
                         mostrarMensajeError('{mensajeValidacion}');
+                        abrirModalEditar();
                         ";
                     ScriptManager.RegisterStartupScript(this, this.GetType(), "ErrorValidacionEdicion", scriptErrorValidacion, true);
                     return;
@@ -195,6 +196,7 @@ namespace ClinicaWeb
                         var modalEditInstance = bootstrap.Modal.getInstance(modalEditEl);
                         if (modalEditInstance) {{ modalEditInstance.hide(); }}
                         mostrarMensajeError('{mensajeDuplicado}');
+                       abrirModalEditar();
                         limpiarFondosResiduales();";
                     ScriptManager.RegisterStartupScript(this, this.GetType(), "ErrorDuplicadoEdicion", script, true);
                     return;

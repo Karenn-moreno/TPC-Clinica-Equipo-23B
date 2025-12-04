@@ -316,11 +316,11 @@ namespace ClinicaWeb
 
             if (errores.Count > 0)
             {
-                string mensaje = "Por favor, corrija los siguientes errores:<ul style='text-align: left;'>" + string.Join("", errores) + "</ul>";
+               string mensaje = "Por favor, corrija los siguientes errores:<ul style='text-align: left;'>" + string.Join("", errores) + "</ul>";
 
                 string script = $@"
                     mostrarMensajeError('{mensaje}');
-abrirModalEditar();
+                     abrirModalEditar();
                     ";
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "ErrorValidacionEdicion", script, true);
                 return;
@@ -341,12 +341,11 @@ abrirModalEditar();
                         var modalEditInstance = bootstrap.Modal.getInstance(modalEditEl);
                         if (modalEditInstance) {{ modalEditInstance.hide(); }}
                         mostrarMensajeError('{mensajeDuplicado}');
-abrirModalEditar();
+                        abrirModalEditar();
                         limpiarFondosResiduales();";
                     ScriptManager.RegisterStartupScript(this, this.GetType(), "ErrorDuplicadoEdicion", script, true);
                     return;
                 }
-    
 
                 dominio.Paciente pacienteModificado = new dominio.Paciente();
                 pacienteModificado.IdPersona = idPaciente;
@@ -375,7 +374,6 @@ abrirModalEditar();
                     var modalEditInstance = bootstrap.Modal.getInstance(modalEditEl);
                     if (modalEditInstance) {{ modalEditInstance.hide(); }}
                     mostrarMensajeError('{mensajeError}');
-abrirModalEditar();
                     limpiarFondosResiduales();";
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "ErrorAlert", script, true);
             }

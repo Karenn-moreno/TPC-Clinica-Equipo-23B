@@ -6,13 +6,11 @@
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
 
-      <!-- msj error -->
+    <!-- msj error -->
     <asp:Literal ID="litErrorRol" runat="server" EnableViewState="false"></asp:Literal>
 
-<asp:Panel ID="pnlContenido" runat="server">
-    
-
-</asp:Panel>
+    <asp:Panel ID="pnlContenido" runat="server">
+    </asp:Panel>
 
     <asp:UpdatePanel ID="UpdatePanel1" runat="server">
         <ContentTemplate>
@@ -255,20 +253,40 @@
                                                 <div class="col-md-6 mb-3">
                                                     <label class="form-label">Nombre</label>
                                                     <asp:TextBox ID="txtEditNombre" runat="server" CssClass="form-control" />
+                                                    <asp:RequiredFieldValidator runat="server" ControlToValidate="txtEditNombre"
+                                                        ErrorMessage="* Obligatorio"
+                                                        CssClass="text-danger small"
+                                                        ValidationGroup="Editar"
+                                                        Display="Dynamic" />
                                                 </div>
                                                 <div class="col-md-6 mb-3">
                                                     <label class="form-label">Apellido</label>
                                                     <asp:TextBox ID="txtEditApellido" runat="server" CssClass="form-control" />
+                                                    <asp:RequiredFieldValidator runat="server" ControlToValidate="txtEditApellido"
+                                                        ErrorMessage="* Obligatorio"
+                                                        CssClass="text-danger small"
+                                                        ValidationGroup="Editar"
+                                                        Display="Dynamic" />
                                                 </div>
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-6 mb-3">
                                                     <label class="form-label">DNI</label>
                                                     <asp:TextBox ID="txtEditDNI" runat="server" CssClass="form-control" />
+                                                    <asp:RequiredFieldValidator runat="server" ControlToValidate="txtEditDNI"
+                                                        ErrorMessage="* Obligatorio"
+                                                        CssClass="text-danger small"
+                                                        ValidationGroup="Editar"
+                                                        Display="Dynamic" />
                                                 </div>
                                                 <div class="col-md-6 mb-3">
                                                     <label class="form-label">Fecha de Nacimiento</label>
                                                     <asp:TextBox ID="txtEditNacimiento" runat="server" CssClass="form-control" TextMode="Date" />
+                                                    <asp:RequiredFieldValidator runat="server" ControlToValidate="txtEditNacimiento"
+                                                        ErrorMessage="* Obligatorio"
+                                                        CssClass="text-danger small"
+                                                        ValidationGroup="Editar"
+                                                        Display="Dynamic" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -290,7 +308,9 @@
                                             <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancelar</button>
                                             <asp:Button ID="btnGuardarEdicion" runat="server" Text="Guardar Cambios"
                                                 CssClass="btn btn-primary" OnClick="btnGuardarEdicion_Click"
-                                                CausesValidation="false"
+                                                ValidationGroup="Editar"
+                                                OnClientClick="return Page_ClientValidate('Editar');"
+                                                CausesValidation="true"
                                                 formnovalidate="" />
                                         </div>
                                     </div>
@@ -302,8 +322,8 @@
                                         <div class="modal-header bg-danger text-white">
                                             <h5 class="modal-title" id="errorModalLabel">
                                                 <span class="material-symbols-outlined align-middle me-2">error</span>
-                                                 Atención
-                                                </h5>
+                                                Atención
+                                            </h5>
                                             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
@@ -353,7 +373,7 @@
         });
         function mostrarMensajeError(mensaje) {
 
-            document.getElementById('mensajeErrorBody').innerText = mensaje;
+            document.getElementById('mensajeErrorBody').innerHTML = mensaje;
 
 
             var myModal = new bootstrap.Modal(document.getElementById('errorModal'));
