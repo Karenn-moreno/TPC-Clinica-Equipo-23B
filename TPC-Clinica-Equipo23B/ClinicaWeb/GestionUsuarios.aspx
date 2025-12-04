@@ -105,7 +105,7 @@
                                         </div>
                                         <div class="modal-body">
                                             <p>¿Está seguro que desea dar de baja a este usuario?</p>
-                                            <p class="text-muted small">Esta acción deshabilitará el acceso al sistema (Baja Lógica).</p>
+                                            <p class="text-muted small">Esta acción deshabilitara el registro</p>
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -163,7 +163,7 @@
                                                     <asp:TextBox ID="txtEditTelefono" runat="server" CssClass="form-control" />
                                                 </div>
                                                 <div class="col-md-6 mb-3">
-                                                    <label class="form-label">Localidad</label>
+                                                    <label class="form-label">Dirección</label>
                                                     <asp:TextBox ID="txtEditLocalidad" runat="server" CssClass="form-control" />
                                                 </div>
                                             </div>

@@ -275,7 +275,7 @@ namespace ClinicaWeb
                 errores.Add("<li>Error al obtener el ID del paciente para editar.</li>");
             }
 
-     
+
             if (string.IsNullOrWhiteSpace(txtEditNombre.Text))
                 errores.Add("<li>El campo Nombre es obligatorio.</li>");
             if (string.IsNullOrWhiteSpace(txtEditApellido.Text))
@@ -285,7 +285,7 @@ namespace ClinicaWeb
             if (string.IsNullOrWhiteSpace(txtEditNacimiento.Text))
                 errores.Add("<li>El campo Fecha de Nacimiento es obligatorio.</li>");
 
-          
+
             if (!string.IsNullOrWhiteSpace(txtEditDNI.Text))
             {
                 if (txtEditDNI.Text.Length != 8 || !txtEditDNI.Text.All(char.IsDigit))
@@ -293,6 +293,13 @@ namespace ClinicaWeb
                     errores.Add("<li>El DNI debe contener exactamente 8 dígitos.</li>");
                 }
             }
+
+            if (!string.IsNullOrWhiteSpace(txtEditEmail.Text))
+            {
+                if (!txtEditEmail.Text.Contains("@") || !txtEditEmail.Text.Contains("."))
+                    errores.Add("<li>El formato del Email no es válido.</li>");
+            }
+
 
             if (!string.IsNullOrEmpty(txtEditNacimiento.Text))
             {
@@ -312,17 +319,35 @@ namespace ClinicaWeb
                 string mensaje = "Por favor, corrija los siguientes errores:<ul style='text-align: left;'>" + string.Join("", errores) + "</ul>";
 
                 string script = $@"
-                    var modalEditEl = document.getElementById('editPatientModal');
-                    var modalEditInstance = bootstrap.Modal.getInstance(modalEditEl);
-                    if (modalEditInstance) {{ modalEditInstance.hide(); }}
                     mostrarMensajeError('{mensaje}');
-                    limpiarFondosResiduales();";
+abrirModalEditar();
+                    ";
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "ErrorValidacionEdicion", script, true);
                 return;
             }
 
             try
             {
+                UsuarioNegocio userNegocio = new UsuarioNegocio();
+                string dni = txtEditDNI.Text.Trim();
+                string email = txtEditEmail.Text.Trim();
+
+                if (userNegocio.ExisteUsuarioMismoDniOEmail(idPaciente, email, dni))
+                {
+                    string mensajeDuplicado = "El DNI o Correo Electrónico ingresado ya está registrado para otro usuario/paciente. Por favor, verifique los datos.";
+
+                    string script = $@"
+                        var modalEditEl = document.getElementById('editPatientModal');
+                        var modalEditInstance = bootstrap.Modal.getInstance(modalEditEl);
+                        if (modalEditInstance) {{ modalEditInstance.hide(); }}
+                        mostrarMensajeError('{mensajeDuplicado}');
+abrirModalEditar();
+                        limpiarFondosResiduales();";
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "ErrorDuplicadoEdicion", script, true);
+                    return;
+                }
+    
+
                 dominio.Paciente pacienteModificado = new dominio.Paciente();
                 pacienteModificado.IdPersona = idPaciente;
                 pacienteModificado.Nombre = txtEditNombre.Text.Trim();
@@ -343,16 +368,18 @@ namespace ClinicaWeb
             }
             catch (Exception ex)
             {
-               
+
                 string mensajeError = "Error al guardar: " + ex.Message.Replace("'", "").Replace("\n", " ");
                 string script = $@"
                     var modalEditEl = document.getElementById('editPatientModal');
                     var modalEditInstance = bootstrap.Modal.getInstance(modalEditEl);
                     if (modalEditInstance) {{ modalEditInstance.hide(); }}
                     mostrarMensajeError('{mensajeError}');
+abrirModalEditar();
                     limpiarFondosResiduales();";
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "ErrorAlert", script, true);
             }
+
         }
 
         protected void gvPacientes_RowDataBound(object sender, GridViewRowEventArgs e)

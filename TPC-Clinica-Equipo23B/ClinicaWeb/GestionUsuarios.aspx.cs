@@ -147,12 +147,53 @@ namespace ClinicaWeb
             try
             {
                 int idUsuario = int.Parse(hfIdUsuarioEditar.Value);
+                List<string> errores = new List<string>();
 
+                if (string.IsNullOrWhiteSpace(txtEditNombre.Text))
+                    errores.Add("<li>El campo Nombre es obligatorio.</li>");
+                if (string.IsNullOrWhiteSpace(txtEditApellido.Text))
+                    errores.Add("<li>El campo Apellido es obligatorio.</li>");
+                if (string.IsNullOrWhiteSpace(txtEditDNI.Text))
+                    errores.Add("<li>El campo DNI es obligatorio.</li>");
+                else if (txtEditDNI.Text.Length > 0 && (txtEditDNI.Text.Length < 7 || txtEditDNI.Text.Length > 8 || !txtEditDNI.Text.All(char.IsDigit)))
+                    errores.Add("<li>El DNI debe contener 7 u 8 dígitos.</li>");
+                if (string.IsNullOrWhiteSpace(txtEditEmail.Text))
+                    errores.Add("<li>El campo Email es obligatorio.</li>");
 
-                if (string.IsNullOrWhiteSpace(txtEditNombre.Text) || string.IsNullOrWhiteSpace(txtEditApellido.Text) || string.IsNullOrWhiteSpace(txtEditDNI.Text) || string.IsNullOrWhiteSpace(txtEditEmail.Text))
+       
+                if (!txtEditEmail.Text.Contains("@") || !txtEditEmail.Text.Contains("."))
+                    errores.Add("<li>El formato del Email no es válido.</li>");
+
+      
+                if (errores.Any())
                 {
-                    throw new Exception("Nombre, Apellido, DNI y Email son obligatorios.");
+                    string mensajeValidacion = "Por favor, corrija los siguientes errores:<ul style='text-align: left;'>" + string.Join("", errores) + "</ul>";
+                    string scriptErrorValidacion = $@"
+                        mostrarMensajeError('{mensajeValidacion}');
+                        ";
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "ErrorValidacionEdicion", scriptErrorValidacion, true);
+                    return;
                 }
+
+
+                UsuarioNegocio userNegocio = new UsuarioNegocio();
+                string dni = txtEditDNI.Text.Trim();
+                string email = txtEditEmail.Text.Trim();
+
+                if (userNegocio.ExisteUsuarioMismoDniOEmail(idUsuario, email, dni))
+                {
+                    string mensajeDuplicado = "El DNI o Correo Electrónico ingresado ya está registrado para otro usuario/paciente. Por favor, verifique los datos.";
+
+                    string script = $@"
+                        var modalEditEl = document.getElementById('editUserModal');
+                        var modalEditInstance = bootstrap.Modal.getInstance(modalEditEl);
+                        if (modalEditInstance) {{ modalEditInstance.hide(); }}
+                        mostrarMensajeError('{mensajeDuplicado}');
+                        limpiarFondosResiduales();";
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "ErrorDuplicadoEdicion", script, true);
+                    return;
+                }
+
 
                 Persona personaModificada = new Persona
                 {
@@ -163,13 +204,12 @@ namespace ClinicaWeb
                     Email = txtEditEmail.Text.Trim(),
                     Telefono = string.IsNullOrEmpty(txtEditTelefono.Text) ? null : txtEditTelefono.Text.Trim(),
                     Localidad = string.IsNullOrEmpty(txtEditLocalidad.Text) ? null : txtEditLocalidad.Text.Trim()
-                };
+                }; 
 
-             
-                UsuarioNegocio userNegocio = new UsuarioNegocio();
+
                 userNegocio.ModificarPersona(personaModificada);
 
-          
+
                 CargarGrillaUsuarios();
                 string scriptExito = "var myModalEl = document.getElementById('editUserModal'); var modal = bootstrap.Modal.getInstance(myModalEl); modal.hide(); limpiarFondosResiduales(); alert('Usuario modificado correctamente.');";
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "cerrarModalExito", scriptExito, true);

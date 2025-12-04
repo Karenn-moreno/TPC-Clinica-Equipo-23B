@@ -228,7 +228,36 @@ namespace negocio
                 datos.cerrarConexion();
             }
         }
-        
+
+        public bool ExisteUsuarioMismoDniOEmail(int idPersonaExcluir, string email, string dni)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                // La clave es agregar "AND IdPersona != @IdExcluir"
+                datos.setearConsulta(@"
+                    SELECT IdPersona 
+                    FROM Persona 
+                    WHERE (Email = @Email OR Dni = @Dni) AND IdPersona != @IdExcluir
+                ");
+                datos.setearParametro("@Email", email);
+                datos.setearParametro("@Dni", dni);
+                datos.setearParametro("@IdExcluir", idPersonaExcluir);
+
+                datos.ejecutarLectura();
+
+                return datos.Lector.Read();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al verificar la existencia de DNI/Email duplicado para edición.", ex);
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
         public string RegistrarNuevoUsuarioConRolYGenerarPassword(Persona nuevaPersona, int idRol, string matricula = null, List<int> especialidades = null, List<JornadaLaboral> jornadas = null)
         {
 
