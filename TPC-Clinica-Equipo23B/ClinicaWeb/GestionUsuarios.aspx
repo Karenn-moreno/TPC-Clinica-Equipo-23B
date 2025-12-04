@@ -33,7 +33,7 @@
                                         <div class="input-group">
                                             <asp:TextBox ID="txtFiltroEmail" runat="server"
                                                 CssClass="form-control"
-                                                placeholder="Buscar usuario por Email..."
+                                                placeholder="Buscar usuario por apellido, email o rol..."
                                                 TextMode="Email">
                                             </asp:TextBox>
                                             <asp:LinkButton ID="btnBuscar" runat="server"

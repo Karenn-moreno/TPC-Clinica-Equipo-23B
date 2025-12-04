@@ -81,6 +81,7 @@ namespace ClinicaWeb
         }
         protected void btnBuscar_Click(object sender, EventArgs e)
         {
+
             List<UsuarioConRol> listaCompleta = (List<UsuarioConRol>)Session["ListaUsuarios"];
             string filtro = txtFiltroEmail.Text.Trim().ToLower();
 
@@ -88,7 +89,12 @@ namespace ClinicaWeb
 
             if (!string.IsNullOrEmpty(filtro) && listaCompleta != null)
             {
-                listaFiltrada = listaCompleta.FindAll(x => x.Email.ToLower().Contains(filtro));
+                // para filtrar 
+                listaFiltrada = listaCompleta.FindAll(u =>
+                    (u.Email != null && u.Email.ToLower().Contains(filtro)) ||
+                    (u.Apellido != null && u.Apellido.ToLower().Contains(filtro)) ||
+                    (u.RolNombre != null && u.RolNombre.ToLower().Contains(filtro))
+                );
             }
             else
             {
