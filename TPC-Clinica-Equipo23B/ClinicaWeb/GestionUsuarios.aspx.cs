@@ -165,8 +165,18 @@ namespace ClinicaWeb
                     errores.Add("<li>El DNI debe contener 7 u 8 dígitos.</li>");
                 if (string.IsNullOrWhiteSpace(txtEditEmail.Text))
                     errores.Add("<li>El campo Email es obligatorio.</li>");
+                if (!string.IsNullOrWhiteSpace(txtEditNombre.Text))
+                {
+                    if (!txtEditNombre.Text.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
+                        errores.Add("<li>El Nombre solo puede contener letras y espacios.</li>");
+                }
 
-       
+                if (!string.IsNullOrWhiteSpace(txtEditApellido.Text))
+                {
+                    if (!txtEditApellido.Text.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
+                        errores.Add("<li>El Apellido solo puede contener letras y espacios.</li>");
+                }
+
                 if (!txtEditEmail.Text.Contains("@") || !txtEditEmail.Text.Contains("."))
                     errores.Add("<li>El formato del Email no es válido.</li>");
 

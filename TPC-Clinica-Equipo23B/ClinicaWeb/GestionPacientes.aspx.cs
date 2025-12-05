@@ -126,6 +126,27 @@ namespace ClinicaWeb
                 errores.Add("<li>El campo Fecha de Nacimiento es obligatorio.</li>");
 
 
+
+            if (!string.IsNullOrWhiteSpace(txtEditNombre.Text))
+            {
+                if (!txtEditNombre.Text.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
+                    errores.Add("<li>El Nombre solo puede contener letras y espacios.</li>");
+            }
+
+            if (!string.IsNullOrWhiteSpace(txtEditApellido.Text))
+            {
+                if (!txtEditApellido.Text.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
+                    errores.Add("<li>El Apellido solo puede contener letras y espacios.</li>");
+            }
+
+            // Validar teléfono solo números
+            if (!string.IsNullOrWhiteSpace(txtAddTelefono.Text))
+            {
+                if (!txtAddTelefono.Text.All(char.IsDigit))
+                    errores.Add("<li>El teléfono solo puede contener números.</li>");
+            }
+
+
             if (!string.IsNullOrWhiteSpace(txtAddDNI.Text))
             {
                 if (txtAddDNI.Text.Length != 8 || !txtAddDNI.Text.All(char.IsDigit))
@@ -284,6 +305,25 @@ namespace ClinicaWeb
                 errores.Add("<li>El campo DNI es obligatorio.</li>");
             if (string.IsNullOrWhiteSpace(txtEditNacimiento.Text))
                 errores.Add("<li>El campo Fecha de Nacimiento es obligatorio.</li>");
+
+            if (!string.IsNullOrWhiteSpace(txtEditNombre.Text))
+            {
+                if (!txtEditNombre.Text.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
+                    errores.Add("<li>El Nombre solo puede contener letras y espacios.</li>");
+            }
+
+            if (!string.IsNullOrWhiteSpace(txtEditApellido.Text))
+            {
+                if (!txtEditApellido.Text.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
+                    errores.Add("<li>El Apellido solo puede contener letras y espacios.</li>");
+            }
+
+            // Validar teléfono solo números
+            if (!string.IsNullOrWhiteSpace(txtEditTelefono.Text))
+            {
+                if (!txtEditTelefono.Text.All(char.IsDigit))
+                    errores.Add("<li>El teléfono solo puede contener números.</li>");
+            }
 
 
             if (!string.IsNullOrWhiteSpace(txtEditDNI.Text))

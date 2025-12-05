@@ -205,6 +205,8 @@ namespace ClinicaWeb
                 else if (!long.TryParse(txtDni.Text, out _))
                     errores.Add("El DNI debe ser numérico.");
 
+
+
                 // Email válido
                 if (!string.IsNullOrWhiteSpace(txtEmail.Text))
                 {
